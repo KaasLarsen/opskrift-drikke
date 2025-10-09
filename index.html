@@ -3,31 +3,125 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>opskrift-drikke – nemme opskrifter på juice, smoothies, kaffe & drinks</title>
-  <meta name="description" content="nemme opskrifter på drikke: juice, smoothies, kaffe, varme drikke, gløgg, mocktails og saft. trin for trin med tider, tips og varianter." />
+  <title>Opskrift-Drikke – Nemme Opskrifter På Juice, Smoothies, Kaffe & Drinks</title>
+  <meta name="description" content="Nemme opskrifter på drikke: juice, smoothies, kaffe, varme drikke, gløgg, mocktails og saft. Trin for trin med tider, tips og varianter." />
   <link rel="icon" href="/img/favicon.ico" />
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/main.js"></script>
 </head>
 <body>
   <div data-include="/partials/header.html"></div>
+
   <main>
-    <h1>drikkeopskrifter der virker i hverdagen</h1>
-    <p class="hint">fra grøn smoothie til æblegløgg – enkelt forklaret, lækkert resultat</p>
 
-    <div class="filter" role="tablist" aria-label="filtre">
-      <button data-filter="alle" class="active" role="tab">alle</button>
-      <button data-filter="juice" role="tab">juice & smoothies</button>
-      <button data-filter="kaffe" role="tab">kaffe & varme</button>
-      <button data-filter="drinks" role="tab">drinks & mocktails</button>
-      <button data-filter="saft" role="tab">saft & sirup</button>
-      <button data-filter="shots" role="tab">shots & sunde</button>
-      <button data-filter="saeson" role="tab">sæson</button>
-    </div>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-body">
+        <h1>Drikke Du Får Lyst Til At Lave</h1>
+        <p class="hero-sub">Smoothies, varm hygge, iskolde sommerdrinks og alt derimellem. Forklaret Tydeligt. Klar På Minutter.</p>
 
-    <div id="seneste-list" class="grid" aria-live="polite"></div>
+        <div class="hero-actions">
+          <button class="hero-search" data-search-open aria-label="Åbn søgning">
+            <svg class="ico" aria-hidden="true"><use href="/assets/icons.svg#search"/></svg>
+            <span>Søg efter “Smoothie”, “Gløgg”, “Iskaffe”…</span>
+            <kbd>/</kbd>
+          </button>
+
+          <div class="hero-chips" role="tablist" aria-label="Kategorier">
+            <a class="chip" href="/kategorier/juice-smoothies">Juice & Smoothies</a>
+            <a class="chip" href="/kategorier/kaffe-varme-drikke">Kaffe & Varme</a>
+            <a class="chip" href="/kategorier/drinks-mocktails">Drinks & Mocktails</a>
+            <a class="chip" href="/kategorier/saft-sirup">Saft & Sirup</a>
+            <a class="chip" href="/kategorier/shots-sunde">Shots & Sunde</a>
+          </div>
+        </div>
+
+        <div class="hero-gallery">
+          <a class="hero-card" href="/opskrifter/groen-smoothie-med-banan-og-spinat.html">
+            <img src="/img/groen-smoothie-768.jpg" alt="Grøn smoothie i glas" />
+            <figcaption>Grøn Smoothie</figcaption>
+          </a>
+          <a class="hero-card" href="/opskrifter/aeblegloegg-med-kanel-og-appelsin.html">
+            <img src="/img/aeblegloegg-768.jpg" alt="Æblegløgg med kanel" />
+            <figcaption>Æblegløgg</figcaption>
+          </a>
+          <a class="hero-card" href="/opskrifter/iste-med-citron-og-mynte.html">
+            <img src="/img/iste-768.jpg" alt="Koldbrygget iste med citron og mynte" />
+            <figcaption>Koldbrygget Iste</figcaption>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- HURTIGE GENVEJE -->
+    <section class="section section-quick">
+      <div class="section-head">
+        <h2>Start Her</h2>
+        <p class="hint">De Mest Efterspurgte Kategorier</p>
+      </div>
+      <div class="quick-grid">
+        <a class="quick" href="/kategorier/juice-smoothies">
+          <svg class="ico"><use href="/assets/icons.svg#leaf"/></svg>
+          Juice & Smoothies
+        </a>
+        <a class="quick" href="/kategorier/kaffe-varme-drikke">
+          <svg class="ico"><use href="/assets/icons.svg#cup"/></svg>
+          Kaffe & Varme
+        </a>
+        <a class="quick" href="/kategorier/drinks-mocktails">
+          <svg class="ico"><use href="/assets/icons.svg#cup"/></svg>
+          Drinks & Mocktails
+        </a>
+        <a class="quick" href="/kategorier/saft-sirup">
+          <svg class="ico"><use href="/assets/icons.svg#leaf"/></svg>
+          Saft & Sirup
+        </a>
+      </div>
+    </section>
+
+    <!-- SENESTE OPSKRIFTER -->
+    <section class="section">
+      <div class="section-head">
+        <h2>Seneste Opskrifter</h2>
+        <a class="link" href="/seneste" aria-label="Se alle seneste opskrifter">Se Alle</a>
+      </div>
+      <div id="seneste-list" class="grid"></div>
+    </section>
+
+    <!-- SÆSON -->
+    <section class="season">
+      <div class="season-body">
+        <div class="season-badge">
+          <svg class="ico"><use href="/assets/icons.svg#snow"/></svg>
+          Sæsonens Hygge
+        </div>
+        <h3>Varme Drikke Til Efterår & Jul</h3>
+        <p class="hint">Prøv Æblegløgg Med Kanel Og Appelsin. Klar På 20 Minutter.</p>
+        <div class="season-actions">
+          <a class="btn" href="/opskrifter/aeblegloegg-med-kanel-og-appelsin.html">Se Opskriften</a>
+          <a class="btn btn-ghost" href="/kategorier/kaffe-varme-drikke">Se Flere Varme Drikke</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="cta">
+      <div class="cta-box">
+        <h3>Klar På Flere Nemme Drikke?</h3>
+        <p class="hint">Gem Siden På Startskærmen Eller Del Den Med En Ven. Næste Gang Går Det Endnu Hurtigere.</p>
+        <div class="cta-actions">
+          <button class="btn" data-search-open>
+            <svg class="ico"><use href="/assets/icons.svg#search"/></svg>
+            Find Din Næste Drik
+          </button>
+          <a class="btn btn-ghost" href="/seneste">Se De Seneste</a>
+        </div>
+      </div>
+    </section>
+
   </main>
+
   <div data-include="/partials/footer.html"></div>
-  <script>renderSenesteList(); setupCategoryFilters();</script>
+  <script>renderSenesteList();</script>
 </body>
 </html>
