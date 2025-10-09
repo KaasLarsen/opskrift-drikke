@@ -182,3 +182,76 @@ hr.sep{border:0; border-top:1px dashed var(--line); margin:18px 0}
   h1{font-size:30px}
   .hero-card img{height:170px}
 }
+/* --- Fine-tuning til forsiden (bevarer din eksisterende stil) --- */
+
+/* Lidt mere luft og maxbredde til store skærme */
+.container{max-width:1160px}
+
+/* Hero: stærkere kontrast i dark mode og pænere spacing */
+[data-theme="dark"] .hero{
+  background:
+    radial-gradient(900px 300px at 20% -10%, rgba(39,193,132,.14), transparent 60%),
+    radial-gradient(600px 240px at 100% 0%, rgba(39,193,132,.12), transparent 60%);
+}
+.hero .hero-body{gap:16px}
+.hero-sub{font-size:19px}
+
+/* Søg i hero: bedre indtastningsfølelse og placeholder-farve */
+.hero-search input{
+  font-size:16px; line-height:1.5; color:inherit;
+}
+.hero-search input::placeholder{color:var(--muted)}
+
+/* Chips & knapper: tydeligere hover/fokus */
+.chip:hover{transform:translateY(-2px); transition:transform .12s ease}
+.chip:focus-visible,
+.btn:focus-visible,
+.icon-btn:focus-visible{outline:2px solid var(--ring); outline-offset:2px}
+
+/* Kort: mere “løft” og plads til tekst */
+.card{align-items:center}
+.card .card-body{flex:1}
+.card:hover{box-shadow:var(--shadow)}
+
+/* Grid: lidt større luft på mobile */
+@media (max-width:640px){
+  .grid{gap:18px}
+  .quick-grid{gap:14px}
+}
+
+/* Sticky header over billeder: let baggrund i scrolled tilstand */
+.site-header{transition:background-color .18s ease, border-color .18s ease}
+@supports (backdrop-filter: blur(8px)){
+  .site-header{backdrop-filter:saturate(1.2) blur(8px)}
+}
+
+/* Sæson-kort: strammere hierarchy */
+.season-body h3{margin-top:4px; font-size:22px}
+
+/* CTA: mere spacing i knap-række */
+.cta-actions{gap:10px}
+
+/* --- Skelet-placeholders (til “kommer snart”/loading) --- */
+.skeleton{position:relative; overflow:hidden; background:var(--line)}
+.skeleton::after{
+  content:""; position:absolute; inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  animation:skeleton-shimmer 1.2s infinite;
+}
+.skeleton-text{height:0.9em; border-radius:6px}
+.skeleton-thumb{height:180px; border-radius:14px}
+
+@keyframes skeleton-shimmer{
+  100%{transform:translateX(100%)}
+}
+
+/* Eksempel-utility til skelet-kort (brug i HTML ved behov):
+   <div class="card">
+     <figure class="thumb-sq skeleton skeleton-thumb"></figure>
+     <div class="card-body" style="width:100%">
+       <div class="skeleton skeleton-text" style="width:60%; margin:6px 0 10px"></div>
+       <div class="skeleton skeleton-text" style="width:40%"></div>
+     </div>
+   </div>
+*/
