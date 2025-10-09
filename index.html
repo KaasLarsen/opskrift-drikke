@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>opskrift-drikke – nemme opskrifter på juice, smoothies, kaffe & drinks</title>
+  <meta name="description" content="nemme opskrifter på drikke: juice, smoothies, kaffe, varme drikke, gløgg, mocktails og saft. trin for trin med tider, tips og varianter." />
+  <link rel="icon" href="/img/favicon.ico" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/main.js"></script>
+</head>
+<body>
+  <div data-include="/partials/header.html"></div>
+  <main>
+    <h1>drikkeopskrifter der virker i hverdagen</h1>
+    <p class="hint">fra grøn smoothie til æblegløgg – enkelt forklaret, lækkert resultat</p>
+
+    <div class="filter" role="tablist" aria-label="filtre">
+      <button data-filter="alle" class="active" role="tab">alle</button>
+      <button data-filter="juice" role="tab">juice & smoothies</button>
+      <button data-filter="kaffe" role="tab">kaffe & varme</button>
+      <button data-filter="drinks" role="tab">drinks & mocktails</button>
+      <button data-filter="saft" role="tab">saft & sirup</button>
+      <button data-filter="shots" role="tab">shots & sunde</button>
+      <button data-filter="saeson" role="tab">sæson</button>
+    </div>
+
+    <div id="seneste-list" class="grid" aria-live="polite"></div>
+  </main>
+  <div data-include="/partials/footer.html"></div>
+  <script>renderSenesteList(); setupCategoryFilters();</script>
+</body>
+</html>

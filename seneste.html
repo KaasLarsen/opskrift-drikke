@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>seneste opskrifter – opskrift-drikke.dk</title>
+  <meta name="description" content="alle de nyeste drikkeopskrifter – smoothie, juice, kaffe, saft, drinks og meget mere." />
+  <link rel="icon" href="/img/favicon.ico" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/main.js"></script>
+</head>
+<body>
+  <div data-include="/partials/header.html"></div>
+  <main>
+    <h1>seneste opskrifter</h1>
+    <p class="hint">automatisk læst fra recipes-sitemap.xml</p>
+    <div id="seneste-list" class="grid"></div>
+  </main>
+  <div data-include="/partials/footer.html"></div>
+  <script>renderSenesteList();</script>
+</body>
+</html>

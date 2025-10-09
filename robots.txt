@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.opskrift-drikke.dk/sitemaps/sitemap.xml
