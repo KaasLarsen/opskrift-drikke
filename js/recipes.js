@@ -1,34 +1,40 @@
-
 import { formatStars, showToast } from './app.js';
 import { currentUser } from './auth.js';
 
 let __cache = null;
 
 async function loadChunk(i){
-  const res = await fetch(`/data/recipes-${i}.json`).then(r=>r.json());
+  const res = await fetch(`/data/recipes-${i}.json`).then(r=> r.ok ? r.json() : []);
   return res;
 }
 
 export async function loadAllRecipes(progressCb){
   if (__cache) return __cache;
-  const first = await loadChunk(1);
-  __cache = first.slice(); // copy
-  // lazy-load rest
-  const chunkPromises = [];
-  let i = 2;
-  while (true){
-    const url = `/data/recipes-${i}.json`;
-    try {
-      const res = await fetch(url, {cache:'force-cache'});
-      if (!res.ok) break;
-      const arr = await res.json();
-      __cache = __cache.concat(arr);
-      if (progressCb) progressCb(__cache.length);
-      i++;
-    } catch(e){
-      break;
+  // try chunked first
+  try {
+    const first = await loadChunk(1);
+    if (Array.isArray(first) && first.length) {
+      __cache = first.slice();
+      // background load rest (attempt up to 20 chunks just in case)
+      for (let i=2;i<=20;i++){
+        try{
+          const r = await fetch(`/data/recipes-${i}.json`, {cache:'force-cache'});
+          if (!r.ok) break;
+          const arr = await r.json();
+          if (!Array.isArray(arr) || !arr.length) break;
+          __cache = __cache.concat(arr);
+          if (progressCb) progressCb(__cache.length);
+          // dispatch global event
+          window.dispatchEvent(new CustomEvent('recipes:updated', {detail:{count:__cache.length}}));
+        }catch(e){ break; }
+      }
+      return __cache;
     }
-  }
+  } catch(e){ /* fall back below */ }
+  // fallback to full file
+  __cache = await fetch('/data/recipes.json').then(r=>r.json());
+  if (progressCb) progressCb(__cache.length);
+  window.dispatchEvent(new CustomEvent('recipes:updated', {detail:{count:__cache.length}}));
   return __cache;
 }
 
@@ -38,7 +44,6 @@ export function getFavorites(){
 export function setFavorites(list){
   localStorage.setItem('od_favs', JSON.stringify(list));
 }
-
 export function toggleFavorite(slug){
   const favs = getFavorites();
   const i = favs.indexOf(slug);
@@ -69,23 +74,29 @@ export function renderRecipeCard(r){
   </a>`;
 }
 
-// Auto-mount on index and favorites
+// Mount on pages that have a #results or #favoritesList
 document.addEventListener('DOMContentLoaded', async () => {
   const results = document.getElementById('results');
   const favWrap = document.getElementById('favoritesList');
   if (!results && !favWrap) return;
 
-  // Load first chunk fast
-  const first = await fetch('/data/recipes-1.json').then(r=>r.json());
-  window.__allRecipes = first.slice();
+  // load first chunk fast (or fallback to all)
+  let data;
+  try {
+    data = await loadAllRecipes();
+  } catch(e){
+    data = await fetch('/data/recipes.json').then(r=>r.json());
+  }
+  window.__allRecipes = data;
 
-  // Initial render
-  if (results){
-    results.innerHTML = first.slice(0, 30).map(renderRecipeCard).join('');
-    // attach fav toggle
+  if (results) {
+    results.innerHTML = data.slice(0, 30).map(renderRecipeCard).join('');
+    // Gate favorite: must be logged in
     results.addEventListener('click', (e)=>{
       const btn = e.target.closest('[data-fav]');
       if (!btn) return;
+      const u = currentUser();
+      if (!u) { showToast('Du skal være logget ind for at gemme'); return; }
       const slug = btn.getAttribute('data-fav');
       const ok = toggleFavorite(slug);
       if (ok){ btn.classList.add('bg-rose-50','border-rose-300'); btn.querySelector('span').textContent='Gemt'; btn.querySelector('svg').classList.remove('opacity-30'); }
@@ -95,14 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (favWrap) {
     const favs = getFavorites();
-    const list = first.filter(r=>favs.includes(r.slug));
+    const list = data.filter(r=>favs.includes(r.slug));
     favWrap.innerHTML = list.map(renderRecipeCard).join('') || '<p>Ingen favoritter endnu.</p>';
   }
-
-  // Load remaining chunks in background and update globals + placeholders
-  loadAllRecipes((len)=>{
-    window.__allRecipes = __cache;
-    const input = document.getElementById('searchInput');
-    if (input) input.placeholder = `Søg i ${len.toLocaleString('da-DK')} drikkeopskrifter...`;
-  });
 });
