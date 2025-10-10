@@ -1,5 +1,6 @@
 
 import { formatStars } from './app.js';
+import { currentUser } from './auth.js';
 
 let __cache = null;
 

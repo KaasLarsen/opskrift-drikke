@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const favs = getFavorites();
   if (favs.includes(r.slug)){ favBtn.classList.add('bg-rose-50'); }
   favBtn.addEventListener('click', ()=>{
+    const u = currentUser();
+    if (!u) { alert('Log ind for at gemme opskrifter'); return; }
     const ok = toggleFavorite(r.slug);
     favBtn.classList.toggle('bg-rose-50', ok);
   });
