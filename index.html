@@ -10,26 +10,20 @@
   <script defer src="/assets/main.js"></script>
 </head>
 <body>
-  <!-- Header fra partial -->
   <div data-include="/partials/header.html"></div>
-
   <main>
-
-    <!-- HERO -->
     <section class="hero">
       <div class="container hero-body">
-        <h1>Drikke du får lyst til at lave</h1>
+        <h1>Drikke Du Får Lyst Til At Lave</h1>
         <p class="hero-sub">Smoothies, Varme Drikke, Iste, Kaffe-Drinks Og Alt Derimellem. Forklaret Tydeligt. Klar På Minutter.</p>
 
-        <!-- Inline søgning (live fra recipes-sitemap.xml) -->
         <form id="hero-search" class="hero-search" role="search" aria-label="Søg efter opskrifter" onsubmit="return false;">
-          <svg class="ico" aria-hidden="true"><use href="/assets/icons.svg#search"/></svg>
+          <img src="/assets/icons/juice.svg" alt="" width="20" height="20" aria-hidden="true" />
           <input id="hero-search-input" type="search" placeholder="Søg efter “Smoothie”, “Gløgg”, “Iskaffe”…" aria-label="Søg" autocomplete="off" style="flex:1;border:0;outline:none;background:transparent" />
           <kbd>/</kbd>
         </form>
         <div id="hero-search-results" class="grid" aria-live="polite" style="display:none;margin-top:8px"></div>
 
-        <!-- Kategori-chips -->
         <div class="hero-chips" role="tablist" aria-label="Kategorier">
           <a class="chip" href="/kategorier/juice-smoothies">Juice & Smoothies</a>
           <a class="chip" href="/kategorier/kaffe-varme-drikke">Kaffe & Varme</a>
@@ -38,53 +32,29 @@
           <a class="chip" href="/kategorier/shots-sunde">Shots & Sunde</a>
         </div>
 
-        <!-- Hero-galleri (placeholders) -->
         <div class="hero-gallery">
           <a class="hero-card" href="/opskrifter/groen-smoothie-med-banan-og-spinat.html">
-            <img src="/img/groen-smoothie-768.jpg" alt="Grøn Smoothie" />
+            <div style="display:grid;place-items:center;height:230px">
+              <img src="/assets/icons/smoothie.svg" alt="Ikon for grøn smoothie" style="width:96px;height:96px;opacity:.95" />
+            </div>
             <figcaption>Grøn Smoothie</figcaption>
           </a>
           <a class="hero-card" href="/opskrifter/aeblegloegg-med-kanel-og-appelsin.html">
-            <img src="/img/aeblegloegg-768.jpg" alt="Æblegløgg" />
+            <div style="display:grid;place-items:center;height:230px">
+              <img src="/assets/icons/gloegg.svg" alt="Ikon for æblegløgg" style="width:96px;height:96px;opacity:.95" />
+            </div>
             <figcaption>Æblegløgg</figcaption>
           </a>
           <a class="hero-card" href="/opskrifter/iste-med-citron-og-mynte.html">
-            <img src="/img/iste-768.jpg" alt="Koldbrygget Iste" />
+            <div style="display:grid;place-items:center;height:230px">
+              <img src="/assets/icons/iste.svg" alt="Ikon for koldbrygget iste" style="width:96px;height:96px;opacity:.95" />
+            </div>
             <figcaption>Koldbrygget Iste</figcaption>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- START HER (placeholders) -->
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Start Her</h2>
-          <p class="hint">Genveje Der Får Dig I Gang</p>
-        </div>
-        <div class="quick-grid">
-          <a class="quick" href="/kategorier/juice-smoothies">
-            <svg class="ico"><use href="/assets/icons.svg#leaf"/></svg>
-            Juice & Smoothies
-          </a>
-          <a class="quick" href="/kategorier/kaffe-varme-drikke">
-            <svg class="ico"><use href="/assets/icons.svg#cup"/></svg>
-            Kaffe & Varme
-          </a>
-          <a class="quick" href="/kategorier/drinks-mocktails">
-            <svg class="ico"><use href="/assets/icons.svg#cup"/></svg>
-            Drinks & Mocktails
-          </a>
-          <a class="quick" href="/kategorier/saft-sirup">
-            <svg class="ico"><use href="/assets/icons.svg#leaf"/></svg>
-            Saft & Sirup
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- SENESTE (automatisk fra sitemap) -->
     <section class="section">
       <div class="container">
         <div class="section-head">
@@ -94,134 +64,10 @@
         <div id="seneste-list" class="grid"></div>
       </div>
     </section>
-
-    <!-- UDVAGT / KOMMER SNART (placeholders) -->
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Udvalgte Favoritter</h2>
-          <p class="hint">Kommer Snart – Plads Til Dine Hits</p>
-        </div>
-
-        <div class="grid">
-          <a class="card" href="#">
-            <figure class="thumb-sq"><svg class="ico"><use href="/assets/icons.svg#cup"/></svg></figure>
-            <div class="card-body">
-              <h3>Iskaffe Med Vanilje</h3>
-              <p class="meta">Kommer Snart</p>
-            </div>
-          </a>
-          <a class="card" href="#">
-            <figure class="thumb-sq"><svg class="ico"><use href="/assets/icons.svg#leaf"/></svg></figure>
-            <div class="card-body">
-              <h3>Citron-Ingefær Shot</h3>
-              <p class="meta">Kommer Snart</p>
-            </div>
-          </a>
-          <a class="card" href="#">
-            <figure class="thumb-sq"><svg class="ico"><use href="/assets/icons.svg#cup"/></svg></figure>
-            <div class="card-body">
-              <h3>Hindbær Lemonade</h3>
-              <p class="meta">Kommer Snart</p>
-            </div>
-          </a>
-          <a class="card" href="#">
-            <figure class="thumb-sq"><svg class="ico"><use href="/assets/icons.svg#cup"/></svg></figure>
-            <div class="card-body">
-              <h3>Chai Latte</h3>
-              <p class="meta">Kommer Snart</p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- SÆSON -->
-    <section class="section season">
-      <div class="container">
-        <div class="season-body">
-          <div class="season-badge">
-            <svg class="ico"><use href="/assets/icons.svg#snow"/></svg>
-            Sæsonens Hygge
-          </div>
-          <h3>Varme Drikke Til Efterår & Jul</h3>
-          <p class="hint">Prøv Æblegløgg Med Kanel Og Appelsin. Klar På 20 Minutter.</p>
-          <div class="season-actions">
-            <a class="btn" href="/opskrifter/aeblegloegg-med-kanel-og-appelsin.html">Se Opskriften</a>
-            <a class="btn btn-ghost" href="/kategorier/kaffe-varme-drikke">Se Flere Varme Drikke</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA (placeholder) -->
-    <section class="section cta">
-      <div class="container">
-        <div class="cta-box">
-          <h3>Klar Til At Gemme Favoritter?</h3>
-          <p class="hint">Tilføj Siden Til Hjemmeskærmen Eller Del Den Med En Ven. Næste Gang Går Det Endnu Hurtigere.</p>
-          <div class="cta-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-            <button class="btn" data-search-open>
-              <svg class="ico"><use href="/assets/icons.svg#search"/></svg>
-              Find Din Næste Drik
-            </button>
-            <a class="btn btn-ghost" href="/seneste">Se De Seneste</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
-
-  <!-- Footer fra partial -->
   <div data-include="/partials/footer.html"></div>
-
-  <!-- Init: seneste + hero-søgning -->
   <script>
-    // Loader "Seneste" fra recipes-sitemap.xml (funktion findes i /assets/main.js)
     renderSenesteList();
-
-    // Lille, isoleret hero-søgning med live resultater (bruger også sitemap)
-    (function heroSearch(){
-      const form = document.getElementById('hero-search');
-      const input = document.getElementById('hero-search-input');
-      const box = document.getElementById('hero-search-results');
-      let cache = null, t = null;
-
-      async function getUrls(){
-        if(cache) return cache;
-        try{
-          const res = await fetch('/sitemaps/recipes-sitemap.xml?ts='+Date.now());
-          const xml = await res.text();
-          const doc = new DOMParser().parseFromString(xml, 'application/xml');
-          cache = [...doc.querySelectorAll('url loc')].map(n => n.textContent);
-          return cache;
-        }catch(e){ return []; }
-      }
-      function card(u){
-        const slug = u.split('/').pop().replace('.html','');
-        const title = slug.replace(/-/g,' ').replace(/\b[a-z]/g,c=>c.toUpperCase());
-        return `
-          <a class="card" href="${u}">
-            <figure class="thumb-sq"><svg class="ico"><use href="/assets/icons.svg#cup"/></svg></figure>
-            <div class="card-body">
-              <h3>${title}</h3>
-              <p class="meta">Drik · Nem</p>
-            </div>
-          </a>`;
-      }
-      async function search(q){
-        if(!q.trim()){ box.style.display='none'; box.innerHTML=''; return; }
-        const urls = await getUrls();
-        const hits = urls.filter(u => u.toLowerCase().includes(q.trim().toLowerCase())).slice(0,12);
-        box.innerHTML = hits.map(card).join('');
-        box.style.display = hits.length ? '' : 'none';
-      }
-      input.addEventListener('input', ()=>{ clearTimeout(t); t=setTimeout(()=>search(input.value), 160); });
-      form.addEventListener('submit', (e)=>{ e.preventDefault(); if(input.value.trim()===''){ box.style.display='none'; } });
-      // Tastaturgenvej: "/" åbner global overlay (bevares), men livefelt svarer også.
-      document.addEventListener('keydown', (e)=>{ if(e.key==='/' && !e.metaKey && !e.ctrlKey && !e.altKey){ setTimeout(()=>input.focus(),0); }});
-    })();
   </script>
 </body>
 </html>
