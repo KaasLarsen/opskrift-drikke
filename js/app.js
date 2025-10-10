@@ -22,3 +22,25 @@ export function formatStars(rating) {
 }
 
 document.addEventListener('DOMContentLoaded', loadPartials);
+
+
+export function showToast(msg){
+  let t = document.getElementById('od_toast');
+  if (!t){
+    t = document.createElement('div');
+    t.id = 'od_toast';
+    t.style.position='fixed';
+    t.style.left='50%';
+    t.style.bottom='20px';
+    t.style.transform='translateX(-50%)';
+    t.style.padding='10px 16px';
+    t.style.background='rgba(0,0,0,.85)';
+    t.style.color='#fff';
+    t.style.borderRadius='12px';
+    t.style.zIndex='9999';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity='1';
+  setTimeout(()=>{ t.style.opacity='0'; }, 2000);
+}

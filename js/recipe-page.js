@@ -1,6 +1,6 @@
 
 import { loadAllRecipes, toggleFavorite, getFavorites } from './recipes.js';
-import { formatStars } from './app.js';
+import { formatStars, showToast } from './app.js';
 import { currentUser } from './auth.js';
 
 function ratingKey(slug, email){ return `od_rating_${slug}_${email||'anon'}`; }
@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   favBtn.addEventListener('click', ()=>{
     const u = currentUser();
     if (!u) { alert('Log ind for at gemme opskrifter'); return; }
+    const u = currentUser();
+    if (!u) { showToast('Du skal være logget ind for at gemme'); return; }
     const ok = toggleFavorite(r.slug);
     favBtn.classList.toggle('bg-rose-50', ok);
   });

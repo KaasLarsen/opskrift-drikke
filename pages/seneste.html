@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>seneste opskrifter – opskrift-drikke.dk</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta property="og:title" content="opskrift-drikke.dk"/>
+    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+    <script type="module" src="/js/app.js"></script>
+    <script defer src="/js/analytics.js"></script>
+    
+    <script type="module" src="/js/recipes.js"></script>
+    <script type="module" src="/js/search.js"></script>
+
+    <style>
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+      .btn { border-radius: 1rem; }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-stone-900">
+    <div id="header"></div>
+    <main class="max-w-6xl mx-auto px-4">
+<section class="pt-8">
+  <h1 class="text-3xl font-semibold">Seneste opskrifter</h1>
+  <p class="mt-3">Her er de nyeste tilføjelser.</p>
+  <div id="latestGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</section>
+<script type="module">
+  import { loadAllRecipes, renderRecipeCard } from '/js/recipes.js';
+  const grid = document.getElementById('latestGrid');
+  const data = await loadAllRecipes();
+  const parsed = data.map(r=>{ const m = r.title.match(/#(\d+)/); return {n: m?parseInt(m[1],10):0, r}; });
+  parsed.sort((a,b)=>b.n-a.n);
+  grid.innerHTML = parsed.slice(0, 60).map(x=>renderRecipeCard(x.r)).join('');
+</script>
+</main>
+    <div id="footer"></div>
+    
+  </body>
+</html>
