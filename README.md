@@ -39,3 +39,6 @@ god fornøjelse.
 - manifest + favicon + open graph
 - søgning/performance rettet, kort-rendering via eksport
 - partials hentes relativt for at virke på både vercel og gh pages
+
+
+v2.1: partials hentes nu via absolut sti (/partials/...) for Vercel.
