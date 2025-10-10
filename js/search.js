@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!input || !results) return;
 
   const data = window.__allRecipes || await loadAllRecipes();
+  const total = data.length;
+  if (input && total) { input.placeholder = `Søg i ${total.toLocaleString('da-DK')} drikkeopskrifter...`; }
+
 
   // categories
   const cats = [...new Set(data.map(r=>r.category))].slice(0, 10);
