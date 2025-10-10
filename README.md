@@ -46,3 +46,5 @@ v2.1: partials hentes nu via absolut sti (/partials/...) for Vercel.
 v2.2: opskrifter udvidet til 3.000. sitemap opdateret.
 
 v2.4: hub pagineret (100/side) + A–Å, tags-oversigter, dynamisk søge-placeholder.
+
+v2.5: canonical + BreadcrumbList på alle oversigter og opskrifter; data split i chunks med lazy load; dynamisk title/description på opskrifter.

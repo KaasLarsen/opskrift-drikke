@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('breadcrumbTitle').textContent = r.title;
   document.getElementById('recipeTitle').textContent = r.title;
+  document.title = r.title + ' – opskrift-drikke.dk';
+  let md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute('content', r.description);
   document.getElementById('ratingStars').innerHTML = formatStars(r.rating);
   document.getElementById('metaInfo').textContent = `${r.category} · ${r.time} min · ${r.servings} glas`;
 
@@ -77,4 +80,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   const s = document.createElement('script');
   s.type='application/ld+json'; s.textContent = JSON.stringify(ld);
   document.head.appendChild(s);
+  ensureCanonicalAndBreadcrumbs(r);
 });
+
+
+// Canonical + BreadcrumbList for recipe
+function ensureCanonicalAndBreadcrumbs(r){
+  // canonical
+  let link = document.querySelector("link[rel='canonical']");
+  const url = location.origin + location.pathname + location.search;
+  if (!link){
+    link = document.createElement('link');
+    link.setAttribute('rel','canonical');
+    document.head.appendChild(link);
+  }
+  link.setAttribute('href', url);
+
+  // breadcrumbs JSON-LD
+  const catUrl = location.origin + `/kategori/${r.category}.html`;
+  const ld = {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Forside","item": location.origin + "/index.html"},
+      {"@type":"ListItem","position":2,"name":"Opskrifter","item": location.origin + "/opskrifter/index.html"},
+      {"@type":"ListItem","position":3,"name": r.category, "item": catUrl},
+      {"@type":"ListItem","position":4,"name": r.title, "item": url}
+    ]
+  };
+  const s = document.createElement('script');
+  s.type='application/ld+json'; s.textContent = JSON.stringify(ld);
+  document.head.appendChild(s);
+  ensureCanonicalAndBreadcrumbs(r);
+}

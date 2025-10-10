@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const filters = document.getElementById('filters');
   if (!input || !results) return;
 
-  const data = window.__allRecipes || await loadAllRecipes();
+  let data = window.__allRecipes || await loadAllRecipes();
+  window.addEventListener("recipes:updated", ()=>{ data = window.__allRecipes || data; });
   const total = data.length;
   if (input && total) { input.placeholder = `Søg i ${total.toLocaleString('da-DK')} drikkeopskrifter...`; }
 

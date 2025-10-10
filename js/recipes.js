@@ -1,9 +1,34 @@
 
 import { formatStars } from './app.js';
 
-export async function loadAllRecipes(){
-  const data = await fetch('/data/recipes.json').then(r=>r.json());
-  return data;
+let __cache = null;
+
+async function loadChunk(i){
+  const res = await fetch(`/data/recipes-${i}.json`).then(r=>r.json());
+  return res;
+}
+
+export async function loadAllRecipes(progressCb){
+  if (__cache) return __cache;
+  const first = await loadChunk(1);
+  __cache = first.slice(); // copy
+  // lazy-load rest
+  const chunkPromises = [];
+  let i = 2;
+  while (true){
+    const url = `/data/recipes-${i}.json`;
+    try {
+      const res = await fetch(url, {cache:'force-cache'});
+      if (!res.ok) break;
+      const arr = await res.json();
+      __cache = __cache.concat(arr);
+      if (progressCb) progressCb(__cache.length);
+      i++;
+    } catch(e){
+      break;
+    }
+  }
+  return __cache;
 }
 
 export function getFavorites(){
@@ -48,11 +73,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const results = document.getElementById('results');
   const favWrap = document.getElementById('favoritesList');
   if (!results && !favWrap) return;
-  const data = await loadAllRecipes();
-  window.__allRecipes = data;
 
-  if (results) {
-    results.innerHTML = data.slice(0, 30).map(renderRecipeCard).join('');
+  // Load first chunk fast
+  const first = await fetch('/data/recipes-1.json').then(r=>r.json());
+  window.__allRecipes = first.slice();
+
+  // Initial render
+  if (results){
+    results.innerHTML = first.slice(0, 30).map(renderRecipeCard).join('');
+    // attach fav toggle
     results.addEventListener('click', (e)=>{
       const btn = e.target.closest('[data-fav]');
       if (!btn) return;
@@ -65,7 +94,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (favWrap) {
     const favs = getFavorites();
-    const list = data.filter(r=>favs.includes(r.slug));
+    const list = first.filter(r=>favs.includes(r.slug));
     favWrap.innerHTML = list.map(renderRecipeCard).join('') || '<p>Ingen favoritter endnu.</p>';
   }
+
+  // Load remaining chunks in background and update globals + placeholders
+  loadAllRecipes((len)=>{
+    window.__allRecipes = __cache;
+    const input = document.getElementById('searchInput');
+    if (input) input.placeholder = `Søg i ${len.toLocaleString('da-DK')} drikkeopskrifter...`;
+  });
 });
