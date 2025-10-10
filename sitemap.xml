@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://opskrift-drikke.dk/index.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/opskrifter/index.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/om-os.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/kontakt.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/privatliv.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/vilkaar.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/favoritter.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/cocktail.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/juice.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/kaffe.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/limonade.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/mocktail.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/smoothie.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/sodavand.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/sommerskål.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/te.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://opskrift-drikke.dk/kategori/varm chokolade.html</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/opskrift.html?slug=mild-sour-0001</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/opskrift.html?slug=silkebloed-chokolade-kakao-0002</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://opskrift-drikke.dk/pages/opskrift.html?slug=iskold-gin-og-tonic-0003</loc><lastmod>2025-10-10</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
