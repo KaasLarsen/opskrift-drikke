@@ -1,25 +1,21 @@
-<header class="site-header">
-  <div class="container inner">
-    <a class="logo" href="/">
-      <svg class="logo-ico" aria-hidden="true"><use href="/assets/icons.svg#leaf"/></svg>
-      <span>opskrift-drikke.dk</span>
+<!-- Global Header Partial -->
+<header class="w-full border-b bg-white/80 backdrop-blur sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/index.html" class="flex items-center gap-2">
+      <svg class="w-7 h-7"><use href="/assets/icons.svg#logo"/></svg>
+      <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
-
-    <nav aria-label="Primær">
-      <a href="/seneste">Seneste</a>
-      <a href="/kategorier/juice-smoothies">Juice & Smoothies</a>
-      <a href="/kategorier/kaffe-varme-drikke">Kaffe & Varme</a>
-      <a href="/kategorier/drinks-mocktails">Drinks & Mocktails</a>
-      <a href="/kategorier/saft-sirup">Saft & Sirup</a>
+    <nav class="hidden md:flex items-center gap-6 text-sm">
+      <a href="/index.html" class="hover:underline">Forside</a>
+      <a href="/pages/om-os.html" class="hover:underline">Om os</a>
+      <a href="/pages/kontakt.html" class="hover:underline">Kontakt</a>
+      <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
     </nav>
-
-    <div class="header-actions">
-      <button class="icon-btn" aria-label="Søg" title="Søg (/)" data-search-open>
-        <svg class="ico"><use href="/assets/icons.svg#search"/></svg>
-      </button>
-      <button class="icon-btn" aria-label="Skift Tema" title="Skift Tema" data-theme-toggle>
-        <svg class="ico"><use href="/assets/icons.svg#theme"/></svg>
-      </button>
+    <div class="flex items-center gap-3">
+      <a href="/pages/login.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
+        <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
+      </a>
+      <button id="themeToggle" class="rounded-2xl px-3 py-1.5 border">Tema</button>
     </div>
   </div>
 </header>

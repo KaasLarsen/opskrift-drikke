@@ -1,18 +1,33 @@
-# opskrift-drikke.dk (green modern + theme toggle + search)
-Statisk site til Vercel.
 
-## kom i gang
-1) push til GitHub
-2) importér repo i Vercel (Framework: Other, Build: none, Output: /)
-3) opdater `sitemaps/recipes-sitemap.xml` når du tilføjer nye opskrifter
-4) forsiden og `seneste` læser automatisk fra `recipes-sitemap.xml`
+# opskrift-drikke.dk – statisk site
 
-## features
-- lys/mørk tema (gemmes i localStorage, følger system som default)
-- søgning: tryk `/` eller klik forstørrelsesglas (loader fra recipes-sitemap.xml)
-- lette kort, grøn moderne stil
+det her projekt er klar til github pages eller vercel.
 
-## ny opskrift
-- kopiér en fil i `/opskrifter/`
-- opdater `<title>`, meta, JSON-LD, H1, ingredienser og trin
-- tilføj url i `sitemaps/recipes-sitemap.xml`
+## start
+
+1) læg hele mappen i et repo på github (fx `higthub/opskrift-drikke.dk`).
+2) vercel: peg på `index.html` som entry. github pages: aktiver pages for `main` branch.
+3) analytics: sæt `window.ANALYTICS = { ga4: 'G-XXXX', plausible: 'opskrift-drikke.dk' }` i `<head>` før `analytics.js` eller via inline script.
+4) opskrifter: de 500 opskrifter ligger i `/data/recipes.json`. kun du tilføjer nye – redigér JSON direkte.
+5) login/favoritter/kommentarer er **kun lokale** i browseren (localStorage). det er fint til start, men ikke sikkert til rigtige brugere.
+
+## struktur
+
+- `partials/` header og footer (ens på alle sider, indlæses via js)
+- `pages/opskrift.html` viser en opskrift ud fra `?slug=`
+- `data/recipes.json` alle opskrifter
+- `js/` al funktionalitet: søgning, login, favoritter, kommentarer, schema.org, analytics
+- `assets/icons.svg` ikon-sprite (logo, søg, hjerte, stjerne, bruger, kommentar, indstillinger)
+
+## seo
+
+- `sitemap.xml` + `robots.txt`
+- `Recipe` schema via json-ld på opskrift-siden
+- meta description på alle sider
+
+## design
+
+- lys, moderne, runde bokse, tailwind via cdn
+- ingen billeder – kun svg-ikoner
+
+god fornøjelse.
