@@ -1,6 +1,9 @@
 
-import { loadAllRecipes, toggleFavorite, getFavorites } from '/js/recipes.js';
-import { formatStars } from '/js/app.js';
+import { loadAllRecipes, toggleFavorite, getFavorites } from './recipes.js';
+import { formatStars } from './app.js';
+import { currentUser } from './auth.js';
+
+function ratingKey(slug, email){ return `od_rating_${slug}_${email||'anon'}`; }
 
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(location.search);
@@ -30,6 +33,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   favBtn.addEventListener('click', ()=>{
     const ok = toggleFavorite(r.slug);
     favBtn.classList.toggle('bg-rose-50', ok);
+  });
+
+  // user rating UI
+  const ur = document.getElementById('userRating');
+  let user = currentUser();
+  const saved = localStorage.getItem(ratingKey(r.slug, user?.email));
+  let my = saved ? Number(saved) : 0;
+
+  function renderUserStars(val){
+    let html='';
+    for(let i=1;i<=5;i++){
+      html += `<svg data-star="${i}" class="w-5 h-5 ${i<=val?'':'opacity-30'}"><use href="/assets/icons.svg#star"/></svg>`;
+    }
+    ur.innerHTML = html;
+  }
+  renderUserStars(my);
+  ur.addEventListener('click', (e)=>{
+    const s = e.target.closest('[data-star]'); if(!s) return;
+    user = currentUser();
+    if(!user){ alert('Log ind for at bedømme'); return; }
+    const val = Number(s.getAttribute('data-star'));
+    localStorage.setItem(ratingKey(r.slug, user.email), String(val));
+    my = val;
+    renderUserStars(my);
   });
 
   // schema.org (Recipe)

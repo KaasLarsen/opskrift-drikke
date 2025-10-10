@@ -7,14 +7,19 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta property="og:title" content="opskrift-drikke.dk"/>
+    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
-    <script defer src="/js/app.js"></script>
-    <script defer src="/js/auth.js"></script>
-    <script defer src="/js/search.js"></script>
-    <script defer src="/js/recipes.js"></script>
-    <script defer src="/js/comments.js"></script>
+    <script type="module" src="/js/app.js"></script>
     <script defer src="/js/analytics.js"></script>
     
+    <script type="module" src="/js/recipes.js"></script>
+    <script type="module" src="/js/search.js"></script>
+
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
       .btn { border-radius: 1rem; }
@@ -32,7 +37,7 @@
     </div>
   </div>
 
-  <p class="mt-3">find noget lækkert at drikke i dag. alt er hurtigt, søgbart og til at gemme med et hjerte.</p>
+  <p class="mt-3">Find noget lækkert at drikke i dag. alt er hurtigt, søgbart og til at gemme med et hjerte.</p>
 
   <div id="filters" class="mt-6 flex flex-wrap gap-2"></div>
 

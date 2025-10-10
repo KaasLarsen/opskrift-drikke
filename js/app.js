@@ -1,20 +1,17 @@
 
-// load header/footer partials
-async function loadPartials() {
-  const header = await fetch('/partials/header.html').then(r => r.text()).catch(()=>'');
-  const footer = await fetch('/partials/footer.html').then(r => r.text()).catch(()=>'');
+// ES module
+export async function loadPartials() {
+  const header = await fetch('partials/header.html').then(r => r.text()).catch(()=>'');
+  const footer = await fetch('partials/footer.html').then(r => r.text()).catch(()=>'');
   document.getElementById('header').innerHTML = header;
   document.getElementById('footer').innerHTML = footer;
 
-  // theme toggle (light only visual)
   const btn = document.getElementById('themeToggle');
   if (btn) btn.addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
   });
 }
-document.addEventListener('DOMContentLoaded', loadPartials);
 
-// small util
 export function formatStars(rating) {
   const full = Math.round(rating);
   let html = '';
@@ -23,3 +20,5 @@ export function formatStars(rating) {
   }
   return html;
 }
+
+document.addEventListener('DOMContentLoaded', loadPartials);

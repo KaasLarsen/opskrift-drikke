@@ -31,3 +31,11 @@ det her projekt er klar til github pages eller vercel.
 - ingen billeder – kun svg-ikoner
 
 god fornøjelse.
+
+
+## v2 ændringer
+- ES modules på al JS (robust import og rækkefølge)
+- interaktiv bruger-bedømmelse på opskriftssider (lokal lagring)
+- manifest + favicon + open graph
+- søgning/performance rettet, kort-rendering via eksport
+- partials hentes relativt for at virke på både vercel og gh pages

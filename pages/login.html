@@ -7,12 +7,14 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta property="og:title" content="opskrift-drikke.dk"/>
+    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
-    <script defer src="/js/app.js"></script>
-    <script defer src="/js/auth.js"></script>
-    <script defer src="/js/search.js"></script>
-    <script defer src="/js/recipes.js"></script>
-    <script defer src="/js/comments.js"></script>
+    <script type="module" src="/js/app.js"></script>
     <script defer src="/js/analytics.js"></script>
     
     <style>
@@ -29,7 +31,7 @@
         <input id="email" class="w-full border rounded-2xl p-3 mb-3" placeholder="E-mail" />
         <input id="password" type="password" class="w-full border rounded-2xl p-3 mb-3" placeholder="Adgangskode" />
         <button id="loginBtn" class="btn border px-3 py-1.5 w-full">Log ind</button>
-        <p class="text-sm mt-2">har du ikke en konto? <a href="/pages/register.html" class="underline">opret her</a>.</p>
+        <p class="text-sm mt-2">Har du ikke en konto? <a href="/pages/register.html" class="underline">Opret her</a>.</p>
       </div>
     </section>
     </main>

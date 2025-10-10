@@ -1,0 +1,15 @@
+{
+  "name": "opskrift-drikke.dk",
+  "short_name": "opskrift-drikke",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/assets/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#fafaf9"
+}

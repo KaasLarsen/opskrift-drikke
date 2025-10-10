@@ -1,6 +1,5 @@
 
-import { formatStars } from '/js/app.js';
-import { currentUser } from '/js/auth.js';
+import { formatStars } from './app.js';
 
 export async function loadAllRecipes(){
   const data = await fetch('/data/recipes.json').then(r=>r.json());
@@ -44,28 +43,29 @@ export function renderRecipeCard(r){
   </a>`;
 }
 
+// Auto-mount on index and favorites
 document.addEventListener('DOMContentLoaded', async () => {
   const results = document.getElementById('results');
-  if (!results) return;
+  const favWrap = document.getElementById('favoritesList');
+  if (!results && !favWrap) return;
   const data = await loadAllRecipes();
   window.__allRecipes = data;
-  // initial render
-  results.innerHTML = data.slice(0, 30).map(renderRecipeCard).join('');
-  // attach fav buttons
-  results.addEventListener('click', (e)=>{
-    const btn = e.target.closest('[data-fav]');
-    if (!btn) return;
-    const slug = btn.getAttribute('data-fav');
-    const ok = toggleFavorite(slug);
-    if (ok){ btn.classList.add('bg-rose-50','border-rose-300'); btn.querySelector('span').textContent='Gemt'; btn.querySelector('svg').classList.remove('opacity-30'); }
-    else { btn.classList.remove('bg-rose-50','border-rose-300'); btn.querySelector('span').textContent='Gem'; btn.querySelector('svg').classList.add('opacity-30'); }
-  });
 
-  // favorites page
-  const favWrap = document.getElementById('favoritesList');
+  if (results) {
+    results.innerHTML = data.slice(0, 30).map(renderRecipeCard).join('');
+    results.addEventListener('click', (e)=>{
+      const btn = e.target.closest('[data-fav]');
+      if (!btn) return;
+      const slug = btn.getAttribute('data-fav');
+      const ok = toggleFavorite(slug);
+      if (ok){ btn.classList.add('bg-rose-50','border-rose-300'); btn.querySelector('span').textContent='Gemt'; btn.querySelector('svg').classList.remove('opacity-30'); }
+      else { btn.classList.remove('bg-rose-50','border-rose-300'); btn.querySelector('span').textContent='Gem'; btn.querySelector('svg').classList.add('opacity-30'); }
+    });
+  }
+
   if (favWrap) {
     const favs = getFavorites();
     const list = data.filter(r=>favs.includes(r.slug));
-    favWrap.innerHTML = list.map(renderRecipeCard).join('') || '<p>ingen favoritter endnu.</p>';
+    favWrap.innerHTML = list.map(renderRecipeCard).join('') || '<p>Ingen favoritter endnu.</p>';
   }
 });
