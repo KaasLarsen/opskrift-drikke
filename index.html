@@ -49,53 +49,53 @@
     <div id="header"></div>
 
     <main class="max-w-6xl mx-auto px-4">
-      <!-- HERO -->
-      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#fff7f2] via-white to-white border mt-6">
-        <div class="absolute inset-0 pointer-events-none"
-             style="background: radial-gradient(600px 200px at 20% 0%, rgba(249,115,22,.08), transparent 60%),
-                     radial-gradient(400px 160px at 90% 30%, rgba(249,115,22,.06), transparent 60%);">
+<!-- HERO -->
+<section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#fff7f2] via-white to-white border mt-6">
+  <div class="absolute inset-0 pointer-events-none"
+       style="background: radial-gradient(600px 200px at 20% 0%, rgba(249,115,22,.08), transparent 60%),
+               radial-gradient(400px 160px at 90% 30%, rgba(249,115,22,.06), transparent 60%);">
+  </div>
+
+  <div class="relative px-4 py-10">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div class="md:max-w-xl">
+        <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
+        <p class="mt-3 text-stone-700">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
+
+        <!-- søgefelt (placeholder sættes dynamisk af JS) -->
+        <div class="mt-5 flex items-center gap-2 bg-[#fff7f2] border border-orange-200 p-2 rounded-2xl w-full shadow-sm focus-within:shadow-md transition">
+          <svg class="w-5 h-5 text-orange-500"><use href="/assets/icons.svg#search"/></svg>
+          <input id="searchInput"
+                 class="w-full outline-none bg-transparent placeholder-stone-500"
+                 placeholder="Søger opskrifter..." />
         </div>
 
-        <div class="relative px-4 py-10">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div class="md:max-w-xl">
-              <h1 class="text-3xl md:text-4xl font-semibold">find din næste drik</h1>
-              <p class="mt-3 text-stone-700">hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
+            <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
+          </a>
+          <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
+            <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>Udforsk kategorier</span>
+          </a>
+        </div>
+      </div>
 
-              <!-- søgefelt (samme id som før, så alt virker) -->
-              <div class="mt-5 flex items-center gap-2 bg-[#fff7f2] border border-orange-200 p-2 rounded-2xl w-full shadow-sm focus-within:shadow-md transition">
-                <svg class="w-5 h-5 text-orange-500"><use href="/assets/icons.svg#search"/></svg>
-                <input id="searchInput"
-                       class="w-full outline-none bg-transparent placeholder-stone-500"
-                       placeholder="søg i 5.000 drikkeopskrifter..." />
-              </div>
-
-              <div class="mt-4 flex flex-wrap gap-2">
-                <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
-                  <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>dagens drik</span>
-                </a>
-                <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
-                  <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>udforsk kategorier</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- lille promo-boks -->
-            <div class="md:w-80">
-              <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
-                <div class="text-sm opacity-70">tip</div>
-                <div class="mt-1 font-medium">gem favoritter med hjertet</div>
-                <p class="mt-2 text-sm opacity-80">log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
-                <div class="mt-3 flex items-center gap-2 text-xs">
-                  <span class="px-2 py-1 rounded-full border">gløgg</span>
-                  <span class="px-2 py-1 rounded-full border">sunde shots</span>
-                  <span class="px-2 py-1 rounded-full border">mocktails</span>
-                </div>
-              </div>
-            </div>
+      <div class="md:w-80">
+        <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
+          <div class="text-sm opacity-70">Tip</div>
+          <div class="mt-1 font-medium">Gem favoritter med hjertet</div>
+          <p class="mt-2 text-sm opacity-80">Log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
+          <div class="mt-3 flex items-center gap-2 text-xs">
+            <span class="px-2 py-1 rounded-full border">Gløgg</span>
+            <span class="px-2 py-1 rounded-full border">Sunde shots</span>
+            <span class="px-2 py-1 rounded-full border">Mocktails</span>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <!-- Filter + resultater -->
       <section class="pt-6">
