@@ -6,15 +6,36 @@
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-6 text-sm">
-      <a href="/index.html" class="hover:underline">Forside</a>
-      <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
-      <a href="/pages/guides.html" class="hover:underline">Guides</a>
-      <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
-      <a href="/tags/index.html" class="hover:underline">Tags</a>
-      <a href="/kategori/gloegg.html" class="hover:underline">Gløgg</a>
-      <a href="/kategori/sunde-shots.html" class="hover:underline">Sunde shots</a>
-    </nav>
+  <nav class="hidden md:flex items-center gap-6 text-sm">
+  <a href="/index.html" class="hover:underline">Forside</a>
+  <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
+
+  <!-- Kategorier dropdown -->
+  <div class="relative" id="catMenuWrap">
+    <button id="catMenuBtn"
+            class="inline-flex items-center gap-1 hover:underline"
+            aria-haspopup="true" aria-expanded="false" aria-controls="catMenuList">
+      Kategorier
+      <svg class="w-4 h-4"><use href="/assets/icons.svg#chevron-down"/></svg>
+    </button>
+    <div id="catMenuList"
+         class="invisible opacity-0 pointer-events-none transition
+                absolute left-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg p-2 z-50">
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/gloegg.html">Gløgg</a>
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/sunde-shots.html">Sunde shots</a>
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a>
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a>
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/smoothies.html">Smoothies</a>
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/juice.html">Juice</a>
+      <div class="my-1 border-t"></div>
+      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/index.html">Se alle tags →</a>
+    </div>
+  </div>
+
+  <a href="/pages/guides.html" class="hover:underline">Guides</a>
+  <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
+</nav>
+
 
     <div class="flex items-center gap-3">
       <button id="loginBtn" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
