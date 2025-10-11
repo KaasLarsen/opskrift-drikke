@@ -1,29 +1,53 @@
 <!-- Global Footer Partial -->
-<footer class="mt-16 border-t">
+<footer class="mt-16 border-t bg-white/70 backdrop-blur">
   <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8">
+    <!-- venstre kolonne -->
     <div>
       <div class="flex items-center gap-2">
-        <svg class="w-6 h-6"><use href="/assets/icons.svg#logo"/></svg>
-        <span class="font-semibold">Opskrift-drikke.dk</span>
+        <svg class="w-6 h-6 text-orange-500"><use href="/assets/icons.svg#logo"/></svg>
+        <span class="font-semibold text-lg">Opskrift-drikke.dk</span>
       </div>
-      <p class="mt-3 text-sm">En lys og moderne side med drikkeopskrifter. Kun store bogstaver i starten af en sætning.</p>
+      <p class="mt-3 text-sm leading-relaxed">
+        Find inspiration til hverdagens drikke – fra klassiske kaffer og sunde shots til forfriskende sommerdrinks.
+      </p>
+      <div class="flex gap-3 mt-4">
+        <a href="https://www.facebook.com" aria-label="Facebook" class="hover:text-orange-500">
+          <svg class="w-5 h-5"><use href="/assets/icons.svg#facebook"/></svg>
+        </a>
+        <a href="https://www.instagram.com" aria-label="Instagram" class="hover:text-orange-500">
+          <svg class="w-5 h-5"><use href="/assets/icons.svg#instagram"/></svg>
+        </a>
+        <a href="https://www.pinterest.com" aria-label="Pinterest" class="hover:text-orange-500">
+          <svg class="w-5 h-5"><use href="/assets/icons.svg#pinterest"/></svg>
+        </a>
+      </div>
     </div>
+
+    <!-- midterkolonne -->
     <div class="text-sm">
-      <div class="font-medium mb-2">Navigation</div>
+      <div class="font-medium mb-2 text-stone-700">Navigation</div>
       <ul class="space-y-2">
-        <li><a href="/index.html" class="hover:underline">Forside</a></li>
-        <li><a href="/pages/om-os.html" class="hover:underline">Om os</a></li>
-        <li><a href="/pages/kontakt.html" class="hover:underline">Kontakt</a></li>
-        <li><a href="/pages/privatliv.html" class="hover:underline">Privatliv</a></li>
-        <li><a href="/pages/vilkaar.html" class="hover:underline">Vilkår</a></li>
-        <li><a href="/pages/favoritter.html" class="hover:underline">Favoritter</a></li>
-      <li><a href="/tags/index.html" class="hover:underline">Tags</a></li>
+        <li><a href="/index.html" class="hover:text-orange-500 transition">Forside</a></li>
+        <li><a href="/pages/seneste.html" class="hover:text-orange-500 transition">Seneste opskrifter</a></li>
+        <li><a href="/pages/guides.html" class="hover:text-orange-500 transition">Guides</a></li>
+        <li><a href="/pages/favoritter.html" class="hover:text-orange-500 transition">Favoritter</a></li>
+        <li><a href="/tags/index.html" class="hover:text-orange-500 transition">Tags</a></li>
       </ul>
     </div>
+
+    <!-- højre kolonne -->
     <div class="text-sm">
-      <div class="font-medium mb-2">Info</div>
-      <p>© 2025 Opskrift-drikke.dk. Alle rettigheder forbeholdes.</p>
-      <p class="mt-2">Bygget som statisk side med Tailwind, JSON-data og lokale funktioner.</p>
+      <div class="font-medium mb-2 text-stone-700">Om siden</div>
+      <ul class="space-y-2">
+        <li><a href="/pages/om-os.html" class="hover:text-orange-500 transition">Om os</a></li>
+        <li><a href="/pages/kontakt.html" class="hover:text-orange-500 transition">Kontakt</a></li>
+        <li><a href="/pages/privatliv.html" class="hover:text-orange-500 transition">Privatlivspolitik</a></li>
+        <li><a href="/pages/vilkaar.html" class="hover:text-orange-500 transition">Vilkår</a></li>
+      </ul>
     </div>
+  </div>
+
+  <div class="border-t py-4 text-center text-xs text-stone-500">
+    © 2025 Opskrift-drikke.dk – gode drikkeopskrifter til hverdag og fest.
   </div>
 </footer>
