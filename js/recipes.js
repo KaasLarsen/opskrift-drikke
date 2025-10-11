@@ -119,6 +119,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!u) { showToast('Du skal være logget ind for at gemme'); return; }
       const slug = btn.getAttribute('data-fav');
       const ok = toggleFavorite(slug);
+
+      // emit til “Ugens mest gemte”
+      window.dispatchEvent(new CustomEvent('favorite:toggled', {
+        detail: { slug, ok, ts: Date.now() }
+      }));
+
       if (ok){
         btn.classList.add('bg-rose-50','border-rose-300');
         btn.querySelector('span').textContent='Gemt';
