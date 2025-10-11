@@ -1,53 +1,110 @@
 <!doctype html>
 <html lang="da">
   <head>
-    <meta name="google-adsense-account" content="ca-pub-7373148222153531">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Forside – opskrift-drikke.dk</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+
+    <!-- Tailwind -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="/assets/manifest.json">
+
+    <!-- Meta -->
+    <meta name="description" content="drikkeopskrifter med søgning, favoritter, guides og kommentarer."/>
     <meta property="og:title" content="opskrift-drikke.dk"/>
-    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
+    <meta property="og:description" content="5.000 drikkeopskrifter – søg, gem og bedøm."/>
     <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/"/>
+
+    <!-- Icons / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#f97316">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta name="theme-color" content="#f97316">
+
+    <!-- Sitemap hint -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+
+    <!-- Global app (indsætter header/footer og auto-loader nav + auth) -->
     <script type="module" src="/js/app.js"></script>
+
+    <!-- Analytics (hvis du bruger det) -->
     <script defer src="/js/analytics.js"></script>
-    
+
+    <!-- Søgning / data -->
     <script type="module" src="/js/recipes.js"></script>
     <script type="module" src="/js/search.js"></script>
+    <script type="module" src="/js/suggest.js"></script>
+    <script type="module" src="/js/hero.js"></script>
 
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn { border-radius: 1rem; }
+      .btn  { border-radius: 1rem; }
     </style>
   </head>
   <body class="bg-stone-50 text-stone-900">
+    <!-- Header partial mount -->
     <div id="header"></div>
+
     <main class="max-w-6xl mx-auto px-4">
-<section class="pt-8">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <h1 class="text-3xl font-semibold">Velkommen til Opskrift-drikke.dk</h1>
-    <div class="flex items-center gap-2 bg-[#fff7f2] border border-orange-200 p-2 rounded-2xl w-full md:w-96 shadow-sm focus-within:shadow-md transition">
-  <svg class="w-5 h-5 text-orange-500"><use href="/assets/icons.svg#search"/></svg>
-  <input id="searchInput"
-         class="w-full outline-none bg-transparent placeholder-stone-500"
-         placeholder="Søg i 5.000 drikkeopskrifter..." />
-</div>
-  </div>
+      <!-- HERO -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#fff7f2] via-white to-white border mt-6">
+        <div class="absolute inset-0 pointer-events-none"
+             style="background: radial-gradient(600px 200px at 20% 0%, rgba(249,115,22,.08), transparent 60%),
+                     radial-gradient(400px 160px at 90% 30%, rgba(249,115,22,.06), transparent 60%);">
+        </div>
 
-  <p class="mt-3">Find noget lækkert at drikke i dag. alt er hurtigt, søgbart og til at gemme med et hjerte.</p>
+        <div class="relative px-4 py-10">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="md:max-w-xl">
+              <h1 class="text-3xl md:text-4xl font-semibold">find din næste drik</h1>
+              <p class="mt-3 text-stone-700">hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
-  <div id="filters" class="mt-6 flex flex-wrap gap-2"></div>
+              <!-- søgefelt (samme id som før, så alt virker) -->
+              <div class="mt-5 flex items-center gap-2 bg-[#fff7f2] border border-orange-200 p-2 rounded-2xl w-full shadow-sm focus-within:shadow-md transition">
+                <svg class="w-5 h-5 text-orange-500"><use href="/assets/icons.svg#search"/></svg>
+                <input id="searchInput"
+                       class="w-full outline-none bg-transparent placeholder-stone-500"
+                       placeholder="søg i 5.000 drikkeopskrifter..." />
+              </div>
 
-  <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-</section>
-</main>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
+                  <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>dagens drik</span>
+                </a>
+                <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
+                  <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>udforsk kategorier</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- lille promo-boks -->
+            <div class="md:w-80">
+              <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
+                <div class="text-sm opacity-70">tip</div>
+                <div class="mt-1 font-medium">gem favoritter med hjertet</div>
+                <p class="mt-2 text-sm opacity-80">log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
+                <div class="mt-3 flex items-center gap-2 text-xs">
+                  <span class="px-2 py-1 rounded-full border">gløgg</span>
+                  <span class="px-2 py-1 rounded-full border">sunde shots</span>
+                  <span class="px-2 py-1 rounded-full border">mocktails</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter + resultater -->
+      <section class="pt-6">
+        <div id="filters" class="flex flex-wrap gap-2"></div>
+        <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+    </main>
+
+    <!-- Footer partial mount -->
     <div id="footer"></div>
-    
   </body>
 </html>
