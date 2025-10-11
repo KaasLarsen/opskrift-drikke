@@ -1,53 +1,54 @@
 <!-- Global Header Partial -->
 <header class="w-full border-b bg-white/80 backdrop-blur sticky top-0 z-40">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo -->
     <a href="/index.html" class="flex items-center gap-2">
       <svg class="w-7 h-7"><use href="/assets/icons.svg#logo"/></svg>
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
 
-  <nav class="hidden md:flex items-center gap-6 text-sm">
-  <a href="/index.html" class="hover:underline">Forside</a>
-  <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
+    <!-- Navigation -->
+    <nav class="hidden md:flex items-center gap-5 text-sm">
+      <a href="/index.html" class="hover:underline">Forside</a>
+      <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
 
-  <!-- Kategorier dropdown -->
-  <div class="relative" id="catMenuWrap">
-    <button id="catMenuBtn"
-            class="inline-flex items-center gap-1 hover:underline"
-            aria-haspopup="true" aria-expanded="false" aria-controls="catMenuList">
-      Kategorier
-      <svg class="w-4 h-4"><use href="/assets/icons.svg#chevron-down"/></svg>
-    </button>
-    <div id="catMenuList"
-         class="invisible opacity-0 pointer-events-none transition
-                absolute left-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg p-2 z-50">
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/gloegg.html">Gløgg</a>
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/sunde-shots.html">Sunde shots</a>
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a>
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a>
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/smoothies.html">Smoothies</a>
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/juice.html">Juice</a>
-      <div class="my-1 border-t"></div>
-      <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/index.html">Se alle tags →</a>
-    </div>
-  </div>
+      <!-- Kategorier dropdown -->
+      <div class="relative inline-block group" id="catMenuWrap">
+        <button id="catMenuBtn"
+                class="inline-flex items-center gap-1 hover:underline"
+                aria-haspopup="true" aria-expanded="false" aria-controls="catMenuList">
+          Kategorier
+          <svg class="w-4 h-4"><use href="/assets/icons.svg#chevron-down"/></svg>
+        </button>
 
-  <a href="/pages/guides.html" class="hover:underline">Guides</a>
-  <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
-</nav>
+        <!-- Menu-liste -->
+        <div id="catMenuList"
+             class="invisible opacity-0 pointer-events-none transition
+                    absolute left-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg p-2 z-50
+                    group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto">
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/gloegg.html">Gløgg</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/sunde-shots.html">Sunde shots</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/smoothies.html">Smoothies</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/juice.html">Juice</a>
+          <div class="my-1 border-t"></div>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50 font-medium text-stone-600" href="/tags/index.html">Se alle tags →</a>
+        </div>
+      </div>
 
+      <a href="/pages/guides.html" class="hover:underline">Guides</a>
+      <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
+      <a href="/pages/om-os.html" class="hover:underline">Om os</a>
+    </nav>
 
+    <!-- Right side -->
     <div class="flex items-center gap-3">
-      <button id="loginBtn" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
-        <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
-      </button>
-      <button id="logoutBtn" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hidden">
-        <svg class="w-4 h-4"><use href="/assets/icons.svg#logout"/></svg><span>Log ud</span>
-      </button>
-      <span id="userName" class="ml-1 opacity-80 text-sm"></span>
+      <a href="/pages/login.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
+        <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg>
+        <span>Log ind</span>
+      </a>
+      <button id="themeToggle" class="rounded-2xl px-3 py-1.5 border">Tema</button>
     </div>
   </div>
 </header>
-
-<!-- auth UI (kræver /js/auth.js) -->
-<script type="module" src="/js/auth.js"></script>
