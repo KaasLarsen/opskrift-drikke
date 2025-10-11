@@ -1,17 +1,19 @@
 <!-- Global Header Partial -->
 <header class="w-full border-b bg-white/80 backdrop-blur sticky top-0 z-40">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo -->
     <a href="/index.html" class="flex items-center gap-2">
       <svg class="w-7 h-7"><use href="/assets/icons.svg#logo"/></svg>
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-5 text-sm">
+    <!-- Navigation -->
+    <nav class="hidden md:flex items-center gap-4 text-sm">
       <a href="/index.html" class="hover:underline">Forside</a>
       <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
 
       <!-- Kategorier dropdown -->
-      <div class="relative inline-block group" id="catMenuWrap">
+      <div id="catMenuWrap" class="relative inline-flex">
         <button id="catMenuBtn"
                 class="inline-flex items-center gap-1 hover:underline"
                 aria-haspopup="true" aria-expanded="false" aria-controls="catMenuList">
@@ -19,10 +21,10 @@
           <svg class="w-4 h-4"><use href="/assets/icons.svg#chevron-down"/></svg>
         </button>
 
+        <!-- Menu-liste -->
         <div id="catMenuList"
-             class="invisible opacity-0 pointer-events-none transition
-                    absolute left-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg p-2 z-50
-                    group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto">
+             class="absolute left-0 top-full mt-1 w-56 bg-white border rounded-2xl shadow-lg p-2 z-50
+                    opacity-0 translate-y-1 pointer-events-none transition">
           <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/gloegg.html">Gløgg</a>
           <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/kategori/sunde-shots.html">Sunde shots</a>
           <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a>
@@ -39,6 +41,7 @@
       <a href="/pages/om-os.html" class="hover:underline">Om os</a>
     </nav>
 
+    <!-- Right side -->
     <div class="flex items-center gap-3">
       <a href="/pages/login.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
         <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
