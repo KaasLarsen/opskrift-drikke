@@ -5,18 +5,29 @@
       <svg class="w-7 h-7"><use href="/assets/icons.svg#logo"/></svg>
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
+
     <nav class="hidden md:flex items-center gap-6 text-sm">
       <a href="/index.html" class="hover:underline">Forside</a>
       <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
-      <li><a href="/pages/guides.html" class="hover:underline">Guides</a></li>
+      <a href="/pages/guides.html" class="hover:underline">Guides</a>
       <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
       <a href="/tags/index.html" class="hover:underline">Tags</a>
-      </nav>
+      <a href="/kategori/gloegg.html" class="hover:underline">Gløgg</a>
+      <a href="/kategori/sunde-shots.html" class="hover:underline">Sunde shots</a>
+    </nav>
+
     <div class="flex items-center gap-3">
-      <a href="/pages/login.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
+      <button id="loginBtn" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
         <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
-      </a>
+      </button>
+      <button id="logoutBtn" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hidden">
+        <svg class="w-4 h-4"><use href="/assets/icons.svg#logout"/></svg><span>Log ud</span>
+      </button>
+      <span id="userName" class="ml-1 opacity-80 text-sm"></span>
       <button id="themeToggle" class="rounded-2xl px-3 py-1.5 border">Tema</button>
     </div>
   </div>
 </header>
+
+<!-- auth UI (kræver /js/auth.js) -->
+<script type="module" src="/js/auth.js"></script>
