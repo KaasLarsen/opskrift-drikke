@@ -1,119 +1,76 @@
-
-import { loadAllRecipes, toggleFavorite, getFavorites } from './recipes.js';
-import { formatStars, showToast } from './app.js';
+// /js/recipe-page.js
+import { loadAllRecipes } from './recipes.js';
 import { currentUser } from './auth.js';
+import { formatStars, showToast } from './app.js';
 
-function ratingKey(slug, email){ return `od_rating_${slug}_${email||'anon'}`; }
+function getSlug(){
+  const p = new URLSearchParams(location.search);
+  return (p.get('slug') || '').trim();
+}
+function findBySlug(data, slug){
+  const s2 = decodeURIComponent(slug).toLowerCase();
+  return data.find(x => (x.slug||'').toLowerCase() === s2) || null;
+}
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const params = new URLSearchParams(location.search);
-  const slug = params.get('slug');
-  const data = await loadAllRecipes();
-  const r = data.find(x=>x.slug===slug) || data[0];
-  if (!r) return;
-
-  document.getElementById('breadcrumbTitle').textContent = r.title;
-  document.getElementById('recipeTitle').textContent = r.title;
-  document.title = r.title + ' – opskrift-drikke.dk';
-  let md = document.querySelector('meta[name="description"]');
-  if (md) md.setAttribute('content', r.description);
-  document.getElementById('ratingStars').innerHTML = formatStars(r.rating);
-  document.getElementById('metaInfo').textContent = `${r.category} · ${r.time} min · ${r.servings} glas`;
-
-  // ingredients
-  document.getElementById('ingredients').innerHTML = r.ingredients.map(i=>`<li>${i}</li>`).join('');
-  // steps
-  document.getElementById('steps').innerHTML = r.steps.map(s=>`<li>${s}</li>`).join('');
-
-  // related
-  const related = data.filter(x=>x.category===r.category && x.slug!==r.slug).slice(0,5);
-  document.getElementById('relatedList').innerHTML = related.map(x=>`<a href="/pages/opskrift.html?slug=${x.slug}" class="block hover:underline">${x.title}</a>`).join('');
-
-  // favorite
+async function init(){
+  const titleEl = document.getElementById('recipeTitle');
+  const breadcrumb = document.getElementById('breadcrumbTitle');
+  const ingredientsEl = document.getElementById('ingredients');
+  const stepsEl = document.getElementById('steps');
+  const metaInfo = document.getElementById('metaInfo');
   const favBtn = document.getElementById('favBtn');
-  const favs = getFavorites();
-  if (favs.includes(r.slug)){ favBtn.classList.add('bg-rose-50'); }
+  const ratingStars = document.getElementById('ratingStars');
+
+  const slug = getSlug();
+  if (!slug){
+    titleEl.textContent = 'Opskrift mangler slug i url';
+    document.getElementById('recipeError')?.classList.remove('hidden');
+    return;
+  }
+
+  let data;
+  try {
+    data = await loadAllRecipes();
+  } catch (e) {
+    titleEl.textContent = 'Kunne ikke indlæse opskrifter (data mangler)';
+    document.getElementById('recipeError')?.classList.remove('hidden');
+    return;
+  }
+
+  const r = findBySlug(data, slug);
+  if (!r){
+    titleEl.textContent = 'Opskrift ikke fundet';
+    document.getElementById('recipeError')?.classList.remove('hidden');
+    return;
+  }
+
+  // udfyld side
+  titleEl.textContent = r.title;
+  document.title = r.title + ' – opskrift-drikke.dk';
+  breadcrumb.textContent = r.title;
+
+  ratingStars.innerHTML = `${formatStars(r.rating)}<span class="ml-1 opacity-70">(${r.reviews})</span>`;
+  metaInfo.textContent = `${r.category} · ${r.time} min · ${r.servings} personer`;
+
+  ingredientsEl.innerHTML = r.ingredients.map(i=>`<li>${i}</li>`).join('');
+  stepsEl.innerHTML = r.steps.map(s=>`<li>${s}</li>`).join('');
+
+  // favorit (kræver login)
+  const favs = JSON.parse(localStorage.getItem('od_favs')||'[]');
+  if (favs.includes(r.slug)) favBtn.classList.add('bg-rose-50','border-rose-300');
   favBtn.addEventListener('click', ()=>{
     const u = currentUser();
-    if (!u) { alert('Log ind for at gemme opskrifter'); return; }
-    const u = currentUser();
-    if (!u) { showToast('Du skal være logget ind for at gemme'); return; }
-    const ok = toggleFavorite(r.slug);
-    favBtn.classList.toggle('bg-rose-50', ok);
+    if (!u){ showToast('Du skal være logget ind for at gemme'); return; }
+    const i = favs.indexOf(r.slug);
+    if (i>=0){ favs.splice(i,1); favBtn.classList.remove('bg-rose-50','border-rose-300'); }
+    else { favs.push(r.slug); favBtn.classList.add('bg-rose-50','border-rose-300'); }
+    localStorage.setItem('od_favs', JSON.stringify(favs));
   });
 
-  // user rating UI
-  const ur = document.getElementById('userRating');
-  let user = currentUser();
-  const saved = localStorage.getItem(ratingKey(r.slug, user?.email));
-  let my = saved ? Number(saved) : 0;
-
-  function renderUserStars(val){
-    let html='';
-    for(let i=1;i<=5;i++){
-      html += `<svg data-star="${i}" class="w-5 h-5 ${i<=val?'':'opacity-30'}"><use href="/assets/icons.svg#star"/></svg>`;
-    }
-    ur.innerHTML = html;
-  }
-  renderUserStars(my);
-  ur.addEventListener('click', (e)=>{
-    const s = e.target.closest('[data-star]'); if(!s) return;
-    user = currentUser();
-    if(!user){ alert('Log ind for at bedømme'); return; }
-    const val = Number(s.getAttribute('data-star'));
-    localStorage.setItem(ratingKey(r.slug, user.email), String(val));
-    my = val;
-    renderUserStars(my);
-  });
-
-  // schema.org (Recipe)
-  const ld = {
-    "@context":"https://schema.org",
-    "@type":"Recipe",
-    "name": r.title,
-    "description": r.description,
-    "recipeIngredient": r.ingredients,
-    "recipeInstructions": r.steps.map(s=>({"@type":"HowToStep","text":s})),
-    "prepTime": `PT${Math.max(1, Math.round(r.time*0.4))}M`,
-    "cookTime": `PT${Math.max(1, Math.round(r.time*0.6))}M`,
-    "totalTime": `PT${r.time}M`,
-    "recipeYield": `${r.servings} glas`,
-    "author": {"@type":"Person","name":"Opskrift-drikke.dk"},
-    "aggregateRating": {"@type":"AggregateRating","ratingValue": r.rating, "reviewCount": r.reviews}
-  };
-  const s = document.createElement('script');
-  s.type='application/ld+json'; s.textContent = JSON.stringify(ld);
-  document.head.appendChild(s);
-  ensureCanonicalAndBreadcrumbs(r);
-});
-
-
-// Canonical + BreadcrumbList for recipe
-function ensureCanonicalAndBreadcrumbs(r){
-  // canonical
-  let link = document.querySelector("link[rel='canonical']");
-  const url = location.origin + location.pathname + location.search;
-  if (!link){
-    link = document.createElement('link');
-    link.setAttribute('rel','canonical');
-    document.head.appendChild(link);
-  }
-  link.setAttribute('href', url);
-
-  // breadcrumbs JSON-LD
-  const catUrl = location.origin + `/kategori/${r.category}.html`;
-  const ld = {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Forside","item": location.origin + "/index.html"},
-      {"@type":"ListItem","position":2,"name":"Opskrifter","item": location.origin + "/opskrifter/index.html"},
-      {"@type":"ListItem","position":3,"name": r.category, "item": catUrl},
-      {"@type":"ListItem","position":4,"name": r.title, "item": url}
-    ]
-  };
-  const s = document.createElement('script');
-  s.type='application/ld+json'; s.textContent = JSON.stringify(ld);
-  document.head.appendChild(s);
-  ensureCanonicalAndBreadcrumbs(r);
+  // relaterede
+  const rel = data.filter(x=>x.category===r.category && x.slug!==r.slug).slice(0,6);
+  const relatedList = document.getElementById('relatedList');
+  relatedList.innerHTML = rel.map(x=>`<li><a class="hover:underline" href="/pages/opskrift.html?slug=${x.slug}">${x.title}</a></li>`).join('');
 }
+
+document.addEventListener('DOMContentLoaded', init);
