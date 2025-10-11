@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Seneste opskrifter – opskrift-drikke.dk</title>
+    <title>Gløgg – opskrift-drikke.dk</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/assets/manifest.json">
     <meta property="og:title" content="opskrift-drikke.dk"/>
-    <meta property="og:description" content="Seneste opskrifter – opskrift-drikke.dk"/>
+    <meta property="og:description" content="Gløgg – opskrift-drikke.dk"/>
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="https://opskrift-drikke.dk/"/>
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
@@ -24,18 +24,17 @@
     <main class="max-w-6xl mx-auto px-4">
       
 <section class="pt-8">
-  <nav class="text-sm"><a href="/index.html" class="hover:underline">Forside</a> / Seneste</nav>
-  <h1 class="text-3xl font-semibold">Seneste opskrifter</h1>
-  <p class="mt-2">Her er de nyeste tilføjelser – opdateret automatisk.</p>
-  <div id="latestGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <nav class="text-sm"><a href="/index.html" class="hover:underline">Forside</a> / Kategori</nav>
+  <h1 class="text-3xl font-semibold mt-2">Gløgg</h1>
+  <p class="mt-2">Varm, krydret og hyggelig – alle vores gløgg-varianter.</p>
+  <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 </section>
 <script type="module">
   import { loadAllRecipes, renderRecipeCard } from '/js/recipes.js';
-  const grid = document.getElementById('latestGrid');
   const data = await loadAllRecipes();
-  const parsed = data.map(r=>{ const m = (r.title||'').match(/#(\d+)/); return {n: m?parseInt(m[1],10):0, r}; });
-  parsed.sort((a,b)=>b.n-a.n);
-  grid.innerHTML = parsed.slice(0, 60).map(x=>renderRecipeCard(x.r)).join('');
+  const list = data.filter(r => (r.category||'').toLowerCase() === 'gløgg');
+  const res = document.getElementById('results');
+  res.innerHTML = list.map(renderRecipeCard).join('') || '<p>Ingen opskrifter i denne kategori endnu.</p>';
 </script>
 
     </main>
