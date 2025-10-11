@@ -9,13 +9,11 @@ function saveUser(user, remember){
     else sessionStorage.setItem(SS_USER, payload);
   } catch {}
 }
-
 export function logout(){
   localStorage.removeItem(LS_USER);
   sessionStorage.removeItem(SS_USER);
   window.dispatchEvent(new CustomEvent('auth:changed', { detail:{ user:null }}));
 }
-
 export function currentUser(){
   try {
     const p = localStorage.getItem(LS_USER) || sessionStorage.getItem(SS_USER);
@@ -23,29 +21,27 @@ export function currentUser(){
   } catch { return null; }
 }
 
+// Modal (bruges automatisk i header)
 export function ensureAuthUI(){
-  // inject modal once
   if (document.getElementById('loginModal')) return;
   const m = document.createElement('div');
   m.id = 'loginModal';
   m.className = 'fixed inset-0 hidden items-center justify-center bg-black/40 z-50';
   m.innerHTML = `
     <div class="bg-white rounded-2xl p-6 w-[min(96vw,420px)]">
-      <h2 class="text-xl font-semibold">Log ind</h2>
-      <p class="text-sm opacity-80 mt-1">Skriv din e-mail for at fortsætte.</p>
+      <h2 class="text-xl font-semibold">Log ind eller opret bruger</h2>
+      <p class="text-sm opacity-80 mt-1">Skriv din e-mail. Første gang opretter vi dig automatisk.</p>
       <input id="loginEmail" type="email" class="mt-4 w-full border rounded-2xl p-3" placeholder="din@email.dk" />
       <label class="mt-3 flex items-center gap-2 text-sm"><input id="rememberMe" type="checkbox"/> Husk mig</label>
       <div class="mt-4 flex gap-2 justify-end">
         <button id="loginCancel" class="border px-3 py-1.5 rounded-2xl">Annuller</button>
-        <button id="loginSubmit" class="border px-3 py-1.5 rounded-2xl bg-stone-900 text-white">Log ind</button>
+        <button id="loginSubmit" class="border px-3 py-1.5 rounded-2xl bg-stone-900 text-white">Fortsæt</button>
       </div>
     </div>`;
   document.body.appendChild(m);
 
   const open = () => m.classList.remove('hidden');
   const close = () => m.classList.add('hidden');
-
-  // expose openLogin so header kan åbne modal
   window.__openLogin = open;
 
   m.addEventListener('click', (e)=>{ if (e.target === m) close(); });
@@ -59,15 +55,11 @@ export function ensureAuthUI(){
     window.dispatchEvent(new CustomEvent('auth:changed', { detail:{ user }}));
     close();
   });
-}
 
-// Mount: skift login/logout i header hvis der findes knapper
-document.addEventListener('DOMContentLoaded', () => {
-  ensureAuthUI();
+  // header knapper (hvis de findes)
   const loginBtn = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const nameSpot = document.getElementById('userName');
-
   const sync = () => {
     const u = currentUser();
     if (nameSpot) nameSpot.textContent = u ? u.name : '';
@@ -78,4 +70,29 @@ document.addEventListener('DOMContentLoaded', () => {
   logoutBtn?.addEventListener('click', logout);
   window.addEventListener('auth:changed', sync);
   sync();
+}
+
+// mount modal + init login side, hvis til stede
+document.addEventListener('DOMContentLoaded', () => {
+  ensureAuthUI();
+
+  // login-siden (virker som “opret bruger” også)
+  const form = document.getElementById('loginForm');
+  if (form){
+    const emailEl = document.getElementById('loginEmailPage');
+    const rememberEl = document.getElementById('rememberMePage');
+    const out = document.getElementById('loginState');
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const email = (emailEl.value||'').trim();
+      const remember = rememberEl.checked;
+      if (!email || !/\S+@\S+\.\S+/.test(email)) { out.textContent = 'Skriv en gyldig e-mail.'; return; }
+      const user = { email, name: email.split('@')[0] };
+      saveUser(user, remember);
+      out.textContent = 'Du er nu logget ind.';
+      window.dispatchEvent(new CustomEvent('auth:changed', { detail:{ user }}));
+      setTimeout(()=>{ location.href = '/'; }, 600);
+    });
+  }
 });
