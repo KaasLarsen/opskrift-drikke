@@ -1,41 +1,51 @@
+// /js/recipes.js
 import { formatStars, showToast } from './app.js';
 import { currentUser } from './auth.js';
 
 let __cache = null;
 
-async function loadChunk(i){
-  const res = await fetch(`/data/recipes-${i}.json`).then(r=> r.ok ? r.json() : []);
-  return res;
+async function tryJson(url){
+  const r = await fetch(url, { cache: 'force-cache' });
+  if (!r.ok) throw new Error('http ' + r.status + ' @ ' + url);
+  return r.json();
 }
 
 export async function loadAllRecipes(progressCb){
   if (__cache) return __cache;
-  // try chunked first
+
+  // 1) prøv chunks først (men giv ikke op, hvis -1.json ikke findes)
   try {
-    const first = await loadChunk(1);
-    if (Array.isArray(first) && first.length) {
-      __cache = first.slice();
-      // background load rest (attempt up to 20 chunks just in case)
-      for (let i=2;i<=20;i++){
-        try{
-          const r = await fetch(`/data/recipes-${i}.json`, {cache:'force-cache'});
-          if (!r.ok) break;
-          const arr = await r.json();
-          if (!Array.isArray(arr) || !arr.length) break;
-          __cache = __cache.concat(arr);
-          if (progressCb) progressCb(__cache.length);
-          // dispatch global event
-          window.dispatchEvent(new CustomEvent('recipes:updated', {detail:{count:__cache.length}}));
-        }catch(e){ break; }
+    const first = await tryJson('/data/recipes-1.json');
+    __cache = first.slice();
+
+    // hent resten i baggrunden hvis de findes
+    for (let i = 2; i <= 20; i++){
+      try {
+        const arr = await tryJson(`/data/recipes-${i}.json`);
+        if (!Array.isArray(arr) || !arr.length) break;
+        __cache = __cache.concat(arr);
+        progressCb?.(__cache.length);
+        window.dispatchEvent(new CustomEvent('recipes:updated', { detail: { count: __cache.length }}));
+      } catch {
+        break; // stop når næste chunk ikke findes
       }
-      return __cache;
     }
-  } catch(e){ /* fall back below */ }
-  // fallback to full file
-  __cache = await fetch('/data/recipes.json').then(r=>r.json());
-  if (progressCb) progressCb(__cache.length);
-  window.dispatchEvent(new CustomEvent('recipes:updated', {detail:{count:__cache.length}}));
-  return __cache;
+    return __cache;
+  } catch {
+    // 2) fallback til fuld fil
+    try {
+      __cache = await tryJson('/data/recipes.json');
+      progressCb?.(__cache.length);
+      window.dispatchEvent(new CustomEvent('recipes:updated', { detail: { count: __cache.length }}));
+      return __cache;
+    } catch (e) {
+      // 3) tydelig fejl i UI i stedet for “indlæser…”
+      const t = document.getElementById('recipeTitle');
+      if (t) t.textContent = 'Kunne ikke indlæse opskrifter (data mangler)';
+      console.error('Recipe data could not be loaded:', e);
+      throw e;
+    }
+  }
 }
 
 export function getFavorites(){
@@ -74,24 +84,28 @@ export function renderRecipeCard(r){
   </a>`;
 }
 
-// Mount on pages that have a #results or #favoritesList
+// Mount på sider der har #results eller #favoritesList
 document.addEventListener('DOMContentLoaded', async () => {
   const results = document.getElementById('results');
   const favWrap = document.getElementById('favoritesList');
+  const searchInput = document.getElementById('searchInput');
   if (!results && !favWrap) return;
 
-  // load first chunk fast (or fallback to all)
   let data;
   try {
-    data = await loadAllRecipes();
-  } catch(e){
-    data = await fetch('/data/recipes.json').then(r=>r.json());
+    data = await loadAllRecipes((len) => {
+      if (searchInput) searchInput.placeholder = `Søg i ${len.toLocaleString('da-DK')} drikkeopskrifter...`;
+    });
+  } catch {
+    // UI er allerede opdateret i loadAllRecipes ved fejl
+    return;
   }
   window.__allRecipes = data;
+  if (searchInput) searchInput.placeholder = `Søg i ${data.length.toLocaleString('da-DK')} drikkeopskrifter...`;
 
   if (results) {
     results.innerHTML = data.slice(0, 30).map(renderRecipeCard).join('');
-    // Gate favorite: must be logged in
+    // kræv login for “gem”
     results.addEventListener('click', (e)=>{
       const btn = e.target.closest('[data-fav]');
       if (!btn) return;
