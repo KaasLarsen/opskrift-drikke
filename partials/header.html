@@ -7,13 +7,13 @@
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
 
-    <!-- Navigation -->
-    <nav class="hidden md:flex items-center gap-4 text-sm">
+    <!-- Navigation (tighter spacing) -->
+    <nav class="hidden md:flex items-center gap-3 text-sm">
       <a href="/index.html" class="hover:underline">Forside</a>
       <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
 
       <!-- Kategorier dropdown -->
-      <div id="catMenuWrap" class="relative inline-flex">
+      <div id="catMenuWrap" class="relative inline-flex -mr-1">
         <button id="catMenuBtn"
                 class="inline-flex items-center gap-1 hover:underline"
                 aria-haspopup="true" aria-expanded="false" aria-controls="catMenuList">
@@ -41,12 +41,11 @@
       <a href="/pages/om-os.html" class="hover:underline">Om os</a>
     </nav>
 
-    <!-- Right side -->
+    <!-- Right side (tema-knap fjernet) -->
     <div class="flex items-center gap-3">
       <a href="/pages/login.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
         <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
       </a>
-      <button id="themeToggle" class="rounded-2xl px-3 py-1.5 border">Tema</button>
     </div>
   </div>
 </header>
