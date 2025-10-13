@@ -169,3 +169,31 @@ input:-webkit-autofill{
   -webkit-text-fill-color: inherit !important;
   caret-color: inherit !important;
 }
+/* === FIX: Safari/Chrome "hairline" autofill baggrund === */
+input,
+input[type="search"],
+input[type="text"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: #fff7f2 !important; /* samme farve som din hero */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Fjern autofill-gul baggrund i Chrome/Safari */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #fff7f2 inset !important;
+  -webkit-text-fill-color: #0f1712 !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Fjern Safari søgeikon/knapper helt */
+input::-webkit-search-decoration,
+input::-webkit-search-cancel-button,
+input::-webkit-search-results-button,
+input::-webkit-search-results-decoration {
+  display: none !important;
+}
