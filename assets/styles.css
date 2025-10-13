@@ -256,19 +256,22 @@ hr.sep{border:0; border-top:1px dashed var(--line); margin:18px 0}
    </div>
 */
 
-/* Fjerner Safari/Chrome’s "search field decoration" (den ovale streg) */
-input[type="search"]::-webkit-search-decoration,
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-results-button,
-input[type="search"]::-webkit-search-results-decoration {
-  display: none !important;
-}
-
-/* Nulstil Safari-indre ramme */
+/* Helt neutral inputstil på tværs af browsere */
 input {
-  border-radius: 0;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   -webkit-appearance: none;
   appearance: none;
+  background-clip: padding-box;
+}
+
+/* Fjern alle Safari-specifikke søgefeltsrester */
+input::-webkit-search-decoration,
+input::-webkit-search-cancel-button,
+input::-webkit-search-results-button,
+input::-webkit-search-results-decoration {
+  display: none !important;
 }
 
 
