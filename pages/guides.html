@@ -5,27 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Guides – opskrift-drikke.dk</title>
 
+    <!-- Tailwind -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Meta -->
     <meta name="description" content="Find inspiration og viden i vores guides om kaffe, te, smoothies, mocktails og meget mere."/>
     <meta property="og:title" content="Guides – opskrift-drikke.dk"/>
     <meta property="og:description" content="Læs vores bedste guides om drikke, maskiner og udstyr."/>
     <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guides/"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guides"/>
 
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/assets/manifest.json">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
 
+    <!-- Global scripts -->
     <script type="module" src="/js/app.js"></script>
     <script defer src="/js/analytics.js"></script>
 
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
       .btn { border-radius: 1rem; }
-      input[type="search"] { border-radius: 1rem; border: 1px solid #ddd; padding: 0.5rem 1rem; width: 100%; }
-      .tag { background: #f4f4f4; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.875rem; cursor: pointer; }
+
+      .search-box {
+        background: #fff7f2;
+        border: 1px solid #fed7aa;
+        border-radius: 1rem;
+        padding: 0.5rem 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: box-shadow .2s ease;
+      }
+      .search-box:focus-within {
+        box-shadow: 0 0 0 3px rgba(249,115,22,.2);
+      }
+      .search-box input {
+        background: transparent;
+        border: none;
+        outline: none;
+        width: 100%;
+        color: #1c1917;
+      }
+      .search-box svg {
+        color: #f97316;
+      }
+
+      .tag {
+        background: #f4f4f4;
+        border-radius: 9999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background .2s ease;
+      }
+      .tag:hover { background: #ffe8d9; }
       .tag.active { background: #f97316; color: #fff; }
     </style>
   </head>
@@ -37,13 +72,18 @@
       <h1 class="text-3xl font-semibold mb-4">Guides</h1>
       <p class="opacity-80 mb-6">Find trin-for-trin guides om kaffe, te, smoothies, mocktails, juice, udstyr og meget mere.</p>
 
-      <div class="flex flex-col md:flex-row md:items-center gap-4 mb-8">
-        <div class="flex-1">
+      <!-- søgefelt -->
+      <div class="max-w-md mb-6">
+        <div class="search-box">
+          <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
           <input type="search" id="guideSearch" placeholder="Søg i guides..." />
         </div>
-        <div class="flex flex-wrap gap-2 text-sm" id="guideTags"></div>
       </div>
 
+      <!-- tags / kategorier -->
+      <div id="guideTags" class="flex flex-wrap gap-2 mb-8"></div>
+
+      <!-- liste -->
       <div id="guideList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
@@ -103,6 +143,7 @@
       }
 
       searchEl.addEventListener('input', applyFilters);
+
       tagWrap.addEventListener('click', e => {
         const tag = e.target.closest('[data-tag]');
         if(!tag) return;
