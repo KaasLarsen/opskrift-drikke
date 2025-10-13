@@ -2,7 +2,26 @@
 import { currentUser } from './auth.js';
 import { showToast } from './app.js';
 
-// --- PriceRunner widget (samme pattern som opskrift-siden) ---
+// ---------- utils ----------
+const qs = (id) => document.getElementById(id);
+const getSlug = () => (new URLSearchParams(location.search).get('slug') || '').trim();
+
+function sentenceCase(str = '') {
+  // drop leading/trailing, collapse spaces
+  let s = (str || '').replace(/\s+/g, ' ').trim();
+  if (!s) return s;
+  // lav alt til små bogstaver, hæv første bogstav
+  s = s.toLowerCase();
+  s = s.charAt(0).toUpperCase() + s.slice(1);
+
+  // efter kolon/parentes: gør første ord småt hvis det ikke er egennavn (heuristik)
+  s = s.replace(/(:\s*)([A-ZÆØÅ])/g, (_, p1, p2) => p1 + p2.toLowerCase());
+  s = s.replace(/(\()\s*([A-ZÆØÅ])/g, (_, p1, p2) => p1 + p2.toLowerCase());
+
+  return s;
+}
+
+// ---------- PriceRunner under kommentarer ----------
 async function safeMountPRWidget(guide){
   try {
     const rotator = await import('/js/pricerunner-rotator.js');
@@ -20,7 +39,6 @@ async function safeMountPRWidget(guide){
     const slotSel = '#pr-guide-slot';
     rotator.mountPRByKey(slotSel, key);
 
-    // mild fallback hvis script blokeres
     setTimeout(() => {
       const slot = document.querySelector(slotSel);
       if (slot && !slot.querySelector('iframe') && !slot.querySelector('[id^="prw-"] iframe')) {
@@ -35,10 +53,7 @@ async function safeMountPRWidget(guide){
   }
 }
 
-// Helpers
-const qs = (id) => document.getElementById(id);
-const getSlug = () => (new URLSearchParams(location.search).get('slug') || '').trim();
-
+// ---------- kommentarer ----------
 function commentsKey(slug){ return `od_guide_comments_${slug}`; }
 function loadComments(slug){ try { return JSON.parse(localStorage.getItem(commentsKey(slug))||'[]'); } catch { return []; } }
 function saveComments(slug, list){ localStorage.setItem(commentsKey(slug), JSON.stringify(list.slice(-200))); }
@@ -55,65 +70,76 @@ function renderComments(slug, wrap){
     : '<p class="opacity-70">Ingen kommentarer endnu.</p>';
 }
 
-// Giver ID'er til H2-overskrifter, laver TOC og sektion-cards
+// ---------- strukturér indhold ----------
 function renderStructuredContent(html, mount){
   const tmp = document.createElement('div');
   tmp.innerHTML = html || '';
 
-  // saml alle elementer op og split ved H2
-  const nodes = Array.from(tmp.childNodes);
+  // neutralisér “skæve” styles fra WYSIWYG så teksten ikke skubber til højre
+  tmp.querySelectorAll('p, ul, ol, h2, h3, h4, table, blockquote, div, figure').forEach(el => {
+    el.style.float = 'none';
+    el.style.textAlign = 'left';
+    el.style.marginLeft = '';
+    el.style.marginRight = '';
+    el.style.maxWidth = 'unset';
+  });
+
+  const children = Array.from(tmp.childNodes);
   const sections = [];
-  let current = [];
+  let buffer = [];
 
   const flush = (titleNode) => {
-    const group = document.createElement('div');
-    group.className = 'card bg-white p-6 mt-6';
-    if (titleNode) group.appendChild(titleNode);
-    current.forEach(n => group.appendChild(n));
-    sections.push(group);
-    current = [];
+    // ignorér helt tom sektion
+    const hasContent = buffer.some(n => (n.nodeType === 1 && n.tagName !== 'H2') || (n.nodeType === 3 && n.textContent.trim()));
+    if (!titleNode && !hasContent) { buffer = []; return; }
+
+    const card = document.createElement('div');
+    card.className = 'card bg-white p-6 mt-6';
+    if (titleNode) card.appendChild(titleNode);
+    buffer.forEach(n => card.appendChild(n));
+    sections.push(card);
+    buffer = [];
   };
 
-  // lav indholdsfortegnelse-data
+  // lav indholdsfortegnelse
   const toc = [];
-  nodes.forEach(node => {
+
+  children.forEach(node => {
     if (node.nodeType === 1 && node.tagName === 'H2'){
-      // hvis der står opsamlet indhold, flush som forrige sektion
-      if (current.length) flush();
-      // sørg for ID på H2
+      // luk foregående sektion
+      flush();
+      // lav ID + kopi af H2
       const id = (node.textContent || '').trim()
         .toLowerCase()
         .replace(/[^\w\s\-æøåÆØÅ]/g,'')
         .replace(/\s+/g,'-');
-      node.id = node.id || id;
-      toc.push({ id: node.id, label: node.textContent.trim() });
-
-      // nyt section card med denne H2 som header
       const h2 = document.createElement('h2');
       h2.className = 'text-xl font-medium';
-      h2.id = node.id;
-      h2.textContent = node.textContent;
+      h2.id = id;
+      h2.textContent = sentenceCase(node.textContent || '');
+      toc.push({ id, label: h2.textContent });
+      // start ny sektion med denne H2
       flush(h2);
     } else {
-      current.push(node);
+      buffer.push(node);
     }
   });
-  if (current.length) flush();
+  flush(); // sidste sektion
 
-  // hvis ingen H2 fundet, bare læg alt i et card
+  // hvis ingen H2 → alt i ét card
   if (!sections.length){
     const only = document.createElement('div');
     only.className = 'card bg-white p-6 mt-6';
-    only.innerHTML = html || '';
+    only.innerHTML = tmp.innerHTML || '';
     mount.appendChild(only);
   } else {
     sections.forEach(s => mount.appendChild(s));
   }
 
-  // TOC
+  // vis TOC hvis der er flere sektioner
   const tocWrap = qs('tocWrap');
   const tocEl = qs('toc');
-  if (toc.length){
+  if (toc.length > 1){
     tocWrap.classList.remove('hidden');
     tocEl.innerHTML = toc.map(t => `<a href="#${t.id}">${t.label}</a>`).join('');
   } else {
@@ -121,6 +147,7 @@ function renderStructuredContent(html, mount){
   }
 }
 
+// ---------- init ----------
 async function init(){
   const slug = getSlug();
   const titleEl = qs('guideTitle');
@@ -136,7 +163,7 @@ async function init(){
 
   if (!slug){ titleEl.textContent = 'Slug mangler i URL'; return; }
 
-  // hent guides-data
+  // hent guides
   let guides = [];
   try {
     const res = await fetch('/data/guides.json', { cache: 'no-cache' });
@@ -150,21 +177,24 @@ async function init(){
   const guide = guides.find(g => (g.slug||'').toLowerCase() === decodeURIComponent(slug).toLowerCase());
   if (!guide){ titleEl.textContent = 'Guide ikke fundet'; return; }
 
-  // meta
-  document.title = guide.title + ' – opskrift-drikke.dk';
-  breadEl.textContent = guide.title;
-  titleEl.textContent = guide.title;
-  introEl.textContent = guide.intro || '';
+  // meta + sentence-case
+  const niceTitle = sentenceCase(guide.title || '');
+  const niceIntro = guide.intro ? sentenceCase(guide.intro) : '';
+
+  document.title = `${niceTitle} – opskrift-drikke.dk`;
+  breadEl.textContent = niceTitle;
+  titleEl.textContent = niceTitle;
+  introEl.textContent = niceIntro;
   metaEl.textContent = [guide.category, (guide.tags||[]).join(' · ')].filter(Boolean).join(' · ');
 
-  // indhold → struktureret med sektioner
+  // indhold i sektioner
   contentMount.innerHTML = '';
   renderStructuredContent(guide.content || '', contentMount);
 
-  // relaterede (samme kategori)
+  // relaterede
   const rel = guides.filter(g => g.slug !== guide.slug && g.category === guide.category).slice(0,5);
   relatedEl.innerHTML = rel.length
-    ? rel.map(r => `<li><a class="hover:underline" href="/pages/guide.html?slug=${r.slug}">${r.title}</a></li>`).join('')
+    ? rel.map(r => `<li><a class="hover:underline" href="/pages/guide.html?slug=${r.slug}">${sentenceCase(r.title)}</a></li>`).join('')
     : '<li class="opacity-70">Ingen relaterede guides fundet.</li>';
 
   // kommentarer
@@ -181,7 +211,7 @@ async function init(){
     showToast('Kommentar tilføjet');
   });
 
-  // PriceRunner (under kommentarer)
+  // PR under kommentarer
   await safeMountPRWidget(guide);
 }
 
