@@ -63,12 +63,12 @@
         <p class="mt-3 text-stone-700">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
         <!-- søgefelt (placeholder sættes dynamisk af JS) -->
-        <div class="mt-5 flex items-center gap-2 bg-[#fff7f2] border border-orange-200 p-2 rounded-2xl w-full shadow-sm focus-within:shadow-md transition">
-          <svg class="w-5 h-5 text-orange-500"><use href="/assets/icons.svg#search"/></svg>
-          <input id="searchInput"
-                 class="w-full outline-none bg-transparent placeholder-stone-500"
-                 placeholder="Søger opskrifter..." />
-        </div>
+       <div class="mt-5 flex items-center gap-2 bg-[#fff7f2] ring-1 ring-orange-200 focus-within:ring-2 focus-within:ring-orange-300 p-2 rounded-2xl w-full shadow-sm focus-within:shadow-md transition overflow-hidden">
+  <svg class="w-5 h-5 text-orange-500 shrink-0"><use href="/assets/icons.svg#search"/></svg>
+  <input id="searchInput"
+         class="w-full bg-transparent border-0 outline-none ring-0 focus:outline-none focus:ring-0 placeholder-stone-500 h-10 leading-none"
+         placeholder="Søger opskrifter..." />
+</div>
 
         <div class="mt-4 flex flex-wrap gap-2">
           <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
