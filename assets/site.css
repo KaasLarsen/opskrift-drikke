@@ -279,3 +279,8 @@ export function mountPR(selector = '#pr-home-slot') {
 document.addEventListener('DOMContentLoaded', () => {
   mountPR('#pr-home-slot');
 });
+/* Guides: neutraliser floats og max-bredde i indlejret HTML */
+#guideContent, #guideContent * {
+  text-align: left;
+}
+#guideContent img { max-width: 100%; height: auto; }
