@@ -255,3 +255,12 @@ hr.sep{border:0; border-top:1px dashed var(--line); margin:18px 0}
      </div>
    </div>
 */
+
+<style>
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #fff7f2 inset !important;
+    -webkit-text-fill-color: inherit !important;
+    caret-color: inherit !important;
+  }
+</style>
+
