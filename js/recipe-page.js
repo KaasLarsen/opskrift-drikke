@@ -3,10 +3,6 @@ import { loadAllRecipes, toggleFavorite, getFavorites } from './recipes.js';
 import { formatStars, showToast } from './app.js';
 import { currentUser } from './auth.js';
 
-// NYT: pricerunner + mapping
-import { mountPRByKey } from './pricerunner-rotator.js';
-import { chooseWidgetKeyFrom } from './pr-widgets-map.js';
-
 function qs(id){ return document.getElementById(id); }
 
 function getSlug(){
@@ -21,10 +17,7 @@ function findBySlug(data, slug){
 
 function renderList(list, el, ordered=false){
   if (!Array.isArray(list) || !el) return;
-  el.innerHTML = list.map(item => ordered
-    ? `<li>${item}</li>`
-    : `<li>${item}</li>`
-  ).join('');
+  el.innerHTML = list.map(item => ordered ? `<li>${item}</li>` : `<li>${item}</li>`).join('');
 }
 
 function updateFavUI(btn, isFav){
@@ -50,14 +43,12 @@ function loadComments(slug){
 function saveComments(slug, list){
   localStorage.setItem(commentsKey(slug), JSON.stringify(list.slice(-200)));
 }
-
 function addComment(slug, entry){
   const list = loadComments(slug);
   list.push(entry);
   saveComments(slug, list);
   return list;
 }
-
 function renderComments(slug, wrap){
   const list = loadComments(slug).sort((a,b)=>b.ts-a.ts);
   wrap.innerHTML = list.length
@@ -77,6 +68,30 @@ function pickRelated(all, recipe, limit=6){
   const overlap = (r) => r.slug !== recipe.slug && (r.tags||[]).some(t => tagSet.has(t));
   const pool = all.filter(r => sameCat(r) || overlap(r));
   return pool.slice(0, limit);
+}
+
+// --- PriceRunner widget (failsafe) ---
+async function safeMountPRWidget(recipe){
+  try {
+    const [{ mountPRByKey }, { chooseWidgetKeyFrom }] = await Promise.all([
+      import('/js/pricerunner-rotator.js'),
+      import('/js/pr-widgets-map.js')
+    ]);
+    const key = chooseWidgetKeyFrom(recipe.category, recipe.tags || []);
+    const slotSel = '#pr-recipe-slot';
+    if (!document.querySelector(slotSel)) {
+      const aside = document.querySelector('aside.md\\:col-span-1') || document.querySelector('aside');
+      if (aside) {
+        const holder = document.createElement('div');
+        holder.className = 'card bg-white p-6 mt-6';
+        holder.innerHTML = '<h3 class="text-lg font-medium">Anbefalet udstyr</h3><div id="pr-recipe-slot" class="mt-2"></div>';
+        aside.appendChild(holder);
+      }
+    }
+    mountPRByKey(slotSel, key);
+  } catch (err) {
+    console.warn('PriceRunner-widget blev sprunget over (valgfri):', err);
+  }
 }
 
 async function init(){
@@ -136,7 +151,6 @@ async function init(){
     const u = currentUser();
     if (!u){ showToast('Du skal være logget ind for at bedømme'); return; }
     const n = +b.getAttribute('data-star');
-    // lille local feedback
     [...userRating.querySelectorAll('svg')].forEach((svg, idx)=>{
       svg.classList.toggle('opacity-50', idx >= n);
     });
@@ -155,23 +169,16 @@ async function init(){
     const u = currentUser();
     if (!u){ showToast('Du skal være logget ind for at gemme'); return; }
     const ok = toggleFavorite(recipe.slug);
-
-    // emit til “Ugens mest gemte”
     window.dispatchEvent(new CustomEvent('favorite:toggled', {
       detail: { slug: recipe.slug, ok, ts: Date.now() }
     }));
-
     updateFavUI(favBtn, ok);
     showToast(ok ? 'Gemt i favoritter' : 'Fjernet fra favoritter');
   });
 
   // kommentarer
   const u = currentUser();
-  if (!u){
-    commentHint.textContent = 'Du skal være logget ind.';
-  } else {
-    commentHint.textContent = `Logget ind som ${u.email}`;
-  }
+  commentHint.textContent = u ? `Logget ind som ${u.email}` : 'Du skal være logget ind.';
   renderComments(recipe.slug, commentList);
   commentSubmit.addEventListener('click', ()=>{
     const u = currentUser();
@@ -182,11 +189,6 @@ async function init(){
     addComment(recipe.slug, entry);
     renderComments(recipe.slug, commentList);
     commentText.value = '';
-
-    // valgfri hook til “Ugens brugeranmeldelse” (hvis weekly.js er på siden)
-    window.dispatchEvent(new CustomEvent('comment:added', {
-      detail: { slug: recipe.slug, text: txt, ts: entry.ts, userEmail: u.email }
-    }));
   });
 
   // relaterede
@@ -195,23 +197,8 @@ async function init(){
     ? rel.map(r => `<li><a class="hover:underline" href="/pages/opskrift.html?slug=${r.slug}">${r.title}</a></li>`).join('')
     : '<li class="opacity-70">Ingen relaterede fundet.</li>';
 
-  // ---------- PR widget mount (nyt) ----------
-  // Vælg key ud fra kategori/tags og mount i slotten #pr-recipe-slot
-  const prKey = chooseWidgetKeyFrom(recipe.category, recipe.tags || []);
-  const prSlot = document.querySelector('#pr-recipe-slot');
-  if (prSlot) {
-    mountPRByKey('#pr-recipe-slot', prKey);
-  } else {
-    // hvis du glemte slotten i HTML’en, gør vi det defensivt her
-    const aside = document.querySelector('aside.md\\:col-span-1') || document.querySelector('aside');
-    if (aside) {
-      const holder = document.createElement('div');
-      holder.className = 'card bg-white p-6 mt-6';
-      holder.innerHTML = '<h3 class="text-lg font-medium">Anbefalet udstyr</h3><div id="pr-recipe-slot"></div>';
-      aside.appendChild(holder);
-      mountPRByKey('#pr-recipe-slot', prKey);
-    }
-  }
+  // PriceRunner (valgfri – stopper ikke siden hvis noget fejler)
+  await safeMountPRWidget(recipe);
 }
 
 document.addEventListener('DOMContentLoaded', init);
