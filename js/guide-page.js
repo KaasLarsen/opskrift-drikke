@@ -1,163 +1,134 @@
 // /js/guide-page.js
-import { loadAllGuides } from './guides.js';
+import { currentUser } from './auth.js';
+import { showToast } from './app.js';
 
-// helpers
-const $ = (id) => document.getElementById(id);
-const slugFromUrl = () => new URLSearchParams(location.search).get('slug') || '';
-const estReadMin = (html) => {
-  // grov estimering: 900 tegn ~ 1 minut
-  const text = html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-  const mins = Math.max(1, Math.round(text.length / 900));
-  return `${mins} min læsning`;
-};
+// --- PriceRunner widget (failsafe + kompatibel med begge mappings) ---
+async function safeMountPRWidget(guide){
+  try {
+    const rotator = await import('/js/pricerunner-rotator.js');
+    const mapping = await import('/js/pr-widgets-map.js');
 
-function iconFor(title=''){
-  const t = title.toLowerCase();
-  if (t.includes('intro')) return 'sparkles';
-  if (t.includes('det skal du bruge')) return 'tools';
-  if (t.includes('sådan gør du')) return 'list-checks';
-  if (t.includes('fejl')) return 'alert-triangle';
-  if (t.includes('variation')) return 'shuffle';
-  if (t.includes('opsummer')) return 'check-circle-2';
-  return 'book-open';
-}
-
-function makeSectionCard(h2Text, innerHTML){
-  const icon = iconFor(h2Text);
-  return `
-    <section class="card bg-white p-6" id="${h2Text.toLowerCase().replace(/[^a-z0-9]+/g,'-')}">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 opacity-80"><use href="/assets/icons.svg#${icon}"/></svg>
-        <h2 class="text-xl font-medium">${h2Text}</h2>
-      </div>
-      <div class="prose prose-stone max-w-none mt-3">
-        ${innerHTML}
-      </div>
-    </section>`;
-}
-
-function buildTOC(sections){
-  return sections.map(s => {
-    const id = s.id;
-    const text = s.querySelector('h2')?.textContent || 'Sektion';
-    return `<a href="#${id}" class="block hover:underline">${text}</a>`;
-  }).join('');
-}
-
-function activateTOC(){
-  const toc = $('toc');
-  if (!toc) return;
-  const links = [...toc.querySelectorAll('a')];
-  const sections = links.map(a => document.querySelector(a.getAttribute('href')));
-  const onScroll = () => {
-    let iTop = 0;
-    for (let i=0;i<sections.length;i++){
-      const r = sections[i]?.getBoundingClientRect();
-      if (r && r.top <= 120) iTop = i;
+    let key = null;
+    if (typeof mapping.chooseWidgetKeys === 'function') {
+      const keys = mapping.chooseWidgetKeys(guide) || [];
+      key = Array.isArray(keys) && keys.length ? keys[0] : null;
+    } else if (typeof mapping.chooseWidgetKeyFrom === 'function') {
+      key = mapping.chooseWidgetKeyFrom(guide.category, guide.tags || []);
     }
-    links.forEach((a,idx)=>a.classList.toggle('active', idx===iTop));
-  };
-  document.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+    if (!key) {
+      console.warn('PR (guide): ingen widget-key for', guide.category, guide.tags);
+      return;
+    }
+
+    // sørg for at slotten findes i main-kolonnen (under kommentarer)
+    const slotSel = '#pr-guide-slot';
+    if (!document.querySelector(slotSel)) {
+      const mainCol = document.querySelector('#guideMainCol') || document.querySelector('.md\\:col-span-2');
+      if (mainCol) {
+        const holder = document.createElement('div');
+        holder.className = 'card bg-white p-6 mt-6';
+        holder.innerHTML = '<h3 class="text-lg font-medium">Anbefalet udstyr</h3><div id="pr-guide-slot" class="mt-2"></div>';
+        mainCol.appendChild(holder);
+      }
+    }
+
+    console.log('PR (guide): mount key =', key, 'for category=', guide.category, 'tags=', guide.tags);
+    rotator.mountPRByKey(slotSel, key);
+
+    // mild fallback hvis script blokeres
+    setTimeout(() => {
+      const slot = document.querySelector(slotSel);
+      if (slot && !slot.querySelector('iframe') && !slot.querySelector('[id^="prw-"] iframe')) {
+        const note = document.createElement('div');
+        note.className = 'text-sm opacity-70 mt-2 pr-fallback-note';
+        note.textContent = 'Annonce – kunne ikke indlæse tilbud lige nu.';
+        if (!slot.querySelector('.pr-fallback-note')) slot.appendChild(note);
+      }
+    }, 4000);
+  } catch (err) {
+    console.warn('PriceRunner-widget (guide) blev sprunget over (valgfri):', err);
+  }
 }
 
-function buildSchema(g){
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": g.title,
-    "about": g.category,
-    "author": { "@type": "Person", "name": g.author || "Redaktionen" },
-    "datePublished": new Date().toISOString().slice(0,10),
-    "dateModified": new Date().toISOString().slice(0,10),
-    "inLanguage": "da-DK",
-    "publisher": { "@type": "Organization", "name": "opskrift-drikke.dk" },
-    "articleSection": g.tags || [],
-    "description": g.intro,
-    "mainEntityOfPage": location.href
-  };
+// Helpers
+function qs(id){ return document.getElementById(id); }
+function getSlug(){ const p = new URLSearchParams(location.search); return (p.get('slug') || '').trim(); }
+
+function commentsKey(slug){ return `od_guide_comments_${slug}`; }
+function loadComments(slug){ try { return JSON.parse(localStorage.getItem(commentsKey(slug))||'[]'); } catch { return []; } }
+function saveComments(slug, list){ localStorage.setItem(commentsKey(slug), JSON.stringify(list.slice(-200))); }
+function addComment(slug, entry){ const list = loadComments(slug); list.push(entry); saveComments(slug, list); return list; }
+function renderComments(slug, wrap){
+  const list = loadComments(slug).sort((a,b)=>b.ts-a.ts);
+  wrap.innerHTML = list.length
+    ? list.map(c => `
+        <div class="border rounded-2xl p-3">
+          <div class="text-sm opacity-70">${new Date(c.ts).toLocaleString('da-DK')}</div>
+          <div class="mt-1">${c.text}</div>
+          <div class="text-sm opacity-70 mt-1">${c.user||'Anonym'}</div>
+        </div>`).join('')
+    : '<p class="opacity-70">Ingen kommentarer endnu.</p>';
 }
 
 async function init(){
-  const slug = slugFromUrl();
-  const tEl   = $('guideTitle');
-  const bcEl  = $('breadcrumbTitle');
-  const catEl = $('guideCategory');
-  const tagsEl= $('guideTags');
-  const readEl= $('guideReading');
-  const rateEl= $('guideRating');
-  const intro = $('guideIntro');
-  const contentWrap = $('guideContentWrap');
-  const content = $('guideContent');
-  const toc = $('toc');
-  const facts = $('quickFacts');
-  const ld = $('ld_json');
+  const slug = getSlug();
+  const titleEl = qs('guideTitle');
+  const introEl = qs('guideIntro');
+  const contentEl = qs('guideContent');
+  const breadEl = qs('breadcrumbTitle');
+  const relatedEl = qs('relatedGuides');
+  const commentList = qs('commentList');
+  const commentText = qs('commentText');
+  const commentSubmit = qs('commentSubmit');
+  const commentHint = qs('commentHint');
 
-  if (!slug){ tEl.textContent = 'Guide mangler slug i url'; return; }
+  if (!slug){ titleEl.textContent = 'Slug mangler i URL'; return; }
 
-  let all=[];
-  try { all = await loadAllGuides(); }
-  catch { tEl.textContent = 'Kunne ikke indlæse guides'; return; }
+  // hent guides-data
+  let guides = [];
+  try {
+    const res = await fetch('/data/guides.json', { cache: 'no-cache' });
+    guides = await res.json();
+  } catch (e){
+    titleEl.textContent = 'Kunne ikke indlæse guides';
+    console.error(e);
+    return;
+  }
 
-  const g = all.find(x => (x.slug||'').toLowerCase() === slug.toLowerCase());
-  if (!g){ tEl.textContent = 'Guide ikke fundet'; return; }
+  const guide = guides.find(g => (g.slug||'').toLowerCase() === decodeURIComponent(slug).toLowerCase());
+  if (!guide){ titleEl.textContent = 'Guide ikke fundet'; return; }
 
   // meta
-  document.title = `${g.title} – opskrift-drikke.dk`;
-  tEl.textContent = g.title;
-  bcEl.textContent = g.title;
-  catEl.textContent = g.category || 'Guide';
-  rateEl.innerHTML = `${g.rating?.toFixed?.(1) || '5.0'} ★ <span class="opacity-70">(${g.reviews||0})</span>`;
+  document.title = guide.title + ' – opskrift-drikke.dk';
+  breadEl.textContent = guide.title;
+  titleEl.textContent = guide.title;
+  introEl.textContent = guide.intro || '';
 
-  // badges (tags)
-  tagsEl.innerHTML = (g.tags||[]).slice(0,4).map(t => `<span class="badge">${t}</span>`).join('');
+  // indhold (forventer at content er trusted HTML fra dit build)
+  contentEl.innerHTML = guide.content || '';
 
-  // intro + læsetid
-  intro.textContent = g.intro || '';
-  readEl.textContent = estReadMin(g.content||'');
+  // relaterede (samme kategori)
+  const rel = guides.filter(g => g.slug !== guide.slug && g.category === guide.category).slice(0,5);
+  relatedEl.innerHTML = rel.length
+    ? rel.map(r => `<li><a class="hover:underline" href="/pages/guide.html?slug=${r.slug}">${r.title}</a></li>`).join('')
+    : '<li class="opacity-70">Ingen relaterede guides fundet.</li>';
 
-  // render sections som “rune bokse”
-  // g.content er HTML med <h2> sektioner -> split dem
-  content.innerHTML = g.content || '';
-  const h = document.createElement('div');
-  h.innerHTML = content.innerHTML;
+  // kommentarer
+  const u = currentUser();
+  commentHint.textContent = u ? `Logget ind som ${u.email}` : 'Du skal være logget ind.';
+  renderComments(slug, commentList);
+  commentSubmit.addEventListener('click', ()=>{
+    const u = currentUser(); if (!u){ showToast('Du skal være logget ind for at kommentere'); return; }
+    const txt = (commentText.value||'').trim(); if (!txt){ showToast('Skriv en kommentar først'); return; }
+    const entry = { text: txt, ts: Date.now(), user: u.email };
+    addComment(slug, entry);
+    renderComments(slug, commentList);
+    commentText.value = '';
+    showToast('Kommentar tilføjet');
+  });
 
-  // samle sektioner: hver <h2> + efterfølgende elementer indtil næste <h2>
-  const nodes = [...h.childNodes];
-  const sectionCards = [];
-  let cur = null;
-  for (const n of nodes){
-    if (n.nodeType === 1 && n.tagName === 'H2'){
-      if (cur) sectionCards.push(cur);
-      cur = { title: n.textContent, html: '' };
-    } else {
-      if (cur) cur.html += n.outerHTML || n.textContent || '';
-    }
-  }
-  if (cur) sectionCards.push(cur);
-
-  // injicer kort i DOM
-  let htmlOut = '';
-  for (const s of sectionCards){
-    htmlOut += makeSectionCard(s.title, s.html);
-  }
-  contentWrap.insertAdjacentHTML('beforeend', htmlOut);
-
-  // TOC
-  const sectionEls = [...contentWrap.querySelectorAll('section[id]')];
-  toc.innerHTML = buildTOC(sectionEls);
-  activateTOC();
-
-  // Quick facts
-  facts.innerHTML = `
-    <li><strong>Forfatter:</strong> ${g.author || 'Redaktionen'}</li>
-    <li><strong>Kategori:</strong> ${g.category || '-'}</li>
-    <li><strong>Tags:</strong> ${(g.tags||[]).slice(0,5).join(', ') || '-'}</li>
-    <li><strong>Vurdering:</strong> ${g.rating?.toFixed?.(1) || '5.0'} (${g.reviews||0})</li>
-  `;
-
-  // Schema.org Article
-  ld.textContent = JSON.stringify(buildSchema(g));
+  // PriceRunner (under kommentarer)
+  await safeMountPRWidget(guide);
 }
 
 document.addEventListener('DOMContentLoaded', init);
