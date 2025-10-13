@@ -2,7 +2,7 @@
 import { currentUser } from './auth.js';
 import { showToast } from './app.js';
 
-// --- PriceRunner widget (failsafe + kompatibel med begge mappings) ---
+// --- PriceRunner widget (samme pattern som opskrift-siden) ---
 async function safeMountPRWidget(guide){
   try {
     const rotator = await import('/js/pricerunner-rotator.js');
@@ -15,24 +15,9 @@ async function safeMountPRWidget(guide){
     } else if (typeof mapping.chooseWidgetKeyFrom === 'function') {
       key = mapping.chooseWidgetKeyFrom(guide.category, guide.tags || []);
     }
-    if (!key) {
-      console.warn('PR (guide): ingen widget-key for', guide.category, guide.tags);
-      return;
-    }
+    if (!key) return;
 
-    // sørg for at slotten findes i main-kolonnen (under kommentarer)
     const slotSel = '#pr-guide-slot';
-    if (!document.querySelector(slotSel)) {
-      const mainCol = document.querySelector('#guideMainCol') || document.querySelector('.md\\:col-span-2');
-      if (mainCol) {
-        const holder = document.createElement('div');
-        holder.className = 'card bg-white p-6 mt-6';
-        holder.innerHTML = '<h3 class="text-lg font-medium">Anbefalet udstyr</h3><div id="pr-guide-slot" class="mt-2"></div>';
-        mainCol.appendChild(holder);
-      }
-    }
-
-    console.log('PR (guide): mount key =', key, 'for category=', guide.category, 'tags=', guide.tags);
     rotator.mountPRByKey(slotSel, key);
 
     // mild fallback hvis script blokeres
@@ -46,13 +31,13 @@ async function safeMountPRWidget(guide){
       }
     }, 4000);
   } catch (err) {
-    console.warn('PriceRunner-widget (guide) blev sprunget over (valgfri):', err);
+    console.warn('PriceRunner-widget (guide) valgfrit, sprang over:', err);
   }
 }
 
 // Helpers
-function qs(id){ return document.getElementById(id); }
-function getSlug(){ const p = new URLSearchParams(location.search); return (p.get('slug') || '').trim(); }
+const qs = (id) => document.getElementById(id);
+const getSlug = () => (new URLSearchParams(location.search).get('slug') || '').trim();
 
 function commentsKey(slug){ return `od_guide_comments_${slug}`; }
 function loadComments(slug){ try { return JSON.parse(localStorage.getItem(commentsKey(slug))||'[]'); } catch { return []; } }
@@ -70,17 +55,84 @@ function renderComments(slug, wrap){
     : '<p class="opacity-70">Ingen kommentarer endnu.</p>';
 }
 
+// Giver ID'er til H2-overskrifter, laver TOC og sektion-cards
+function renderStructuredContent(html, mount){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+
+  // saml alle elementer op og split ved H2
+  const nodes = Array.from(tmp.childNodes);
+  const sections = [];
+  let current = [];
+
+  const flush = (titleNode) => {
+    const group = document.createElement('div');
+    group.className = 'card bg-white p-6 mt-6';
+    if (titleNode) group.appendChild(titleNode);
+    current.forEach(n => group.appendChild(n));
+    sections.push(group);
+    current = [];
+  };
+
+  // lav indholdsfortegnelse-data
+  const toc = [];
+  nodes.forEach(node => {
+    if (node.nodeType === 1 && node.tagName === 'H2'){
+      // hvis der står opsamlet indhold, flush som forrige sektion
+      if (current.length) flush();
+      // sørg for ID på H2
+      const id = (node.textContent || '').trim()
+        .toLowerCase()
+        .replace(/[^\w\s\-æøåÆØÅ]/g,'')
+        .replace(/\s+/g,'-');
+      node.id = node.id || id;
+      toc.push({ id: node.id, label: node.textContent.trim() });
+
+      // nyt section card med denne H2 som header
+      const h2 = document.createElement('h2');
+      h2.className = 'text-xl font-medium';
+      h2.id = node.id;
+      h2.textContent = node.textContent;
+      flush(h2);
+    } else {
+      current.push(node);
+    }
+  });
+  if (current.length) flush();
+
+  // hvis ingen H2 fundet, bare læg alt i et card
+  if (!sections.length){
+    const only = document.createElement('div');
+    only.className = 'card bg-white p-6 mt-6';
+    only.innerHTML = html || '';
+    mount.appendChild(only);
+  } else {
+    sections.forEach(s => mount.appendChild(s));
+  }
+
+  // TOC
+  const tocWrap = qs('tocWrap');
+  const tocEl = qs('toc');
+  if (toc.length){
+    tocWrap.classList.remove('hidden');
+    tocEl.innerHTML = toc.map(t => `<a href="#${t.id}">${t.label}</a>`).join('');
+  } else {
+    tocWrap.classList.add('hidden');
+  }
+}
+
 async function init(){
   const slug = getSlug();
   const titleEl = qs('guideTitle');
   const introEl = qs('guideIntro');
-  const contentEl = qs('guideContent');
+  const metaEl  = qs('guideMeta');
   const breadEl = qs('breadcrumbTitle');
   const relatedEl = qs('relatedGuides');
   const commentList = qs('commentList');
   const commentText = qs('commentText');
   const commentSubmit = qs('commentSubmit');
   const commentHint = qs('commentHint');
+  const contentMount = qs('guideContent');
 
   if (!slug){ titleEl.textContent = 'Slug mangler i URL'; return; }
 
@@ -103,9 +155,11 @@ async function init(){
   breadEl.textContent = guide.title;
   titleEl.textContent = guide.title;
   introEl.textContent = guide.intro || '';
+  metaEl.textContent = [guide.category, (guide.tags||[]).join(' · ')].filter(Boolean).join(' · ');
 
-  // indhold (forventer at content er trusted HTML fra dit build)
-  contentEl.innerHTML = guide.content || '';
+  // indhold → struktureret med sektioner
+  contentMount.innerHTML = '';
+  renderStructuredContent(guide.content || '', contentMount);
 
   // relaterede (samme kategori)
   const rel = guides.filter(g => g.slug !== guide.slug && g.category === guide.category).slice(0,5);
