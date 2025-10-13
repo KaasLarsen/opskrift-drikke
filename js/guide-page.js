@@ -7,17 +7,12 @@ const qs = (id) => document.getElementById(id);
 const getSlug = () => (new URLSearchParams(location.search).get('slug') || '').trim();
 
 function sentenceCase(str = '') {
-  // drop leading/trailing, collapse spaces
   let s = (str || '').replace(/\s+/g, ' ').trim();
   if (!s) return s;
-  // lav alt til små bogstaver, hæv første bogstav
   s = s.toLowerCase();
   s = s.charAt(0).toUpperCase() + s.slice(1);
-
-  // efter kolon/parentes: gør første ord småt hvis det ikke er egennavn (heuristik)
   s = s.replace(/(:\s*)([A-ZÆØÅ])/g, (_, p1, p2) => p1 + p2.toLowerCase());
   s = s.replace(/(\()\s*([A-ZÆØÅ])/g, (_, p1, p2) => p1 + p2.toLowerCase());
-
   return s;
 }
 
@@ -89,7 +84,6 @@ function renderStructuredContent(html, mount){
   let buffer = [];
 
   const flush = (titleNode) => {
-    // ignorér helt tom sektion
     const hasContent = buffer.some(n => (n.nodeType === 1 && n.tagName !== 'H2') || (n.nodeType === 3 && n.textContent.trim()));
     if (!titleNode && !hasContent) { buffer = []; return; }
 
@@ -101,14 +95,13 @@ function renderStructuredContent(html, mount){
     buffer = [];
   };
 
-  // lav indholdsfortegnelse
   const toc = [];
 
   children.forEach(node => {
     if (node.nodeType === 1 && node.tagName === 'H2'){
-      // luk foregående sektion
+      // luk forrige sektion
       flush();
-      // lav ID + kopi af H2
+      // ID + kopi af H2 (sentence-case)
       const id = (node.textContent || '').trim()
         .toLowerCase()
         .replace(/[^\w\s\-æøåÆØÅ]/g,'')
@@ -136,7 +129,7 @@ function renderStructuredContent(html, mount){
     sections.forEach(s => mount.appendChild(s));
   }
 
-  // vis TOC hvis der er flere sektioner
+  // TOC hvis mere end én sektion
   const tocWrap = qs('tocWrap');
   const tocEl = qs('toc');
   if (toc.length > 1){
