@@ -1,86 +1,91 @@
 // /js/pricerunner-rotator.js
-// Simpel version – PriceRunner vises altid (ingen cookie-tjek)
+// PriceRunner vises altid, lazy-load og korrekt script-injektion
 
-// ------------- Dine 3 widgets -------------
 const WIDGETS = [
   {
     id: 'pr-product-widget-5ef258a0',
-    html: `
-<div id="pr-product-widget-5ef258a0" style="display: block; width: 100%"></div>
-<script type="text/javascript" src="https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=3385670828&partnerId=adrunner_dk_opskrift-drikke&widgetId=pr-product-widget-5ef258a0" async></script>
-<div style="display: inline-block">
-  <a href="https://www.pricerunner.dk/pl/84-3385670828/Blendere/Ninja-Detect-TB301EU-Blender-Pro-Sammenlign-Priser" rel="nofollow">
-    <p style="font: 14px 'Klarna Text', Helvetica, sans-serif; font-style: italic; color: #444; text-decoration: underline;">
-      Annonce i samarbejde med <span style="font-weight:bold">PriceRunner</span>
-    </p>
-  </a>
-</div>`
+    src: 'https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=3385670828&partnerId=adrunner_dk_opskrift-drikke&widgetId=pr-product-widget-5ef258a0',
+    link: 'https://www.pricerunner.dk/pl/84-3385670828/Blendere/Ninja-Detect-TB301EU-Blender-Pro-Sammenlign-Priser'
   },
   {
     id: 'pr-product-widget-7b9e4810',
-    html: `
-<div id="pr-product-widget-7b9e4810" style="display: block; width: 100%"></div>
-<script type="text/javascript" src="https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=3673343&partnerId=adrunner_dk_opskrift-drikke&widgetId=pr-product-widget-7b9e4810" async></script>
-<div style="display: inline-block">
-  <a href="https://www.pricerunner.dk/pl/82-3673343/Kaffemaskiner/DeLonghi-Magnifica-S-ECAM-21.117.B-Sammenlign-Priser" rel="nofollow">
-    <p style="font: 14px 'Klarna Text', Helvetica, sans-serif; font-style: italic; color: #444; text-decoration: underline;">
-      Annonce i samarbejde med <span style="font-weight:bold">PriceRunner</span>
-    </p>
-  </a>
-</div>`
+    src: 'https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=3673343&partnerId=adrunner_dk_opskrift-drikke&widgetId=pr-product-widget-7b9e4810',
+    link: 'https://www.pricerunner.dk/pl/82-3673343/Kaffemaskiner/DeLonghi-Magnifica-S-ECAM-21.117.B-Sammenlign-Priser'
   },
   {
     id: 'pr-product-widget-8870c090',
-    html: `
-<div id="pr-product-widget-8870c090" style="display: block; width: 100%"></div>
-<script type="text/javascript" src="https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=3299718083&partnerId=adrunner_dk_opskrift-drikke&widgetId=pr-product-widget-8870c090" async></script>
-<div style="display: inline-block">
-  <a href="https://www.pricerunner.dk/pl/84-3299718083/Blendere/Nutribullet-Pro-900-NB907MAB-Sammenlign-Priser" rel="nofollow">
-    <p style="font: 14px 'Klarna Text', Helvetica, sans-serif; font-style: italic; color: #444; text-decoration: underline;">
-      Annonce i samarbejde med <span style="font-weight:bold">PriceRunner</span>
-    </p>
-  </a>
-</div>`
+    src: 'https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=3299718083&partnerId=adrunner_dk_opskrift-drikke&widgetId=pr-product-widget-8870c090',
+    link: 'https://www.pricerunner.dk/pl/84-3299718083/Blendere/Nutribullet-Pro-900-NB907MAB-Sammenlign-Priser'
   }
 ];
 
-// ------------- Utils -------------
-const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
 
-function clearChildren(node) {
-  while (node.firstChild) node.removeChild(node.firstChild);
+function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
+
+function wrapCard(el){
+  const card = document.createElement('div');
+  card.className = 'card bg-white p-4 border rounded-2xl';
+  const lbl = document.createElement('div');
+  lbl.className = 'text-sm opacity-70 mb-2';
+  lbl.textContent = 'Annonce i samarbejde med PriceRunner';
+  card.appendChild(lbl);
+  card.appendChild(el);
+  return card;
 }
 
-function wrapCard(innerHtml) {
-  return `
-  <div class="card bg-white p-4 border rounded-2xl">
-    <div class="text-sm opacity-70 mb-2">Annonce i samarbejde med PriceRunner</div>
-    ${innerHtml}
-  </div>`;
+// vigtig: opret script-elementet via DOM, ikke innerHTML
+function injectWidget(slot, w){
+  clear(slot);
+
+  // widget container
+  const holder = document.createElement('div');
+  holder.id = w.id;
+  holder.style.display = 'block';
+  holder.style.width = '100%';
+
+  // disclosure-link fra dit snippet
+  const discWrap = document.createElement('div');
+  discWrap.style.display = 'inline-block';
+  discWrap.innerHTML = `
+    <a href="${w.link}" rel="nofollow">
+      <p style="font:14px 'Klarna Text', Helvetica, sans-serif; font-style:italic; color:#444; text-decoration:underline;">
+        Annonce i samarbejde med <span style="font-weight:bold">PriceRunner</span>
+      </p>
+    </a>`;
+
+  const frame = document.createElement('div');
+  frame.appendChild(holder);
+  frame.appendChild(discWrap);
+
+  slot.appendChild(wrapCard(frame));
+
+  // scriptet oprettes som element (ellers kører det ikke)
+  const s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.src = w.src;
+  s.async = true;
+  document.body.appendChild(s);
 }
 
-// ------------- Mount -------------
-export function mountPR(selector = '#pr-home-slot') {
+export function mountPR(selector = '#pr-home-slot'){
   const slot = document.querySelector(selector);
   if (!slot) return;
 
-  const inject = () => {
-    const chosen = pickRandom(WIDGETS);
-    clearChildren(slot);
-    slot.insertAdjacentHTML('beforeend', wrapCard(chosen.html));
+  const w = pick(WIDGETS);
+
+  const onEnter = (entries, obs) => {
+    if (entries.some(e => e.isIntersecting)) {
+      obs.disconnect();
+      injectWidget(slot, w);
+    }
   };
 
-  // Lazy load (kun når i viewport)
-  const observer = new IntersectionObserver((entries) => {
-    if (entries.some(e => e.isIntersecting)) {
-      observer.disconnect();
-      inject();
-    }
-  }, { rootMargin: '200px' });
-  observer.observe(slot);
+  // lazy indlæsning når slotten er i viewport
+  const io = new IntersectionObserver(onEnter, { rootMargin: '200px' });
+  io.observe(slot);
 }
 
-// Auto-mount på forsiden
 document.addEventListener('DOMContentLoaded', () => {
   mountPR('#pr-home-slot');
 });
