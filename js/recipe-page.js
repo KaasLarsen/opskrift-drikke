@@ -70,14 +70,27 @@ function pickRelated(all, recipe, limit=6){
   return pool.slice(0, limit);
 }
 
-// --- PriceRunner widget (failsafe) ---
+// --- PriceRunner widget (failsafe + kompatibel med begge mappings) ---
 async function safeMountPRWidget(recipe){
   try {
-    const [{ mountPRByKey }, { chooseWidgetKeyFrom }] = await Promise.all([
-      import('/js/pricerunner-rotator.js'),
-      import('/js/pr-widgets-map.js')
-    ]);
-    const key = chooseWidgetKeyFrom(recipe.category, recipe.tags || []);
+    const rotator = await import('/js/pricerunner-rotator.js');
+    const mapping = await import('/js/pr-widgets-map.js');
+
+    // vælg funktion fra mapping filen – støt både chooseWidgetKeys (array) og chooseWidgetKeyFrom (single)
+    let key = null;
+    if (typeof mapping.chooseWidgetKeys === 'function') {
+      const keys = mapping.chooseWidgetKeys(recipe) || [];
+      key = Array.isArray(keys) && keys.length ? keys[0] : null;
+    } else if (typeof mapping.chooseWidgetKeyFrom === 'function') {
+      key = mapping.chooseWidgetKeyFrom(recipe.category, recipe.tags || []);
+    }
+
+    if (!key) {
+      console.warn('PR: ingen widget-key fundet for', recipe.category, recipe.tags);
+      return; // ingen widget – men siden virker stadig
+    }
+
+    // sørg for at slotten findes
     const slotSel = '#pr-recipe-slot';
     if (!document.querySelector(slotSel)) {
       const aside = document.querySelector('aside.md\\:col-span-1') || document.querySelector('aside');
@@ -88,7 +101,25 @@ async function safeMountPRWidget(recipe){
         aside.appendChild(holder);
       }
     }
-    mountPRByKey(slotSel, key);
+
+    console.log('PR: mount key =', key, 'for category=', recipe.category, 'tags=', recipe.tags);
+    rotator.mountPRByKey('#pr-recipe-slot', key);
+
+    // valgfri: fallback tekst hvis PriceRunner-scriptet blokeres (cookies/CSP)
+    setTimeout(() => {
+      const slot = document.querySelector('#pr-recipe-slot');
+      if (slot && !slot.querySelector('iframe') && !slot.querySelector('[id^="prw-"] iframe')) {
+        // ingen iframe dukkede op → vis mild fallback
+        const note = document.createElement('div');
+        note.className = 'text-sm opacity-70 mt-2';
+        note.textContent = 'Annonce – kunne ikke indlæse tilbud lige nu.';
+        // undgå duplikater
+        if (!slot.querySelector('.pr-fallback-note')) {
+          note.classList.add('pr-fallback-note');
+          slot.appendChild(note);
+        }
+      }
+    }, 4000);
   } catch (err) {
     console.warn('PriceRunner-widget blev sprunget over (valgfri):', err);
   }
