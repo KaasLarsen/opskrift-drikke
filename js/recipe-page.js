@@ -3,6 +3,10 @@ import { loadAllRecipes, toggleFavorite, getFavorites } from './recipes.js';
 import { formatStars, showToast } from './app.js';
 import { currentUser } from './auth.js';
 
+// NYT: pricerunner + mapping
+import { mountPRByKey } from './pricerunner-rotator.js';
+import { chooseWidgetKeyFrom } from './pr-widgets-map.js';
+
 function qs(id){ return document.getElementById(id); }
 
 function getSlug(){
@@ -190,6 +194,24 @@ async function init(){
   relatedList.innerHTML = rel.length
     ? rel.map(r => `<li><a class="hover:underline" href="/pages/opskrift.html?slug=${r.slug}">${r.title}</a></li>`).join('')
     : '<li class="opacity-70">Ingen relaterede fundet.</li>';
+
+  // ---------- PR widget mount (nyt) ----------
+  // Vælg key ud fra kategori/tags og mount i slotten #pr-recipe-slot
+  const prKey = chooseWidgetKeyFrom(recipe.category, recipe.tags || []);
+  const prSlot = document.querySelector('#pr-recipe-slot');
+  if (prSlot) {
+    mountPRByKey('#pr-recipe-slot', prKey);
+  } else {
+    // hvis du glemte slotten i HTML’en, gør vi det defensivt her
+    const aside = document.querySelector('aside.md\\:col-span-1') || document.querySelector('aside');
+    if (aside) {
+      const holder = document.createElement('div');
+      holder.className = 'card bg-white p-6 mt-6';
+      holder.innerHTML = '<h3 class="text-lg font-medium">Anbefalet udstyr</h3><div id="pr-recipe-slot"></div>';
+      aside.appendChild(holder);
+      mountPRByKey('#pr-recipe-slot', prKey);
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
