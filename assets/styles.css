@@ -274,4 +274,6 @@ input::-webkit-search-results-decoration {
   display: none !important;
 }
 
+/* pricerunner kort tweeks (valgfri) */
+#pr-home-slot .card { border-color: rgba(0,0,0,.06); }
 
