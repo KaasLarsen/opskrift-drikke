@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Eget theme -->
+    <link rel="stylesheet" href="/assets/site.css">
+
     <!-- Meta -->
     <meta name="description" content="drikkeopskrifter med søgning, favoritter, guides og kommentarer."/>
     <meta property="og:title" content="opskrift-drikke.dk"/>
@@ -30,16 +33,17 @@
     <!-- Global app (indsætter header/footer og auto-loader nav + auth) -->
     <script type="module" src="/js/app.js"></script>
 
-    <!-- Analytics (hvis du bruger det) -->
+    <!-- Analytics (valgfri) -->
     <script defer src="/js/analytics.js"></script>
 
-    <!-- Søgning / data -->
+    <!-- Data / søg -->
     <script type="module" src="/js/recipes.js"></script>
     <script type="module" src="/js/search.js"></script>
     <script type="module" src="/js/suggest.js"></script>
     <script type="module" src="/js/hero.js"></script>
 
     <style>
+      /* Mini helpers til denne side */
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
       .btn  { border-radius: 1rem; }
     </style>
@@ -48,58 +52,49 @@
     <!-- Header partial mount -->
     <div id="header"></div>
 
-    <main class="max-w-6xl mx-auto px-4">
-<!-- HERO -->
-<section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#fff7f2] via-white to-white border mt-6">
-  <div class="absolute inset-0 pointer-events-none"
-       style="background: radial-gradient(600px 200px at 20% 0%, rgba(249,115,22,.08), transparent 60%),
-               radial-gradient(400px 160px at 90% 30%, rgba(249,115,22,.06), transparent 60%);">
-  </div>
+    <main class="container">
+      <!-- HERO -->
+      <section class="hero rounded-3xl border mt-6">
+        <div class="hero-body">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 px-4 py-8">
+            <div class="md:max-w-xl">
+              <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
+              <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
-  <div class="relative px-4 py-10">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-      <div class="md:max-w-xl">
-        <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
-        <p class="mt-3 text-stone-700">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
+              <!-- “Hairline-proof” søgefelt -->
+              <div class="hero-search-wrap mt-5 md:w-[420px]">
+                <div class="hero-search">
+                  <svg class="w-5 h-5 text-orange-500 shrink-0"><use href="/assets/icons.svg#search"/></svg>
+                  <input id="searchInput" type="text" placeholder="Søger opskrifter..." />
+                </div>
+              </div>
 
-      <!-- søgefelt helt fri for hairlines -->
-<div class="mt-5 relative rounded-2xl overflow-hidden w-full md:w-96">
-  <div class="absolute inset-0 bg-[#fff7f2]"></div>
-  <div class="relative flex items-center gap-2 p-2">
-    <svg class="w-5 h-5 text-orange-500 shrink-0"><use href="/assets/icons.svg#search"/></svg>
-    <input id="searchInput"
-           type="text"
-           class="w-full h-11 px-2 bg-[#fff7f2] text-stone-900
-                  border-none outline-none ring-0 focus:outline-none focus:ring-0
-                  placeholder-stone-500"
-           placeholder="Søg i opskrifter..." />
-  </div>
-        <div class="mt-4 flex flex-wrap gap-2">
-          <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
-            <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
-          </a>
-          <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
-            <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>Udforsk kategorier</span>
-          </a>
-        </div>
-      </div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
+                  <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
+                </a>
+                <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
+                  <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>Udforsk kategorier</span>
+                </a>
+              </div>
+            </div>
 
-      <div class="md:w-80">
-        <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
-          <div class="text-sm opacity-70">Tip</div>
-          <div class="mt-1 font-medium">Gem favoritter med hjertet</div>
-          <p class="mt-2 text-sm opacity-80">Log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
-          <div class="mt-3 flex items-center gap-2 text-xs">
-            <span class="px-2 py-1 rounded-full border">Gløgg</span>
-            <span class="px-2 py-1 rounded-full border">Sunde shots</span>
-            <span class="px-2 py-1 rounded-full border">Mocktails</span>
+            <!-- lille promo-boks -->
+            <div class="md:w-80 px-1">
+              <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
+                <div class="text-sm opacity-70">Tip</div>
+                <div class="mt-1 font-medium">Gem favoritter med hjertet</div>
+                <p class="mt-2 text-sm opacity-80">Log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
+                <div class="mt-3 flex items-center gap-2 text-xs">
+                  <span class="px-2 py-1 rounded-full border">Gløgg</span>
+                  <span class="px-2 py-1 rounded-full border">Sunde shots</span>
+                  <span class="px-2 py-1 rounded-full border">Mocktails</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+      </section>
 
       <!-- Filter + resultater -->
       <section class="pt-6">
