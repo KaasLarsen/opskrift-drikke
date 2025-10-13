@@ -26,15 +26,16 @@
     <!-- Sitemap hint -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
 
-    <!-- Global app (indsætter header/footer og loader nav/auth) -->
+    <!-- Global app -->
     <script type="module" src="/js/app.js"></script>
-
-    <!-- Analytics (valgfri) -->
     <script defer src="/js/analytics.js"></script>
 
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
       .btn  { border-radius: 1rem; }
+      .toc a { display:block; padding:6px 8px; border-radius:10px; }
+      .toc a:hover { background: rgba(249,115,22,.08); }
+      .lead { font-size:1.125rem; line-height:1.7; color:#374151 }
       @media print {
         #header, #footer, aside { display:none !important; }
         .card { box-shadow:none !important; border:0 !important; }
@@ -47,73 +48,74 @@
     <div id="header"></div>
 
     <main class="max-w-6xl mx-auto px-4">
-      <section class="pt-8" id="guidePage">
+      <!-- breadcrumb -->
+      <section class="pt-6">
         <nav class="text-sm">
-          <a href="/index.html" class="hover:underline">Forside</a> / <span id="breadcrumbTitle">Guide</span>
+          <a href="/index.html" class="hover:underline">Forside</a> / <a href="/pages/guides" class="hover:underline">Guides</a> / <span id="breadcrumbTitle">Guide</span>
         </nav>
+      </section>
 
-        <h1 id="guideTitle" class="text-3xl font-semibold mt-2">Indlæser...</h1>
-        <p id="guideIntro" class="mt-3 text-lg opacity-90"></p>
+      <!-- hero -->
+      <section class="mt-3 rounded-3xl border bg-gradient-to-br from-[#fff7f2] via-white to-white card p-6">
+        <h1 id="guideTitle" class="text-3xl md:text-4xl font-semibold">Indlæser...</h1>
+        <p id="guideIntro" class="lead mt-2"></p>
+        <div id="guideMeta" class="mt-3 text-sm opacity-70"></div>
+      </section>
 
-        <div class="mt-6 grid md:grid-cols-3 gap-8">
-          <!-- venstre kolonne -->
-          <div class="md:col-span-2" id="guideMainCol">
-            <article id="guideContent" class="prose max-w-none bg-white card p-6"></article>
+      <div class="mt-6 grid md:grid-cols-3 gap-8">
+        <!-- venstre kolonne -->
+        <div class="md:col-span-2" id="guideMainCol">
+          <!-- TOC -->
+          <div id="tocWrap" class="card bg-white p-5 hidden">
+            <h2 class="text-lg font-medium mb-2">Indhold</h2>
+            <nav id="toc" class="toc grid gap-1"></nav>
+          </div>
 
-            <div class="card bg-white p-6 mt-6" id="commentsCard">
-              <h2 class="text-xl font-medium">Kommentarer</h2>
-              <div id="commentList" class="mt-3 space-y-4"></div>
-              <div id="commentFormWrap" class="mt-4">
-                <textarea id="commentText" class="w-full border rounded-2xl p-3" placeholder="Skriv en kommentar..."></textarea>
-                <button id="commentSubmit" class="btn border px-3 py-1.5 mt-2">Send</button>
-                <p id="commentHint" class="text-sm opacity-70 mt-1">Du skal være logget ind.</p>
-              </div>
-            </div>
+          <!-- struktureret indhold (auto-sektioneret ud fra H2) -->
+          <div id="guideContent" class="mt-6"></div>
 
-            <!-- PriceRunner: under kommentarer i samme bredde -->
-            <div class="card bg-white p-6 mt-6">
-              <h3 class="text-lg font-medium">Anbefalet udstyr</h3>
-              <div id="pr-guide-slot" class="mt-2"></div>
+          <!-- kommentarer -->
+          <div class="card bg-white p-6 mt-6" id="commentsCard">
+            <h2 class="text-xl font-medium">Kommentarer</h2>
+            <div id="commentList" class="mt-3 space-y-4"></div>
+            <div id="commentFormWrap" class="mt-4">
+              <textarea id="commentText" class="w-full border rounded-2xl p-3" placeholder="Skriv en kommentar..."></textarea>
+              <button id="commentSubmit" class="btn border px-3 py-1.5 mt-2">Send</button>
+              <p id="commentHint" class="text-sm opacity-70 mt-1">Du skal være logget ind.</p>
             </div>
           </div>
 
-          <!-- højre kolonne -->
-          <aside class="md:col-span-1">
-            <div class="card bg-white p-6">
-              <h3 class="text-lg font-medium">Relaterede guides</h3>
-              <ul id="relatedGuides" class="mt-2 space-y-2"></ul>
-            </div>
-
-            <div class="card bg-white p-6 mt-6">
-              <h3 class="text-lg font-medium">Del</h3>
-              <p>Kopiér linket og del med en ven.</p>
-            </div>
-
-            <div class="card bg-white p-6 mt-6">
-              <h3 class="text-lg font-medium">Udvalgte samarbejdspartnere</h3>
-              <ul class="mt-3 space-y-2 text-sm">
-                <li>
-                  <a class="hover:underline text-orange-600"
-                     href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=67785"
-                     rel="nofollow">Proshop</a>
-                </li>
-                <li>
-                  <a class="hover:underline text-orange-600"
-                     href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=105877"
-                     rel="nofollow">Gastroudstyr</a>
-                </li>
-                <li>
-                  <a class="hover:underline text-orange-600"
-                     href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=56458"
-                     rel="nofollow">Hvidevareshoppen</a>
-                </li>
-              </ul>
-            </div>
-          </aside>
+          <!-- PriceRunner under kommentarer -->
+          <div class="card bg-white p-6 mt-6">
+            <h3 class="text-lg font-medium">Anbefalet udstyr</h3>
+            <div id="pr-guide-slot" class="mt-2"></div>
+          </div>
         </div>
-      </section>
 
-      <!-- guide-logik -->
+        <!-- højre kolonne -->
+        <aside class="md:col-span-1">
+          <div class="card bg-white p-6">
+            <h3 class="text-lg font-medium">Relaterede guides</h3>
+            <ul id="relatedGuides" class="mt-2 space-y-2"></ul>
+          </div>
+
+          <div class="card bg-white p-6 mt-6">
+            <h3 class="text-lg font-medium">Del</h3>
+            <p>Kopiér linket og del med en ven.</p>
+          </div>
+
+          <div class="card bg-white p-6 mt-6">
+            <h3 class="text-lg font-medium">Udvalgte samarbejdspartnere</h3>
+            <ul class="mt-3 space-y-2 text-sm">
+              <li><a class="hover:underline text-orange-600" href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=67785" rel="nofollow">Proshop</a></li>
+              <li><a class="hover:underline text-orange-600" href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=105877" rel="nofollow">Gastroudstyr</a></li>
+              <li><a class="hover:underline text-orange-600" href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=56458" rel="nofollow">Hvidevareshoppen</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <!-- logik -->
       <script type="module" src="/js/guide-page.js"></script>
     </main>
 
