@@ -1,187 +1,120 @@
-// /js/guides.js
-// Loader alle guides (chunked), viser søg + kategori-tags og filtrerer live.
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guides – opskrift-drikke.dk</title>
 
-const DATA_VERSION = 'g-v0500'; // bump hvis du uploader nye /data/guides-*.json
-let __guides = null;
-const urlV = (p) => `${p}?${DATA_VERSION}`;
+    <!-- Tailwind -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-async function fetchJson(path){
-  const r = await fetch(urlV(path), {cache:'no-cache'});
-  if (!r.ok) throw new Error(`HTTP ${r.status} @ ${path}`);
-  return r.json();
-}
+    <meta name="description" content="Find inspiration og viden i vores guides om kaffe, te, smoothies, mocktails og meget mere."/>
+    <meta property="og:title" content="Guides – opskrift-drikke.dk"/>
+    <meta property="og:description" content="Læs vores bedste guides om drikke, maskiner og udstyr."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guides.html"/>
 
-function dedupeBySlug(arr){
-  const m = new Map();
-  for (const g of arr||[]) if (g?.slug && !m.has(g.slug)) m.set(g.slug, g);
-  return [...m.values()];
-}
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/assets/manifest.json">
 
-async function loadAllGuides(progressCb){
-  if (__guides) return __guides;
-  let list = [];
-  try{
-    const first = await fetchJson('/data/guides-1.json');
-    if (Array.isArray(first) && first.length){
-      list = list.concat(first);
-      progressCb?.(list.length);
-      // hent videre
-      for (let i=2;i<=20;i++){
-        try{
-          const chunk = await fetchJson(`/data/guides-${i}.json`);
-          if (!Array.isArray(chunk) || !chunk.length) break;
-          list = list.concat(chunk);
-          progressCb?.(list.length);
-        }catch{ break; }
-      }
-    } else {
-      // fallback samlet fil
-      list = await fetchJson('/data/guides.json');
-    }
-  }catch{
-    list = await fetchJson('/data/guides.json');
-  }
-  __guides = dedupeBySlug(list);
-  progressCb?.(__guides.length);
-  return __guides;
-}
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+    <script type="module" src="/js/app.js"></script>
+    <script defer src="/js/analytics.js"></script>
 
-// ---------- UI helpers ----------
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    <style>
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+      .btn { border-radius: 1rem; }
+      input[type="search"] { border-radius: 1rem; border: 1px solid #ddd; padding: 0.5rem 1rem; width: 100%; }
+      .tag { background: #f4f4f4; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.875rem; cursor: pointer; }
+      .tag.active { background: #f97316; color: #fff; }
+    </style>
+  </head>
 
-function titleCaseFirst(s=''){ return s.charAt(0).toUpperCase() + s.slice(1); }
+  <body class="bg-stone-50 text-stone-900">
+    <div id="header"></div>
 
-function renderGuideCard(g){
-  const cat = g.category || (Array.isArray(g.tags) ? g.tags[0] : 'Guide');
-  const excerpt = g.excerpt || g.summary || g.description || 'Kort guide til emnet.';
-  return `
-  <a class="block card bg-white p-4 hover:shadow-md transition" href="/pages/guide?slug=${g.slug}">
-    <div class="flex items-start justify-between gap-3">
-      <div>
-        <h3 class="text-lg font-medium">${g.title}</h3>
-        <p class="text-sm opacity-70 mt-1">${cat}</p>
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <h1 class="text-3xl font-semibold mb-4">Guides</h1>
+      <p class="opacity-80 mb-6">Find trin-for-trin guides om kaffe, te, smoothies, mocktails, juice, udstyr og meget mere.</p>
+
+      <!-- søg + filter -->
+      <div class="flex flex-col md:flex-row md:items-center gap-4 mb-8">
+        <div class="flex-1">
+          <input type="search" id="guideSearch" placeholder="Søg i guides..." />
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm" id="guideTags"></div>
       </div>
-    </div>
-    <p class="text-sm mt-3 line-clamp-3">${excerpt}</p>
-    ${
-      Array.isArray(g.tags) && g.tags.length
-        ? `<div class="mt-3 flex gap-2 flex-wrap text-xs opacity-80">
-             ${g.tags.slice(0,5).map(t=>`<span class="px-2 py-1 pill border">${t}</span>`).join('')}
-           </div>`
-        : ''
-    }
-  </a>`;
-}
 
-function fold(s=''){
-  return s.toLowerCase()
-    .replace(/æ/g,'ae').replace(/ø/g,'oe').replace(/å/g,'aa')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/\s+/g,' ').trim();
-}
+      <div id="guideList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </main>
 
-function countByCategory(list){
-  const m = new Map();
-  for (const g of list){
-    const c = (g.category || (Array.isArray(g.tags)?g.tags[0]:'Andet')) + '';
-    const key = fold(c);
-    const nice = titleCaseFirst(c);
-    const item = m.get(key) || {key, label: nice, count:0};
-    item.count++; m.set(key,item);
-  }
-  return [...m.values()].sort((a,b)=>b.count-a.count);
-}
+    <div id="footer"></div>
 
-function buildFilterPills(cats, active){
-  const wrap = $('#guideFilters');
-  wrap.innerHTML = '';
-  // “alle”-pill først
-  const all = document.createElement('button');
-  all.className = `px-3 py-1.5 pill border ${!active?'bg-stone-900 text-white border-stone-900':'bg-white'}`;
-  all.textContent = 'Alle';
-  all.dataset.cat = '';
-  wrap.appendChild(all);
-  cats.slice(0,12).forEach(c=>{
-    const btn = document.createElement('button');
-    btn.className = `px-3 py-1.5 pill border ${active===c.key?'bg-stone-900 text-white border-stone-900':'bg-white'}`;
-    btn.textContent = `${c.label} (${c.count})`;
-    btn.dataset.cat = c.key;
-    wrap.appendChild(btn);
-  });
-}
+    <script type="module">
+      const listEl = document.getElementById('guideList');
+      const searchEl = document.getElementById('guideSearch');
+      const tagWrap = document.getElementById('guideTags');
 
-function applyFilters(list, q, catKey){
-  const qf = fold(q||'');
-  const filtered = list.filter(g=>{
-    const inCat = !catKey || fold(g.category || (g.tags?.[0] || '')) === catKey;
-    if (!inCat) return false;
-    if (!qf) return true;
-    // tekst-match på title + excerpt + tags
-    const hay = [
-      g.title, g.excerpt, g.summary, g.description,
-      g.category, ...(g.tags||[])
-    ].filter(Boolean).join(' ').toString();
-    return fold(hay).includes(qf);
-  });
-  return filtered;
-}
+      let guides = [];
+      let activeTag = '';
 
-function render(list, total, activeCat, q){
-  $('#guideStatus').textContent =
-    `${list.length} af ${total} guides` +
-    (activeCat ? ` · kategori: ${activeCat}` : '') +
-    (q ? ` · søgning: “${q}”` : '');
+      async function loadGuides(){
+        try {
+          const res = await fetch('/data/guides.json', { cache: 'no-cache' });
+          guides = await res.json();
+          renderGuides(guides);
+          renderTags();
+        } catch(err){
+          listEl.innerHTML = '<p class="opacity-70">Kunne ikke indlæse guides.</p>';
+          console.error(err);
+        }
+      }
 
-  $('#guideList').innerHTML = list.length
-    ? list.map(renderGuideCard).join('')
-    : `<div class="p-4 bg-rose-50 border rounded-2xl">Ingen guides matchede dine filtre.</div>`;
-}
+      function renderGuides(list){
+        if(!list.length){
+          listEl.innerHTML = '<p class="opacity-70">Ingen guides fundet.</p>';
+          return;
+        }
+        listEl.innerHTML = list.map(g => `
+          <a href="/pages/guide.html?slug=${g.slug}" class="block card bg-white p-5 hover:shadow-md transition">
+            <h2 class="font-semibold text-lg mb-2">${g.title}</h2>
+            <p class="text-sm opacity-80">${g.intro || ''}</p>
+            <div class="text-xs opacity-60 mt-3">${g.category || ''}</div>
+          </a>
+        `).join('');
+      }
 
-// debounce helper
-function debounce(fn, ms=150){
-  let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
-}
+      function renderTags(){
+        const tagSet = new Set();
+        guides.forEach(g => (g.tags||[]).forEach(t => tagSet.add(t)));
+        const tags = Array.from(tagSet).sort();
+        tagWrap.innerHTML = tags.map(t => `
+          <span class="tag ${t === activeTag ? 'active' : ''}" data-tag="${t}">${t}</span>
+        `).join('');
+      }
 
-// ---------- Mount ----------
-document.addEventListener('DOMContentLoaded', async ()=>{
-  const search = $('#guideSearch');
-  const listEl = $('#guideList');
-  if (!listEl) return;
+      function applyFilters(){
+        const q = searchEl.value.toLowerCase().trim();
+        const filtered = guides.filter(g => {
+          const matchText = g.title.toLowerCase().includes(q) || (g.intro||'').toLowerCase().includes(q);
+          const matchTag = !activeTag || (g.tags||[]).includes(activeTag);
+          return matchText && matchTag;
+        });
+        renderGuides(filtered);
+      }
 
-  let data = [];
-  try{
-    data = await loadAllGuides((n)=>{ if (search && !search.dataset.fixedPlaceholder) search.placeholder = `Søg i ${n.toLocaleString('da-DK')} guides...`; });
-  }catch(e){
-    $('#guideStatus').textContent = 'Kunne ikke indlæse guides.';
-    return;
-  }
-  const total = data.length;
-  if (search) search.placeholder = `Søg i ${total.toLocaleString('da-DK')} guides...`;
+      searchEl.addEventListener('input', applyFilters);
 
-  // kategorier
-  const cats = countByCategory(data);
-  let activeCat = '';
-  buildFilterPills(cats, activeCat);
+      tagWrap.addEventListener('click', e => {
+        const tag = e.target.closest('[data-tag]');
+        if(!tag) return;
+        activeTag = activeTag === tag.dataset.tag ? '' : tag.dataset.tag;
+        renderTags();
+        applyFilters();
+      });
 
-  // initial render
-  render(data.slice(0, 30), total, '', '');
-
-  // events
-  $('#guideFilters').addEventListener('click', (e)=>{
-    const btn = e.target.closest('button[data-cat]');
-    if (!btn) return;
-    activeCat = btn.dataset.cat || '';
-    buildFilterPills(cats, activeCat);
-    const q = search?.value || '';
-    const out = applyFilters(data, q, activeCat);
-    render(out, total, activeCat ? cats.find(c=>c.key===activeCat)?.label : '', q);
-  });
-
-  const onSearch = debounce(()=>{
-    const q = search?.value || '';
-    const out = applyFilters(data, q, activeCat);
-    render(out, total, activeCat ? cats.find(c=>c.key===activeCat)?.label : '', q);
-  }, 120);
-  search?.addEventListener('input', onSearch);
-});
+      loadGuides();
+    </script>
+  </body>
+</html>
