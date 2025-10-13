@@ -62,19 +62,18 @@
         <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
         <p class="mt-3 text-stone-700">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
-      <!-- søgefelt – hårdfør mod hairlines -->
-<div class="mt-5 flex items-center gap-2 bg-[#fff7f2] rounded-2xl overflow-hidden
-            shadow-[inset_0_0_0_1px_rgba(249,115,22,.35)] 
-            focus-within:shadow-[inset_0_0_0_2px_rgba(249,115,22,.5)] 
-            transition w-full md:w-96">
-  <svg class="w-5 h-5 text-orange-500 shrink-0 ml-2"><use href="/assets/icons.svg#search"/></svg>
-  <input id="searchInput"
-       type="text"
-       class="w-full h-11 px-2 bg-transparent border-0 outline-none ring-0 focus:outline-none focus:ring-0
-              appearance-none [-webkit-appearance:none] placeholder-stone-500"
-       placeholder="Søger opskrifter..." />
-</div>
-
+      <!-- søgefelt helt fri for hairlines -->
+<div class="mt-5 relative rounded-2xl overflow-hidden w-full md:w-96">
+  <div class="absolute inset-0 bg-[#fff7f2]"></div>
+  <div class="relative flex items-center gap-2 p-2">
+    <svg class="w-5 h-5 text-orange-500 shrink-0"><use href="/assets/icons.svg#search"/></svg>
+    <input id="searchInput"
+           type="text"
+           class="w-full h-11 px-2 bg-[#fff7f2] text-stone-900
+                  border-none outline-none ring-0 focus:outline-none focus:ring-0
+                  placeholder-stone-500"
+           placeholder="Søg i opskrifter..." />
+  </div>
         <div class="mt-4 flex flex-wrap gap-2">
           <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
             <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
