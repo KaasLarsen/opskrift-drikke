@@ -10,14 +10,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Eget theme -->
-    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/site.css?v=2">
 
     <!-- Meta -->
     <meta name="description" content="Guides til kaffe, te, smoothies, mocktails og meget mere."/>
     <meta property="og:title" content="Guide – opskrift-drikke.dk"/>
     <meta property="og:description" content="Trin for trin guides om drikke og udstyr."/>
     <meta property="og:type" content="article"/>
-    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guide.html"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guide"/>
 
     <!-- Icons / PWA -->
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -27,8 +27,8 @@
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
 
     <!-- Global app -->
-    <script type="module" src="/js/app.js"></script>
-    <script defer src="/js/analytics.js"></script>
+    <script type="module" src="/js/app.js?v=2"></script>
+    <script defer src="/js/analytics.js?v=2"></script>
 
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
@@ -36,6 +36,9 @@
       .toc a { display:block; padding:6px 8px; border-radius:10px; }
       .toc a:hover { background: rgba(249,115,22,.08); }
       .lead { font-size:1.125rem; line-height:1.7; color:#374151 }
+      /* ← vigtig: sørg for at indhold ikke “driver” til højre */
+      #guideContent, #guideContent * { text-align:left; }
+      #guideContent img { max-width:100%; height:auto; }
       @media print {
         #header, #footer, aside { display:none !important; }
         .card { box-shadow:none !important; border:0 !important; }
@@ -51,7 +54,9 @@
       <!-- breadcrumb -->
       <section class="pt-6">
         <nav class="text-sm">
-          <a href="/index.html" class="hover:underline">Forside</a> / <a href="/pages/guides" class="hover:underline">Guides</a> / <span id="breadcrumbTitle">Guide</span>
+          <a href="/index.html" class="hover:underline">Forside</a> /
+          <a href="/pages/guides" class="hover:underline">Guides</a> /
+          <span id="breadcrumbTitle">Guide</span>
         </nav>
       </section>
 
@@ -71,7 +76,7 @@
             <nav id="toc" class="toc grid gap-1"></nav>
           </div>
 
-          <!-- struktureret indhold (auto-sektioneret ud fra H2) -->
+          <!-- auto-sektioner -->
           <div id="guideContent" class="mt-6"></div>
 
           <!-- kommentarer -->
@@ -115,8 +120,8 @@
         </aside>
       </div>
 
-      <!-- logik -->
-      <script type="module" src="/js/guide-page.js"></script>
+      <!-- logik (cache-bust v=4) -->
+      <script type="module" src="/js/guide-page.js?v=4"></script>
     </main>
 
     <div id="footer"></div>
