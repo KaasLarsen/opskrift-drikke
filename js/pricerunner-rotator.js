@@ -1,5 +1,5 @@
 // /js/pricerunner-rotator.js
-// PriceRunner vises altid, lazy-load og korrekt script-injektion
+// PriceRunner-karussel med venstre/højre pile
 
 const WIDGETS = [
   {
@@ -19,71 +19,88 @@ const WIDGETS = [
   }
 ];
 
-const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+let currentIndex = 0;
 
-function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
-
-function wrapCard(el){
-  const card = document.createElement('div');
-  card.className = 'card bg-white p-4 border rounded-2xl';
-  const lbl = document.createElement('div');
-  lbl.className = 'text-sm opacity-70 mb-2';
-  lbl.textContent = 'Annonce i samarbejde med PriceRunner';
-  card.appendChild(lbl);
-  card.appendChild(el);
-  return card;
+function clear(node) {
+  while (node.firstChild) node.removeChild(node.firstChild);
 }
 
-// vigtig: opret script-elementet via DOM, ikke innerHTML
-function injectWidget(slot, w){
-  clear(slot);
-
-  // widget container
+function createWidgetFrame(w) {
   const holder = document.createElement('div');
   holder.id = w.id;
   holder.style.display = 'block';
   holder.style.width = '100%';
 
-  // disclosure-link fra dit snippet
-  const discWrap = document.createElement('div');
-  discWrap.style.display = 'inline-block';
-  discWrap.innerHTML = `
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = w.src;
+  script.async = true;
+
+  const disc = document.createElement('div');
+  disc.style.display = 'inline-block';
+  disc.innerHTML = `
     <a href="${w.link}" rel="nofollow">
       <p style="font:14px 'Klarna Text', Helvetica, sans-serif; font-style:italic; color:#444; text-decoration:underline;">
         Annonce i samarbejde med <span style="font-weight:bold">PriceRunner</span>
       </p>
     </a>`;
 
-  const frame = document.createElement('div');
-  frame.appendChild(holder);
-  frame.appendChild(discWrap);
+  const wrap = document.createElement('div');
+  wrap.appendChild(holder);
+  wrap.appendChild(disc);
+  document.body.appendChild(script);
 
-  slot.appendChild(wrapCard(frame));
-
-  // scriptet oprettes som element (ellers kører det ikke)
-  const s = document.createElement('script');
-  s.type = 'text/javascript';
-  s.src = w.src;
-  s.async = true;
-  document.body.appendChild(s);
+  return wrap;
 }
 
-export function mountPR(selector = '#pr-home-slot'){
+function renderWidget(slot, index) {
+  clear(slot);
+  const w = WIDGETS[index];
+  const frame = createWidgetFrame(w);
+
+  const card = document.createElement('div');
+  card.className = 'card bg-white p-4 border rounded-2xl relative';
+
+  const label = document.createElement('div');
+  label.className = 'text-sm opacity-70 mb-2';
+  label.textContent = 'Annonce i samarbejde med PriceRunner';
+  card.appendChild(label);
+  card.appendChild(frame);
+
+  // Pile
+  const left = document.createElement('button');
+  left.innerHTML = '◀';
+  left.className = 'absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-orange-500 text-2xl';
+  left.onclick = () => {
+    currentIndex = (currentIndex - 1 + WIDGETS.length) % WIDGETS.length;
+    renderWidget(slot, currentIndex);
+  };
+
+  const right = document.createElement('button');
+  right.innerHTML = '▶';
+  right.className = 'absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-orange-500 text-2xl';
+  right.onclick = () => {
+    currentIndex = (currentIndex + 1) % WIDGETS.length;
+    renderWidget(slot, currentIndex);
+  };
+
+  card.appendChild(left);
+  card.appendChild(right);
+
+  slot.appendChild(card);
+}
+
+export function mountPR(selector = '#pr-home-slot') {
   const slot = document.querySelector(selector);
   if (!slot) return;
 
-  const w = pick(WIDGETS);
-
-  const onEnter = (entries, obs) => {
+  const observer = new IntersectionObserver((entries) => {
     if (entries.some(e => e.isIntersecting)) {
-      obs.disconnect();
-      injectWidget(slot, w);
+      observer.disconnect();
+      renderWidget(slot, currentIndex);
     }
-  };
-
-  // lazy indlæsning når slotten er i viewport
-  const io = new IntersectionObserver(onEnter, { rootMargin: '200px' });
-  io.observe(slot);
+  }, { rootMargin: '200px' });
+  observer.observe(slot);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
