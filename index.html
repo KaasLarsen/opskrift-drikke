@@ -61,12 +61,14 @@
               <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
               <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
-              <!-- “Hairline-proof” søgefelt -->
+              <!-- “Hairline-proof” søgefelt + forslag -->
               <div class="hero-search-wrap mt-5 md:w-[420px]">
                 <div class="hero-search">
                   <svg class="w-5 h-5 text-orange-500 shrink-0"><use href="/assets/icons.svg#search"/></svg>
-                  <input id="searchInput" type="text" placeholder="Søger opskrifter..." />
+                  <input id="searchInput" type="text" placeholder="Søger opskrifter..." aria-autocomplete="list" aria-haspopup="listbox" aria-controls="suggestions" />
                 </div>
+                <!-- Autocomplete dropdown -->
+                <div id="suggestions" role="listbox" aria-label="Forslag"></div>
               </div>
 
               <div class="mt-4 flex flex-wrap gap-2">
