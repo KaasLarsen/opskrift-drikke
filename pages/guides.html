@@ -3,120 +3,115 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Guide – opskrift-drikke.dk</title>
+    <title>Guides – opskrift-drikke.dk</title>
 
-    <!-- Tailwind -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Eget theme -->
-    <link rel="stylesheet" href="/assets/site.css">
+    <meta name="description" content="Find inspiration og viden i vores guides om kaffe, te, smoothies, mocktails og meget mere."/>
+    <meta property="og:title" content="Guides – opskrift-drikke.dk"/>
+    <meta property="og:description" content="Læs vores bedste guides om drikke, maskiner og udstyr."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guides/"/>
 
-    <!-- Meta -->
-    <meta name="description" content="Guides til kaffe, te, smoothies, mocktails og meget mere."/>
-    <meta property="og:title" content="Guide – opskrift-drikke.dk"/>
-    <meta property="og:description" content="Trin for trin guides om drikke og udstyr."/>
-    <meta property="og:type" content="article"/>
-    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guide.html"/>
-
-    <!-- Icons / PWA -->
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/assets/manifest.json">
-
-    <!-- Sitemap hint -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
 
-    <!-- Global app (indsætter header/footer og loader nav/auth) -->
     <script type="module" src="/js/app.js"></script>
-
-    <!-- Analytics (valgfri) -->
     <script defer src="/js/analytics.js"></script>
 
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn  { border-radius: 1rem; }
-      @media print {
-        #header, #footer, aside { display:none !important; }
-        .card { box-shadow:none !important; border:0 !important; }
-        body { background:#fff; color:#000; }
-      }
+      .btn { border-radius: 1rem; }
+      input[type="search"] { border-radius: 1rem; border: 1px solid #ddd; padding: 0.5rem 1rem; width: 100%; }
+      .tag { background: #f4f4f4; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.875rem; cursor: pointer; }
+      .tag.active { background: #f97316; color: #fff; }
     </style>
   </head>
 
   <body class="bg-stone-50 text-stone-900">
     <div id="header"></div>
 
-    <main class="max-w-6xl mx-auto px-4">
-      <section class="pt-8" id="guidePage">
-        <nav class="text-sm">
-          <a href="/index.html" class="hover:underline">Forside</a> / <span id="breadcrumbTitle">Guide</span>
-        </nav>
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <h1 class="text-3xl font-semibold mb-4">Guides</h1>
+      <p class="opacity-80 mb-6">Find trin-for-trin guides om kaffe, te, smoothies, mocktails, juice, udstyr og meget mere.</p>
 
-        <h1 id="guideTitle" class="text-3xl font-semibold mt-2">Indlæser...</h1>
-        <p id="guideIntro" class="mt-3 text-lg opacity-90"></p>
-
-        <div class="mt-6 grid md:grid-cols-3 gap-8">
-          <!-- venstre kolonne -->
-          <div class="md:col-span-2" id="guideMainCol">
-            <article id="guideContent" class="prose max-w-none bg-white card p-6"></article>
-
-            <div class="card bg-white p-6 mt-6" id="commentsCard">
-              <h2 class="text-xl font-medium">Kommentarer</h2>
-              <div id="commentList" class="mt-3 space-y-4"></div>
-              <div id="commentFormWrap" class="mt-4">
-                <textarea id="commentText" class="w-full border rounded-2xl p-3" placeholder="Skriv en kommentar..."></textarea>
-                <button id="commentSubmit" class="btn border px-3 py-1.5 mt-2">Send</button>
-                <p id="commentHint" class="text-sm opacity-70 mt-1">Du skal være logget ind.</p>
-              </div>
-            </div>
-
-            <!-- PriceRunner: under kommentarer i samme bredde -->
-            <div class="card bg-white p-6 mt-6">
-              <h3 class="text-lg font-medium">Anbefalet udstyr</h3>
-              <div id="pr-guide-slot" class="mt-2"></div>
-            </div>
-          </div>
-
-          <!-- højre kolonne -->
-          <aside class="md:col-span-1">
-            <div class="card bg-white p-6">
-              <h3 class="text-lg font-medium">Relaterede guides</h3>
-              <ul id="relatedGuides" class="mt-2 space-y-2"></ul>
-            </div>
-
-            <div class="card bg-white p-6 mt-6">
-              <h3 class="text-lg font-medium">Del</h3>
-              <p>Kopiér linket og del med en ven.</p>
-            </div>
-
-            <div class="card bg-white p-6 mt-6">
-              <h3 class="text-lg font-medium">Udvalgte samarbejdspartnere</h3>
-              <ul class="mt-3 space-y-2 text-sm">
-                <li>
-                  <a class="hover:underline text-orange-600"
-                     href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=67785"
-                     rel="nofollow">Proshop</a>
-                </li>
-                <li>
-                  <a class="hover:underline text-orange-600"
-                     href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=105877"
-                     rel="nofollow">Gastroudstyr</a>
-                </li>
-                <li>
-                  <a class="hover:underline text-orange-600"
-                     href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=56458"
-                     rel="nofollow">Hvidevareshoppen</a>
-                </li>
-              </ul>
-            </div>
-          </aside>
+      <div class="flex flex-col md:flex-row md:items-center gap-4 mb-8">
+        <div class="flex-1">
+          <input type="search" id="guideSearch" placeholder="Søg i guides..." />
         </div>
-      </section>
+        <div class="flex flex-wrap gap-2 text-sm" id="guideTags"></div>
+      </div>
 
-      <!-- guide-logik -->
-      <script type="module" src="/js/guide-page.js"></script>
+      <div id="guideList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
     <div id="footer"></div>
+
+    <script type="module">
+      const listEl = document.getElementById('guideList');
+      const searchEl = document.getElementById('guideSearch');
+      const tagWrap = document.getElementById('guideTags');
+
+      let guides = [];
+      let activeTag = '';
+
+      async function loadGuides(){
+        try {
+          const res = await fetch('/data/guides.json', { cache: 'no-cache' });
+          guides = await res.json();
+          renderGuides(guides);
+          renderTags();
+        } catch(err){
+          listEl.innerHTML = '<p class="opacity-70">Kunne ikke indlæse guides.</p>';
+          console.error(err);
+        }
+      }
+
+      function renderGuides(list){
+        if(!list.length){
+          listEl.innerHTML = '<p class="opacity-70">Ingen guides fundet.</p>';
+          return;
+        }
+        listEl.innerHTML = list.map(g => `
+          <a href="/pages/guide.html?slug=${g.slug}" class="block card bg-white p-5 hover:shadow-md transition">
+            <h2 class="font-semibold text-lg mb-2">${g.title}</h2>
+            <p class="text-sm opacity-80">${g.intro || ''}</p>
+            <div class="text-xs opacity-60 mt-3">${g.category || ''}</div>
+          </a>
+        `).join('');
+      }
+
+      function renderTags(){
+        const tagSet = new Set();
+        guides.forEach(g => (g.tags||[]).forEach(t => tagSet.add(t)));
+        const tags = Array.from(tagSet).sort();
+        tagWrap.innerHTML = tags.map(t => `
+          <span class="tag ${t === activeTag ? 'active' : ''}" data-tag="${t}">${t}</span>
+        `).join('');
+      }
+
+      function applyFilters(){
+        const q = searchEl.value.toLowerCase().trim();
+        const filtered = guides.filter(g => {
+          const matchText = g.title.toLowerCase().includes(q) || (g.intro||'').toLowerCase().includes(q);
+          const matchTag = !activeTag || (g.tags||[]).includes(activeTag);
+          return matchText && matchTag;
+        });
+        renderGuides(filtered);
+      }
+
+      searchEl.addEventListener('input', applyFilters);
+      tagWrap.addEventListener('click', e => {
+        const tag = e.target.closest('[data-tag]');
+        if(!tag) return;
+        activeTag = activeTag === tag.dataset.tag ? '' : tag.dataset.tag;
+        renderTags();
+        applyFilters();
+      });
+
+      loadGuides();
+    </script>
   </body>
 </html>
