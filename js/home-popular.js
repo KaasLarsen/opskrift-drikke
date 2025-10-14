@@ -1,3 +1,4 @@
+// /js/home-popular.js
 const PICKS = [
   { tag:"Gløgg",    title:"Den klassiske gløgg",            desc:"Varm, krydret og nem at lykkes med.",        slug:"gloegg-klassisk-0001",        img:"/assets/recipes/gloegg-klassisk.jpg",        alt:"Den klassiske gløgg" },
   { tag:"Kaffe",    title:"Iskaffe med espresso & mælk",    desc:"Cremet og forfriskende – perfekt hverdag.",  slug:"iskaffe-espresso-milk-023",   img:"/assets/recipes/iskaffe-espresso.jpg",       alt:"Iskaffe med espresso & mælk" },
@@ -6,7 +7,7 @@ const PICKS = [
 ];
 
 const $ = (s, r=document) => r.querySelector(s);
-function card(p){return `
+const card = (p) => `
 <a href="/pages/opskrift.html?slug=${encodeURIComponent(p.slug)}" class="card overflow-hidden hover:shadow transition block border bg-white">
   <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
     <img src="${p.img}" alt="${p.alt}" class="w-full h-full object-cover" loading="lazy">
@@ -16,9 +17,9 @@ function card(p){return `
     <h3 class="text-lg font-semibold mt-2 leading-snug">${p.title}</h3>
     <p class="text-sm text-stone-600 mt-1">${p.desc}</p>
   </div>
-</a>`;}
+</a>`;
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  const wrap = $('#popularRecipes');
-  if (wrap) wrap.innerHTML = PICKS.map(card).join('');
+  const mount = $('#popularRecipes');
+  if (mount) mount.innerHTML = PICKS.map(card).join('');
 });
