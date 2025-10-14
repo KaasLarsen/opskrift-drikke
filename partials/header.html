@@ -1,77 +1,41 @@
-<!-- Global Header Partial (tight spacing + right-aligned login) -->
+<!-- Global Header Partial (kompakt nav + dropdown) -->
 <header class="w-full border-b bg-white/80 backdrop-blur sticky top-0 z-40">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-    <!-- logo -->
+    <!-- Logo -->
     <a href="/index.html" class="flex items-center gap-2">
       <svg class="w-7 h-7"><use href="/assets/icons.svg#logo"/></svg>
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
 
-    <!-- desktop nav (tighter spacing) -->
+    <!-- Desktop nav -->
     <nav class="hidden md:flex items-center gap-3 text-sm">
       <a href="/index.html" class="hover:underline px-1.5">Forside</a>
 
-      <!-- kategorier dropdown (desktop) -->
-      <div class="relative group">
-        <button class="inline-flex items-center gap-1 hover:underline px-1.5" aria-haspopup="true" aria-expanded="false">
+      <!-- Kategorier dropdown (details/summary = tilgængeligt og klik-stabilt) -->
+      <details class="relative">
+        <summary class="list-none inline-flex items-center gap-1 cursor-pointer hover:underline px-1.5">
           Kategorier
           <svg class="w-4 h-4 opacity-70"><use href="/assets/icons.svg#chevron-down"/></svg>
-        </button>
-        <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition
-                    absolute left-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg p-2 z-50">
-          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/smoothie.html">Smoothie</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/juice.html">Juice</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/gloegg.html">Gløgg</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/uden-alkohol.html">Uden alkohol</a>
-        </div>
-      </div>
-
-      <a href="/pages/seneste.html" class="hover:underline px-1.5">Seneste opskrifter</a>
-      <a href="/pages/guides.html" class="hover:underline px-1.5">Guides</a>
-      <a href="/pages/favoritter.html" class="hover:underline px-1.5">Favoritter</a>
-    </nav>
-
-    <!-- actions + hamburger (login pulled further right) -->
-    <div class="flex items-center gap-2 ml-4 md:ml-12">
-      <a href="/pages/login.html" class="hidden sm:inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
-        <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
-      </a>
-      <!-- hamburger (mobil) -->
-      <button id="mobileMenuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-2xl border"
-              aria-label="menu" aria-controls="mobileMenu" aria-expanded="false">
-        <svg class="w-5 h-5"><use href="/assets/icons.svg#menu"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- mobile panel -->
-  <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
-    <nav class="max-w-6xl mx-auto px-4 py-3 grid gap-2 text-sm">
-      <details class="rounded-xl border p-2">
-        <summary class="cursor-pointer flex items-center justify-between px-1 py-1.5">
-          <span>Kategorier</span>
-          <svg class="w-4 h-4 opacity-70"><use href="/assets/icons.svg#chevron-down"/></svg>
         </summary>
-        <div class="mt-2 grid gap-1">
-          <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/smoothie.html">Smoothie</a>
-          <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a>
-          <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/juice.html">Juice</a>
-          <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a>
-          <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/gloegg.html">Gløgg</a>
-          <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/uden-alkohol.html">Uden alkohol</a>
+        <div class="absolute right-0 mt-2 w-56 bg-white border rounded-xl shadow p-2 z-50">
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/smoothie.html">Smoothie</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/juice.html">Juice</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/mocktail.html">Mocktails</a>
+          <a class="block px-3 py-2 rounded-lg hover:bg-stone-50" href="/tags/te.html">Te</a>
         </div>
       </details>
 
-      <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/index.html">Forside</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/pages/seneste.html">Seneste opskrifter</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/pages/guides.html">Guides</a>
-      <a class="px-3 py-2 rounded-lg hover:bg-stone-50" href="/pages/favoritter.html">Favoritter</a>
+      <a href="/pages/seneste.html" class="hover:underline px-1.5">Seneste</a>
+      <a href="/pages/guides.html" class="hover:underline px-1.5">Guides</a>
+      <a href="/pages/favoritter.html" class="hover:underline px-1.5">Favoritter</a>
 
-      <a class="px-3 py-2 rounded-lg border hover:bg-stone-50" href="/pages/login.html">
-        <span>Log ind</span>
-      </a>
+      <a class="ml-2 px-3 py-2 rounded-lg border hover:bg-stone-50" href="/pages/login.html">Log ind</a>
     </nav>
+
+    <!-- Mobil menu (simpel, uændret for nu) -->
+    <a class="md:hidden px-3 py-2 rounded-lg border" href="/pages/menu.html">
+      Menu
+    </a>
   </div>
 </header>
