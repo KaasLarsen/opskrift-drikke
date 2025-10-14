@@ -1,127 +1,19 @@
-<!doctype html>
-<html lang="da">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Forside – opskrift-drikke.dk</title>
+// /js/app.js
+async function mountPartial(id, url){
+  const el = document.getElementById(id);
+  if (!el) return;
+  try{
+    const res = await fetch(url, { cache: "no-cache" });
+    if(!res.ok) throw new Error(`${url} ${res.status}`);
+    el.innerHTML = await res.text();
+  }catch(err){
+    console.error("Partial mount failed:", url, err);
+  }
+}
 
-    <!-- Tailwind -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Eget theme -->
-    <link rel="stylesheet" href="/assets/site.css">
-
-    <!-- Meta -->
-    <meta name="description" content="drikkeopskrifter med søgning, favoritter, guides og kommentarer."/>
-    <meta property="og:title" content="opskrift-drikke.dk"/>
-    <meta property="og:description" content="5.000 drikkeopskrifter – søg, gem og bedøm."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://www.opskrift-drikke.dk/"/>
-
-    <!-- Icons / PWA -->
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#f97316">
-    <link rel="manifest" href="/assets/manifest.json">
-    <meta name="theme-color" content="#f97316">
-
-    <!-- Sitemap hint -->
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
-
-    <!-- Global app: monterer header/footer -->
-    <script type="module" src="/js/app.js"></script>
-
-    <!-- Data / søg -->
-    <script type="module" src="/js/recipes.js"></script>
-    <script type="module" src="/js/search.js"></script>
-    <script type="module" src="/js/suggest.js"></script>
-    <script type="module" src="/js/hero.js"></script>
-    <!-- Populære kort -->
-    <script type="module" src="/js/home-popular.js"></script>
-
-    <style>
-      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn  { border-radius: 1rem; }
-    </style>
-  </head>
-  <body class="bg-stone-50 text-stone-900">
-    <!-- Header mount (behold!) -->
-    <div id="header"></div>
-
-    <main class="container">
-      <!-- HERO -->
-      <section class="hero rounded-3xl border mt-6">
-        <div class="hero-body">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 px-4 py-8">
-            <div class="md:max-w-xl">
-              <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
-              <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
-
-              <!-- Søgefelt -->
-              <div class="max-w-xl mt-6">
-                <div class="search-box">
-                  <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
-                  <input type="search" id="homeSearch" placeholder="Søg i 5.000 drikkeopskrifter..." class="w-full bg-transparent outline-none" />
-                </div>
-              </div>
-
-              <div class="mt-4 flex flex-wrap gap-2">
-                <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
-                  <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
-                </a>
-                <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
-                  <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>Udforsk kategorier</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- lille promo-boks -->
-            <div class="md:w-80 px-1">
-              <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
-                <div class="text-sm opacity-70">Tip</div>
-                <div class="mt-1 font-medium">Gem favoritter med hjertet</div>
-                <p class="mt-2 text-sm opacity-80">Log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
-                <div class="mt-3 flex items-center gap-2 text-xs">
-                  <span class="px-2 py-1 rounded-full border">Gløgg</span>
-                  <span class="px-2 py-1 rounded-full border">Sunde shots</span>
-                  <span class="px-2 py-1 rounded-full border">Mocktails</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- MEST POPULÆRE – egen sektion EFTER hero -->
-      <section class="mt-10">
-        <div class="flex items-end justify-between">
-          <div>
-            <h2 class="text-2xl md:text-3xl font-semibold">Mest populære opskrifter</h2>
-            <p class="text-stone-600 mt-1">Håndplukket favoritter – sæsonens sikre vindere.</p>
-          </div>
-          <a href="/pages/seneste.html" class="hidden sm:inline-flex items-center gap-2 text-sm text-orange-600 hover:underline">Se alle →</a>
-        </div>
-
-        <div id="popularRecipes" class="mt-5 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
-      </section>
-
-      <!-- Filter + resultater (dine eksisterende kort fortsætter her) -->
-      <section class="pt-8">
-        <div id="filters" class="flex flex-wrap gap-2"></div>
-        <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-        <!-- PriceRunner -->
-        <div class="max-w-6xl mx-auto px-4 mt-8">
-          <div id="pr-home-slot"></div>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer mount (behold!) -->
-    <div id="footer"></div>
-
-    <script type="module" src="/js/pricerunner-rotator.js"></script>
-  </body>
-</html>
+// Kør når DOM er klar
+document.addEventListener('DOMContentLoaded', () => {
+  // Tilpas stierne her hvis dine partials ligger andre steder
+  mountPartial('header', '/partials/header.html');
+  mountPartial('footer', '/partials/footer.html');
+});
