@@ -1,95 +1,96 @@
-// === recipes.js — fælles helpers til opskrifter (kort, data, stjerner, mm.) ===
+// === recipes.js — fælles data & kort-rendering ===
 
-// Intern cache (og global fallback til søg m.m.)
-let _RECIPES = Array.isArray(window.RECIPES) ? window.RECIPES : [];
+// Hvor dine JSON-filer ligger (tilpas hvis du bruger anden sti)
+const DATA_FILES = [
+  '/data/recipes.json',        // samlet fil (hvis findes)
+  '/data/recipes-1.json',
+  '/data/recipes-2.json',
+  '/data/recipes-3.json',
+  '/data/recipes-4.json',
+  '/data/recipes-5.json'
+];
 
-/** Sørg for at vi har data — loader /data/recipes.json hvis ikke til stede */
-export async function loadAllRecipes() {
-  if (_RECIPES.length) return _RECIPES;
+let __CACHE = null;
 
-  // Prøv global
-  if (Array.isArray(window.RECIPES) && window.RECIPES.length) {
-    _RECIPES = window.RECIPES;
-    return _RECIPES;
-  }
-
-  // Fallback: hent JSON (kræver at du har /data/recipes.json)
+async function fetchJson(url) {
   try {
-    const res = await fetch('/data/recipes.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('Kan ikke hente recipes.json');
-    const json = await res.json();
-    _RECIPES = Array.isArray(json) ? json : (json.recipes || []);
-    window.RECIPES = _RECIPES; // gør den global (søgefelt m.m. bruger den)
-  } catch (e) {
-    console.error('loadAllRecipes fejl:', e);
-    _RECIPES = [];
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error(res.statusText);
+    return await res.json();
+  } catch {
+    return null;
   }
-  return _RECIPES;
 }
 
-/** Format rating som stjerner + tal */
-export function renderStars(rating = 0, count = 0) {
-  const r = Math.max(0, Math.min(5, Number(rating) || 0));
-  const full = Math.floor(r);
-  const half = r - full >= 0.5 ? 1 : 0;
-  const empty = 5 - full - half;
+export async function loadAllRecipes() {
+  if (__CACHE) return __CACHE;
 
-  const star = '<svg class="w-4 h-4 inline-block -mt-0.5"><use href="/assets/icons.svg#star"/></svg>';
-  const starHalf = '<svg class="w-4 h-4 inline-block -mt-0.5"><use href="/assets/icons.svg#star-half"/></svg>';
-  const starEmpty = '<svg class="w-4 h-4 inline-block -mt-0.5 opacity-30"><use href="/assets/icons.svg#star"/></svg>';
+  const batches = await Promise.all(DATA_FILES.map(fetchJson));
+  const lists = batches.filter(Boolean);
+
+  // Understøt både {recipes:[...]} og ren array.
+  const merged = [];
+  for (const part of lists) {
+    const arr = Array.isArray(part) ? part : (Array.isArray(part.recipes) ? part.recipes : []);
+    merged.push(...arr);
+  }
+
+  // Dedupliker på slug
+  const bySlug = new Map();
+  for (const r of merged) {
+    if (!r || !r.slug) continue;
+    bySlug.set(r.slug, r);
+  }
+  __CACHE = Array.from(bySlug.values());
+  return __CACHE;
+}
+
+export function findBySlug(list, slug) {
+  return list.find(r => String(r.slug) === String(slug));
+}
+
+function safeText(v, fallback = '') {
+  if (v == null) return fallback;
+  return String(v);
+}
+
+function formatStars(rating = 0) {
+  const n = Math.max(0, Math.min(5, Math.round(Number(rating))));
+  const full = '★'.repeat(n);
+  const empty = '☆'.repeat(5 - n);
+  return `${full}${empty}`;
+}
+
+function renderTags(tags) {
+  if (!Array.isArray(tags) || tags.length === 0) return '';
+  return tags.slice(0, 3).map(t =>
+    `<span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">${safeText(t)}</span>`
+  ).join(' ');
+}
+
+/** Kompakt kort (uden billeder) – samme stil som “Mest populære” */
+export function renderRecipeCard(r) {
+  const slug = encodeURIComponent(safeText(r.slug));
+  const title = safeText(r.title, 'Uden titel');
+  const desc = safeText(r.description || r.desc || '');
+  const rating = Number(r.rating || 0);
+  const votes = Number(r.votes || r.reviews || 0);
+  const tags = Array.isArray(r.tags) ? r.tags : (r.tag ? [r.tag] : []);
 
   return `
-    <span class="inline-flex items-center gap-1">
-      ${star.repeat(full)}${half ? starHalf : ''}${starEmpty.repeat(empty)}
-      <span class="text-xs text-stone-500">(${count || 0})</span>
-    </span>
-  `;
-}
-
-/** Lille tag-pill */
-function tagPill(t) {
-  return `<span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">${t}</span>`;
-}
-
-/** Pænt kort UDEN billede (kompakt) */
-export function renderRecipeCard(recipe) {
-  // Forventet struktur (robust mod manglende felter)
-  const {
-    slug = '',
-    title = 'Opskrift',
-    description = '',
-    rating = 0,
-    ratingsCount = 0,
-    tags = [],
-    category = ''
-  } = recipe || {};
-
-  const url = `/pages/opskrift.html?slug=${encodeURIComponent(slug)}`;
-  const sub = description || (Array.isArray(tags) && tags.length ? tags.slice(0, 3).join(' • ') : '');
-
-  return `
-  <a href="${url}" class="card border bg-white hover:shadow transition block">
-    <div class="p-4">
-      <div class="flex items-center gap-2 flex-wrap">
-        ${category ? tagPill(category) : ''}
-        ${Array.isArray(tags) ? tags.slice(0,2).map(tagPill).join('') : ''}
-      </div>
-      <h3 class="text-lg font-semibold mt-2 leading-snug">${title}</h3>
-      ${sub ? `<p class="text-sm text-stone-600 mt-1 line-clamp-2">${sub}</p>` : ''}
-      <div class="mt-2">${renderStars(rating, ratingsCount)}</div>
+  <a href="/pages/opskrift?slug=${slug}" class="block border bg-white rounded-2xl p-4 shadow-sm hover:shadow transition card">
+    <div class="flex flex-wrap gap-1 mb-1">${renderTags(tags)}</div>
+    <h3 class="text-base/5 font-semibold">${title}</h3>
+    ${desc ? `<p class="text-sm text-stone-600 mt-1">${desc}</p>` : ``}
+    <div class="mt-2 text-sm text-stone-800">
+      ${formatStars(rating)} <span class="text-stone-500">(${votes})</span>
     </div>
   </a>`;
 }
 
-/** Hjælper: render en liste af opskrifter ind i et grid-element */
-export function renderIntoGrid(recipes, gridSelector = '#results') {
-  const el = document.querySelector(gridSelector);
-  if (!el) return;
-  el.innerHTML = recipes.map(renderRecipeCard).join('');
-}
-
-/** Hjælper: find en opskrift pr. slug */
-export function findBySlug(slug) {
-  if (!_RECIPES.length && Array.isArray(window.RECIPES)) _RECIPES = window.RECIPES;
-  return _RECIPES.find(r => r.slug === slug);
+/** Hjælper til at fylde et grid med kort */
+export function renderIntoGrid(list, selector = '#results') {
+  const grid = document.querySelector(selector);
+  if (!grid) return;
+  grid.innerHTML = list.map(renderRecipeCard).join('');
 }
