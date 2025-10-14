@@ -90,69 +90,95 @@
     <div id="footer"></div>
 
     <script type="module">
-      const listEl = document.getElementById('guideList');
-      const searchEl = document.getElementById('guideSearch');
-      const tagWrap = document.getElementById('guideTags');
+  const listEl  = document.getElementById('guideList');
+  const searchEl= document.getElementById('guideSearch');
+  const tagWrap = document.getElementById('guideTags');
 
-      let guides = [];
-      let activeTag = '';
+  const V = 'guides-v1'; // bump hvis du uploader nye data (cache-bust)
+  const j = (p) => fetch(`${p}?${V}`, { cache:'no-cache' }).then(r => r.ok ? r.json() : []);
 
-      async function loadGuides(){
-        try {
-          const res = await fetch('/data/guides.json', { cache: 'no-cache' });
-          guides = await res.json();
-          renderGuides(guides);
-          renderTags();
-        } catch(err){
-          listEl.innerHTML = '<p class="opacity-70">Kunne ikke indlæse guides.</p>';
-          console.error(err);
+  let guides = [];
+  let activeTag = '';
+
+  async function loadGuides(){
+    // 1) prøv chunkede filer
+    let all = [];
+    try {
+      const first = await j('/data/guides-1.json');
+      if (Array.isArray(first) && first.length){
+        all = all.concat(first);
+        for (let i=2;i<=20;i++){
+          try {
+            const arr = await j(`/data/guides-${i}.json`);
+            if (!Array.isArray(arr) || !arr.length) break;
+            all = all.concat(arr);
+          } catch { break; }
         }
       }
+    } catch {}
 
-      function renderGuides(list){
-        if(!list.length){
-          listEl.innerHTML = '<p class="opacity-70">Ingen guides fundet.</p>';
-          return;
-        }
-        listEl.innerHTML = list.map(g => `
-          <a href="/pages/guide.html?slug=${g.slug}" class="block card bg-white p-5 hover:shadow-md transition">
-            <h2 class="font-semibold text-lg mb-2">${g.title}</h2>
-            <p class="text-sm opacity-80">${g.intro || ''}</p>
-            <div class="text-xs opacity-60 mt-3">${g.category || ''}</div>
-          </a>
-        `).join('');
+    // 2) fallback til samlet fil, hvis ingen chunks
+    if (!all.length){
+      try { all = await j('/data/guides.json'); }
+      catch (e){
+        listEl.innerHTML = '<p class="opacity-70">Kunne ikke indlæse guides.</p>';
+        console.error(e);
+        return;
       }
+    }
 
-      function renderTags(){
-        const tagSet = new Set();
-        guides.forEach(g => (g.tags||[]).forEach(t => tagSet.add(t)));
-        const tags = Array.from(tagSet).sort();
-        tagWrap.innerHTML = tags.map(t => `
-          <span class="tag ${t === activeTag ? 'active' : ''}" data-tag="${t}">${t}</span>
-        `).join('');
-      }
+    guides = all;
+    renderGuides(guides);
+    renderTags();
+    // pæn placeholder
+    if (searchEl) searchEl.placeholder = `Søg i ${guides.length.toLocaleString('da-DK')} guides...`;
+  }
 
-      function applyFilters(){
-        const q = searchEl.value.toLowerCase().trim();
-        const filtered = guides.filter(g => {
-          const matchText = g.title.toLowerCase().includes(q) || (g.intro||'').toLowerCase().includes(q);
-          const matchTag = !activeTag || (g.tags||[]).includes(activeTag);
-          return matchText && matchTag;
-        });
-        renderGuides(filtered);
-      }
+  function renderGuides(list){
+    if(!list.length){
+      listEl.innerHTML = '<p class="opacity-70">Ingen guides fundet.</p>';
+      return;
+    }
+    listEl.innerHTML = list.map(g => `
+      <a href="/pages/guide.html?slug=${g.slug}" class="block card bg-white p-5 hover:shadow-md transition">
+        <h2 class="font-semibold text-lg mb-2">${g.title}</h2>
+        <p class="text-sm opacity-80">${g.intro || ''}</p>
+        <div class="text-xs opacity-60 mt-3">${g.category || ''}</div>
+      </a>
+    `).join('');
+  }
 
-      searchEl.addEventListener('input', applyFilters);
+  function renderTags(){
+    const tagSet = new Set();
+    guides.forEach(g => (g.tags||[]).forEach(t => tagSet.add(t)));
+    const tags = Array.from(tagSet).sort((a,b)=>a.localeCompare(b,'da'));
+    tagWrap.innerHTML = tags.map(t => `
+      <span class="tag ${t === activeTag ? 'active' : ''}" data-tag="${t}">${t}</span>
+    `).join('');
+  }
 
-      tagWrap.addEventListener('click', e => {
-        const tag = e.target.closest('[data-tag]');
-        if(!tag) return;
-        activeTag = activeTag === tag.dataset.tag ? '' : tag.dataset.tag;
-        renderTags();
-        applyFilters();
-      });
+  function applyFilters(){
+    const q = (searchEl.value || '').toLowerCase().trim();
+    const filtered = guides.filter(g => {
+      const title = (g.title||'').toLowerCase();
+      const intro = (g.intro||'').toLowerCase();
+      const matchText = title.includes(q) || intro.includes(q);
+      const matchTag = !activeTag || (g.tags||[]).some(t => (t||'').toLowerCase() === activeTag.toLowerCase());
+      return matchText && matchTag;
+    });
+    renderGuides(filtered);
+  }
 
-      loadGuides();
-    </script>
+  searchEl.addEventListener('input', applyFilters);
+  tagWrap.addEventListener('click', e => {
+    const tag = e.target.closest('[data-tag]');
+    if(!tag) return;
+    activeTag = (activeTag.toLowerCase() === tag.dataset.tag.toLowerCase()) ? '' : tag.dataset.tag;
+    renderTags();
+    applyFilters();
+  });
+
+  loadGuides();
+</script>
   </body>
 </html>
