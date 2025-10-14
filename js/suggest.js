@@ -1,107 +1,58 @@
-// /js/suggest.js
-import { loadAllRecipes, renderRecipeCard } from './recipes.js';
+// suggest.js – let forslag under #homeSearch
+import { loadAllRecipes } from '/js/recipes.js';
 
-const fold = (s='') => s.toLowerCase()
-  .replace(/æ/g,'ae').replace(/ø/g,'oe').replace(/å/g,'aa')
-  .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-  .replace(/[^a-z0-9\s\-]/g,' ')
-  .replace(/\s+/g,' ')
-  .trim();
+let cache = null;
+const MAX_SHOW = 8;
 
-let DATA=[], INDEX=[];
-let activeIndex = -1;
-
-function buildIndex(r){
-  return {
-    q: fold([r.title||'', r.category||'', (r.tags||[]).join(' ')].join(' ')),
-    title: r.title, category: r.category, tags: r.tags||[]
-  };
-}
-
-function ensureLayer(input){
-  let box = document.getElementById('searchSuggest');
-  if (!box){
+function ensureBox() {
+  let box = document.getElementById('suggestions');
+  if (!box) {
     box = document.createElement('div');
-    box.id = 'searchSuggest';
-    box.className = 'absolute z-40 mt-1 w-full bg-white border rounded-2xl shadow';
-    input.parentElement.style.position = 'relative';
-    input.parentElement.appendChild(box);
+    box.id = 'suggestions';
+    document.querySelector('.hero-search-wrap')?.appendChild(box);
   }
   return box;
 }
 
-function render(items, box){
-  if (!items.length){ box.innerHTML=''; box.style.display='none'; return; }
-  box.style.display='block';
-  box.innerHTML = items.map((it,i)=>`
-    <div data-i="${i}" class="px-3 py-2 cursor-pointer ${i===activeIndex?'bg-stone-100':''}">
-      <div class="text-sm">${it.title}</div>
-      <div class="text-xs opacity-70">${it.category}${it.tags?.length? ' · '+it.tags.slice(0,3).join(', '):''}</div>
-    </div>`).join('');
+function match(q, r) {
+  const hay = `${r.title} ${r.tags?.join(' ') || ''}`.toLowerCase();
+  return hay.includes(q);
 }
 
-async function initSuggest(){
-  const input = document.getElementById('searchInput');
-  const results = document.getElementById('results');
-  if (!input || !results) return;
-  const box = ensureLayer(input);
+function row(r) {
+  const tags = (r.tags || []).slice(0,3).map(t=>`<span class="suggest-meta">#${t}</span>`).join('');
+  return `<div data-href="/pages/opskrift?slug=${encodeURIComponent(r.slug)}">
+    <strong>${r.title}</strong>
+    ${tags}
+  </div>`;
+}
 
-  DATA = await loadAllRecipes();
-  INDEX = DATA.map(buildIndex);
+async function mountSuggest() {
+  const input = document.getElementById('homeSearch');
+  if (!input) return;
 
-  const pick = (item) => {
-    input.value = item.title;
-    input.dispatchEvent(new Event('input', {bubbles:true}));
-    box.style.display='none';
-  };
+  cache = await loadAllRecipes();
+  const box = ensureBox();
 
-  input.addEventListener('input', ()=>{
-    const q = fold(input.value);
-    activeIndex = -1;
-    if (!q){ render([], box); return; }
-    const parts = q.split(' ').filter(Boolean);
-    const out = [];
-    for (let i=0;i<INDEX.length;i++){
-      const it = INDEX[i];
-      let ok = true;
-      for (const p of parts){ if (!it.q.includes(p)) { ok=false; break; } }
-      if (!ok) continue;
-      out.push({i, title: DATA[i].title, category: DATA[i].category, tags: DATA[i].tags});
-      if (out.length >= 8) break;
-    }
-    render(out, box);
+  function close() { box.classList.remove('active'); box.innerHTML = ''; }
+  function open(html) { box.innerHTML = html; box.classList.add('active'); }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) { close(); return; }
+    const hits = cache.filter(r => match(q, r)).slice(0, MAX_SHOW);
+    if (!hits.length) { close(); return; }
+    open(hits.map(row).join(''));
   });
 
-  input.addEventListener('keydown', (e)=>{
-    if (box.style.display==='none') return;
-    const items = [...box.querySelectorAll('[data-i]')];
-    if (!items.length) return;
-    if (e.key === 'ArrowDown'){ activeIndex = (activeIndex+1) % items.length; render(items.map(el=>({title:el.querySelector('.text-sm').textContent, category:'', tags:[] })), box); e.preventDefault(); }
-    if (e.key === 'ArrowUp'){ activeIndex = (activeIndex-1+items.length) % items.length; render(items.map(el=>({title:el.querySelector('.text-sm').textContent, category:'', tags:[] })), box); e.preventDefault(); }
-    if (e.key === 'Enter'){
-      e.preventDefault();
-      const el = items[Math.max(0, activeIndex)];
-      const title = el?.querySelector('.text-sm')?.textContent;
-      if (title){
-        input.value = title;
-        input.dispatchEvent(new Event('input', {bubbles:true}));
-        box.style.display='none';
-      }
-    }
-    if (e.key === 'Escape'){ box.style.display='none'; }
+  box.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-href]');
+    if (item) location.href = item.dataset.href;
   });
 
-  box.addEventListener('click', (e)=>{
-    const item = e.target.closest('[data-i]'); if (!item) return;
-    const idx = +item.getAttribute('data-i');
-    input.value = DATA[INDEX[idx].i]?.title || item.querySelector('.text-sm')?.textContent || '';
-    input.dispatchEvent(new Event('input', {bubbles:true}));
-    box.style.display='none';
-  });
-
-  document.addEventListener('click', (e)=>{
-    if (!box.contains(e.target) && e.target !== input) box.style.display='none';
+  document.addEventListener('click', (e) => {
+    if (!box.contains(e.target) && e.target !== input) close();
   });
 }
 
-document.addEventListener('DOMContentLoaded', initSuggest);
+document.addEventListener('DOMContentLoaded', mountSuggest);
