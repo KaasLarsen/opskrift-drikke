@@ -1,33 +1,29 @@
-// /js/nav.js
+// mobil-toggle + klik-udenfor lukning
 (function(){
-  const btn  = document.getElementById('catMenuBtn');
-  const list = document.getElementById('catMenuList');
-  const wrap = document.getElementById('catMenuWrap');
-  if (!btn || !list || !wrap) return;
+  const btn  = document.getElementById('mobileMenuBtn');
+  const menu = document.getElementById('mobileMenu');
+  if (!btn || !menu) return;
 
-  let hideTimer = null;
-  function open(){
-    clearTimeout(hideTimer);
-    list.classList.remove('pointer-events-none','opacity-0','translate-y-1');
-    btn.setAttribute('aria-expanded','true');
-  }
-  function close(){
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(()=>{
-      list.classList.add('pointer-events-none','opacity-0','translate-y-1');
-      btn.setAttribute('aria-expanded','false');
-    }, 120);
-  }
+  const close = ()=> {
+    menu.classList.add('hidden');
+    btn.setAttribute('aria-expanded', 'false');
+  };
+  const open  = ()=> {
+    menu.classList.remove('hidden');
+    btn.setAttribute('aria-expanded', 'true');
+  };
 
-  btn.addEventListener('click', (e)=>{
-    e.preventDefault();
+  btn.addEventListener('click', ()=>{
     const isOpen = btn.getAttribute('aria-expanded') === 'true';
     isOpen ? close() : open();
   });
-  wrap.addEventListener('mouseenter', open);
-  wrap.addEventListener('mouseleave', close);
-  document.addEventListener('click', (e)=>{ if (!wrap.contains(e.target)) close(); });
-  btn.addEventListener('keydown', (e)=>{ if (e.key==='ArrowDown'){ open(); list.querySelector('a')?.focus(); e.preventDefault(); }});
-  list.addEventListener('keydown', (e)=>{ if (e.key==='Escape'){ close(); btn.focus(); }});
-  window.addEventListener('scroll', close, { passive:true });
+
+  document.addEventListener('click', (e)=>{
+    if (!menu.contains(e.target) && !btn.contains(e.target)) close();
+  });
+
+  // luk ved escape
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape') close();
+  });
 })();
