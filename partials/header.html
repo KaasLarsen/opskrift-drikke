@@ -1,63 +1,90 @@
-<header class="site-header border-b bg-white/90 backdrop-blur z-30">
-  <div class="container">
-    <div class="inner flex items-center h-16 gap-3">
-      <!-- Logo -->
+<header class="site-header border-b bg-white/90 backdrop-blur">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center h-14 gap-3">
+      <!-- Brand -->
       <a href="/" class="logo flex items-center gap-2 font-extrabold">
-        <svg class="logo-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Opskrift-drikke.dk
+        <img src="/assets/favicon-32.png" alt="" class="w-6 h-6">
+        <span>opskrift-drikke.dk</span>
       </a>
 
-      <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-2 ml-auto">
-        <a href="/" class="px-3 py-2 rounded-lg hover:bg-stone-100">Forside</a>
-        <a href="/pages/seneste.html" class="px-3 py-2 rounded-lg hover:bg-stone-100">Seneste</a>
-        <a href="/pages/guides.html" class="px-3 py-2 rounded-lg hover:bg-stone-100">Guides</a>
-        <a href="/pages/favoritter.html" class="px-3 py-2 rounded-lg hover:bg-stone-100">Favoritter</a>
+      <!-- Nav (desktop) -->
+      <nav class="ml-4 hidden md:flex items-center gap-2">
+        <!-- Kategorier: <details> giver klikbar dropdown uden JS-hacks -->
+        <details id="navCategories" class="relative">
+          <summary class="list-none cursor-pointer px-3 py-1.5 rounded-lg hover:bg-stone-100 flex items-center gap-1">
+            <svg class="w-4 h-4 opacity-70"><use href="/assets/icons.svg#grid"/></svg>
+            <span>Kategorier</span>
+            <svg class="w-4 h-4 opacity-70"><use href="/assets/icons.svg#chevron-down"/></svg>
+          </summary>
+          <div class="absolute z-40 mt-2 w-56 rounded-xl border bg-white shadow">
+            <ul class="py-1 text-sm">
+              <li><a class="block px-3 py-2 hover:bg-stone-50" href="/tags/kaffe.html">Kaffe</a></li>
+              <li><a class="block px-3 py-2 hover:bg-stone-50" href="/tags/smoothie.html">Smoothies</a></li>
+              <li><a class="block px-3 py-2 hover:bg-stone-50" href="/tags/juice.html">Juice</a></li>
+              <li><a class="block px-3 py-2 hover:bg-stone-50" href="/tags/mocktails.html">Mocktails</a></li>
+              <li><a class="block px-3 py-2 hover:bg-stone-50" href="/tags/gloegg.html">Gløgg</a></li>
+            </ul>
+          </div>
+        </details>
 
-        <!-- Desktop auth -->
-        <button id="authBtn" class="ml-2 px-3 py-2 rounded-xl border hover:bg-stone-50">
-          Log ind
-        </button>
+        <a href="/pages/seneste.html" class="px-3 py-1.5 rounded-lg hover:bg-stone-100">Seneste</a>
+        <a href="/pages/guides.html" class="px-3 py-1.5 rounded-lg hover:bg-stone-100">Guides</a>
       </nav>
 
+      <!-- Spacer -->
+      <div class="flex-1"></div>
+
+      <!-- Auth (desktop) -->
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/favoritter" class="px-3 py-1.5 rounded-lg hover:bg-stone-100">Favoritter</a>
+        <a id="authBtn" data-auth href="/login" class="px-3 py-1.5 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
+          Log ind
+        </a>
+      </div>
+
       <!-- Mobile hamburger -->
-      <button id="mobileMenuBtn"
-              class="md:hidden ml-auto inline-flex items-center justify-center w-10 h-10 rounded-xl border"
-              aria-label="Åben menu" aria-expanded="false" aria-controls="mobileMenu">
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg border" aria-expanded="false" aria-controls="mobileMenu" aria-label="Åbn menu">
         <!-- 3 streger -->
-        <svg viewBox="0 0 24 24" class="w-6 h-6" aria-hidden="true">
-          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
     </div>
   </div>
 
-  <!-- Mobile overlay + sheet (skjult fra start) -->
-  <div id="mobileMenu" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
-    <!-- mørk baggrund, klik luk -->
+  <!-- Mobile panel + overlay (gennemsigtighed fjernet; tydelig baggrund) -->
+  <div id="mobileMenu" class="hidden fixed inset-0 z-50">
+    <!-- overlay -->
     <div class="absolute inset-0 bg-black/40" data-close></div>
 
-    <!-- hvidt panel -->
-    <div class="absolute inset-x-3 top-14 rounded-2xl bg-white shadow-xl border p-3">
-      <nav class="flex flex-col">
-        <a href="/" class="px-3 py-3 rounded-lg hover:bg-stone-50">Forside</a>
-        <a href="/pages/seneste.html" class="px-3 py-3 rounded-lg hover:bg-stone-50">Seneste</a>
-        <a href="/pages/guides.html" class="px-3 py-3 rounded-lg hover:bg-stone-50">Guides</a>
-        <a href="/pages/favoritter.html" class="px-3 py-3 rounded-lg hover:bg-stone-50">Favoritter</a>
+    <!-- sheet -->
+    <div class="absolute right-0 top-0 h-full w-80 max-w-[85%] bg-white shadow-xl p-4 flex flex-col">
+      <div class="flex items-center justify-between">
+        <div class="font-bold">Menu</div>
+        <button class="p-2" data-close aria-label="Luk">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M6 6l12 12M6 18L18 6" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
 
+      <nav class="mt-4 grid gap-1">
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/tags/kaffe.html">Kaffe</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/tags/smoothie.html">Smoothies</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/tags/juice.html">Juice</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/tags/mocktails.html">Mocktails</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/tags/gloegg.html">Gløgg</a>
         <hr class="my-2">
-
-        <!-- Mobile auth – klikker desktop-knappen eller falder tilbage til /login -->
-        <button id="authBtnMobile" class="px-3 py-3 rounded-xl border text-left hover:bg-stone-50">
-          Log ind
-        </button>
-
-        <button class="mt-2 px-3 py-2 rounded-lg bg-stone-900 text-white" data-close>
-          Luk
-        </button>
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/pages/seneste.html">Seneste</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-stone-100" href="/pages/guides.html">Guides</a>
       </nav>
+
+      <div class="mt-auto grid gap-2">
+        <a class="px-3 py-2 rounded-lg border hover:bg-stone-50" href="/favoritter">Favoritter</a>
+        <a id="authBtnMobile" data-auth class="px-3 py-2 rounded-lg bg-orange-500 text-white text-center hover:bg-orange-600" href="/login">
+          Log ind
+        </a>
+      </div>
     </div>
   </div>
 </header>
