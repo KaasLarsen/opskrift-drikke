@@ -284,3 +284,26 @@ document.addEventListener('DOMContentLoaded', () => {
   text-align: left;
 }
 #guideContent img { max-width: 100%; height: auto; }
+
+/* ----- Guide visning ----- */
+.guide-article h2{
+  margin: 20px 0 10px;
+  font-size: 22px;
+  font-weight: 600;
+}
+.guide-article ol{ margin-left: 1.25rem; list-style: decimal; }
+.guide-article ul{ margin-left: 1.25rem; list-style: disc; }
+.guide-article p{ margin: 8px 0; }
+
+.faq-card{
+  border: 1px solid var(--line, #e5e7eb);
+  background: var(--surface, #fff);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm, 0 6px 14px rgba(0,0,0,.06));
+}
+.faq-card h2{ margin-top: 0; }
+.faq-item{ border-top: 1px dashed var(--line, #e5e7eb); padding-top: 10px; margin-top: 10px; }
+.faq-item:first-child{ border-top: 0; padding-top: 0; margin-top: 0; }
+.faq-item summary{ cursor: pointer; font-weight: 600; }
+
