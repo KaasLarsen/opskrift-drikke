@@ -4,7 +4,8 @@ import { showToast } from './app.js';
 import { mountPR } from './pricerunner-rotator.js';
 import { chooseWidgetKeys } from './pr-widgets-map.js';
 
-/* ---------------- helpers ---------------- */
+console.log('guide-page.js loaded');
+
 const qs  = (id)=> document.getElementById(id);
 const slug = new URLSearchParams(location.search).get('slug') || '';
 
@@ -15,7 +16,6 @@ async function fetchJson(path){
 }
 
 async function loadAllGuides(){
-  // prøv chunkede filer: guides-1.json .. guides-20.json
   let all = [];
   try{
     const first = await fetchJson('/data/guides-1.json');
@@ -30,7 +30,6 @@ async function loadAllGuides(){
       }
     }
   }catch{}
-  // fallback samlet
   if (!all.length){
     try { all = await fetchJson('/data/guides.json'); } catch {}
   }
@@ -41,7 +40,7 @@ function titleCaseAfterColon(s=''){
   return s.replace(/:\s*([a-zæøå])/gi, (_,ch)=>': '+ch.toUpperCase());
 }
 
-/* ---- normaliser indhold til blocks [{type:'h2'|'p'|'ul'|'ol', ...}] ---- */
+/* ---------- normalisering til blocks ---------- */
 function normalizeBlocks(guide){
   if (Array.isArray(guide.blocks) && guide.blocks.length) return guide.blocks;
 
@@ -54,8 +53,8 @@ function normalizeBlocks(guide){
 
       const paras = [];
       if (Array.isArray(sec.paragraphs)) paras.push(...sec.paragraphs);
-      if (typeof sec.body === 'string') paras.push(sec.body);
-      if (typeof sec.text === 'string') paras.push(sec.text);
+      if (typeof sec.body === 'string')  paras.push(sec.body);
+      if (typeof sec.text === 'string')  paras.push(sec.text);
       paras.filter(Boolean).forEach(p=> out.push({ type:'p', text:p }));
 
       const bullets = sec.bullets || sec.list || [];
@@ -86,7 +85,7 @@ function arrayToBlocks(arr){
   arr.forEach((t,i)=>{
     const s = String(t||'').trim();
     if (!s) return;
-    if (/^-\s+/.test(s)){ // bulletliste i én streng
+    if (/^-\s+/.test(s)){
       const items = s.split('\n').map(x=>x.replace(/^\-\s+/, '').trim()).filter(Boolean);
       out.push({ type:'ul', items });
     } else {
@@ -119,7 +118,6 @@ function textToBlocks(text){
   return promoteHeadings(out);
 }
 
-// hvis et afsnit slutter med ":" → lav det til h2
 function promoteHeadings(blocks){
   const out = [];
   blocks.forEach((b, idx)=>{
@@ -132,7 +130,7 @@ function promoteHeadings(blocks){
   return out;
 }
 
-/* ---- render ---- */
+/* ---------- render ---------- */
 function renderTOC(blocks){
   const wrap = qs('tocWrap');
   const toc  = qs('toc');
@@ -153,7 +151,7 @@ function renderBlocks(blocks){
   }).join('');
 }
 
-/* ---- FAQ: brug “Ofte stillede spørgsmål / FAQ” sektion hvis findes ---- */
+/* ---------- FAQ: find “ofte stillede spørgsmål / FAQ” eller heuristik ---------- */
 function renderFAQ(guide, blocks){
   const wrap = qs('faqWrap');
   const list = qs('faqList');
@@ -161,45 +159,23 @@ function renderFAQ(guide, blocks){
   let faqs = Array.isArray(guide.faq) ? guide.faq.slice() : [];
 
   if (!faqs.length){
+    // 1) forsøg: dedikeret sektion
     const h2Idx = blocks.findIndex(b =>
       b.type==='h2' && /^(ofte\s+stillede\s+spørgsmål|faq)$/i.test((b.text||'').trim())
     );
-
     if (h2Idx >= 0){
       const tail = [];
       for (let i=h2Idx+1;i<blocks.length;i++){
         if (blocks[i].type==='h2') break;
         tail.push(blocks[i]);
       }
-      for (let i=0;i<tail.length;i++){
-        const b = tail[i];
-        if (b.type==='p' && /\?\s*$/.test((b.text||'').trim())){
-          const q = (b.text||'').trim();
-          let a = '';
-          const n = tail[i+1];
-          if (n){
-            if (n.type==='p'){ a = n.text || ''; i++; }
-            else if (n.type==='ul' || n.type==='ol'){ a = '<ul>' + (n.items||[]).map(x=>`<li>${x}</li>`).join('') + '</ul>'; i++; }
-          }
-          if (q && a) faqs.push({ q, a });
-        }
-      }
+      faqs = faqs.concat(extractQAPairs(tail));
     }
   }
 
+  // 2) fallback: hele dokumentet
   if (!faqs.length){
-    // fallback: simpel Q? A-par i hele dokumentet
-    const lines = [];
-    blocks.forEach(b=>{
-      if (b.type==='p') lines.push(b.text);
-      if (b.type==='ul' || b.type==='ol') lines.push(...(b.items||[]));
-    });
-    for (let i=0;i<lines.length;i++){
-      const q = (lines[i]||'').trim();
-      const a = (lines[i+1]||'').trim();
-      if (/\?\s*$/.test(q) && a){ faqs.push({ q, a }); }
-    }
-    faqs = faqs.slice(0,6);
+    faqs = extractQAPairs(blocks).slice(0,6);
   }
 
   if (!faqs.length){
@@ -217,7 +193,46 @@ function renderFAQ(guide, blocks){
   wrap.classList.remove('hidden');
 }
 
-/* ---- init ---- */
+// robust Q/A-udtræk: finder linjer der ender med ? inde i p/ul/ol og tager næste blok/linje som svar
+function extractQAPairs(blocks){
+  const flat = [];
+  blocks.forEach(b=>{
+    if (b.type==='p'){
+      // split på hårde break + sætninger der slutter med ? for at undgå “Q+A i samme afsnit”
+      const pieces = (b.text||'')
+        .split(/\n+/)
+        .flatMap(s => s.split(/(?<=\?)\s+(?=[A-ZÆØÅa-zæøå])/)) // split efter '?'
+        .map(x=>x.trim()).filter(Boolean);
+      pieces.forEach(p => flat.push({ kind:'p', text:p }));
+    } else if (b.type==='ul' || b.type==='ol'){
+      (b.items||[]).forEach(it => flat.push({ kind:'p', text:String(it||'').trim() }));
+    } else if (b.type==='h2'){
+      flat.push({ kind:'h2', text:b.text||'' });
+    }
+  });
+
+  const faqs = [];
+  for (let i=0;i<flat.length;i++){
+    const cur = flat[i];
+    if (cur.kind==='p' && /\?\s*$/.test(cur.text)){
+      // saml svar op til næste spørgsmål/h2
+      let answer = '';
+      for (let j=i+1;j<flat.length;j++){
+        if (flat[j].kind==='h2') break;
+        if (flat[j].kind==='p' && /\?\s*$/.test(flat[j].text)) break;
+        if (flat[j].kind==='p'){
+          if (answer) answer += ' ';
+          answer += flat[j].text;
+        }
+        i = j;
+      }
+      if (answer) faqs.push({ q: cur.text, a: answer });
+    }
+  }
+  return faqs;
+}
+
+/* ---------- init ---------- */
 async function init(){
   const tEl   = qs('guideTitle');
   const iEl   = qs('guideIntro');
@@ -261,7 +276,7 @@ async function init(){
     if (keys && keys.length){ mountPR('#pr-guide-slot', keys[0]); }
   }catch(e){ console.warn('PR widget skip', e); }
 
-  /* ---- lokale kommentarer ---- */
+  /* ----- lokale kommentarer ----- */
   const commentList   = qs('commentList');
   const commentText   = qs('commentText');
   const commentSubmit = qs('commentSubmit');
