@@ -4,49 +4,51 @@ import { showToast } from './app.js';
 import { mountPR } from './pricerunner-rotator.js';
 import { chooseWidgetKeys } from './pr-widgets-map.js';
 
-const V = 'guides-v3';
-const get = (p)=> fetch(`${p}?${V}`, {cache:'no-cache'}).then(r=> r.ok ? r.json() : []);
-
+/* ---------------- helpers ---------------- */
 const qs  = (id)=> document.getElementById(id);
 const slug = new URLSearchParams(location.search).get('slug') || '';
 
+async function fetchJson(path){
+  const r = await fetch(path, { cache: 'no-cache' });
+  if (!r.ok) throw new Error(`HTTP ${r.status} @ ${path}`);
+  return r.json();
+}
+
 async function loadAllGuides(){
+  // prøv chunkede filer: guides-1.json .. guides-20.json
   let all = [];
   try{
-    const first = await get('/data/guides-1.json');
+    const first = await fetchJson('/data/guides-1.json');
     if (Array.isArray(first) && first.length){
       all = all.concat(first);
       for (let i=2;i<=20;i++){
         try{
-          const arr = await get(`/data/guides-${i}.json`);
+          const arr = await fetchJson(`/data/guides-${i}.json`);
           if (!Array.isArray(arr) || !arr.length) break;
           all = all.concat(arr);
         }catch{ break; }
       }
     }
   }catch{}
+  // fallback samlet
   if (!all.length){
-    try { all = await get('/data/guides.json'); } catch {}
+    try { all = await fetchJson('/data/guides.json'); } catch {}
   }
   return all;
 }
 
-// ---- utils ----
 function titleCaseAfterColon(s=''){
   return s.replace(/:\s*([a-zæøå])/gi, (_,ch)=>': '+ch.toUpperCase());
 }
 
-// normalize forskellige datastrukturer til "blocks"
+/* ---- normaliser indhold til blocks [{type:'h2'|'p'|'ul'|'ol', ...}] ---- */
 function normalizeBlocks(guide){
-  if (Array.isArray(guide.blocks) && guide.blocks.length){
-    return guide.blocks; // forventet format
-  }
+  if (Array.isArray(guide.blocks) && guide.blocks.length) return guide.blocks;
 
-  // format: sections: [{title, body, bullets:[], paragraphs:[]}]
   if (Array.isArray(guide.sections) && guide.sections.length){
     const out = [];
     guide.sections.forEach((sec, idx)=>{
-      const id = (sec.id || `sec-${idx}`);
+      const id = sec.id || `sec-${idx}`;
       const title = sec.title || sec.heading || 'Afsnit';
       out.push({ type:'h2', id, text:title });
 
@@ -54,8 +56,7 @@ function normalizeBlocks(guide){
       if (Array.isArray(sec.paragraphs)) paras.push(...sec.paragraphs);
       if (typeof sec.body === 'string') paras.push(sec.body);
       if (typeof sec.text === 'string') paras.push(sec.text);
-
-      paras.filter(Boolean).forEach(p => out.push({ type:'p', text:p }));
+      paras.filter(Boolean).forEach(p=> out.push({ type:'p', text:p }));
 
       const bullets = sec.bullets || sec.list || [];
       if (Array.isArray(bullets) && bullets.length){
@@ -65,12 +66,9 @@ function normalizeBlocks(guide){
     return out;
   }
 
-  // format: content (string med linjeskift eller markdown)
   if (typeof guide.content === 'string' && guide.content.trim()){
     return textToBlocks(guide.content);
   }
-
-  // format: body (array af strenge) / text / paragraphs
   if (Array.isArray(guide.body) && guide.body.length){
     return arrayToBlocks(guide.body);
   }
@@ -80,7 +78,6 @@ function normalizeBlocks(guide){
   if (typeof guide.text === 'string' && guide.text.trim()){
     return textToBlocks(guide.text);
   }
-
   return [];
 }
 
@@ -89,55 +86,40 @@ function arrayToBlocks(arr){
   arr.forEach((t,i)=>{
     const s = String(t||'').trim();
     if (!s) return;
-    // linjer der starter med "- " bliver til liste
-    if (/^-\s+/.test(s)){
+    if (/^-\s+/.test(s)){ // bulletliste i én streng
       const items = s.split('\n').map(x=>x.replace(/^\-\s+/, '').trim()).filter(Boolean);
       out.push({ type:'ul', items });
     } else {
       out.push({ type:'p', text:s });
     }
   });
-  // lav simple overskrifter hvis vi spotter "Afsnit: ..."
   return promoteHeadings(out);
 }
 
 function textToBlocks(text){
-  // grov markdown-ish → h2 på linjer der slutter med ":", resten afsnit
   const lines = text.split(/\r?\n/);
   const out = [];
-  let buffer = [];
-  function flush(){
-    const t = buffer.join(' ').trim();
-    if (t) out.push({ type:'p', text:t });
-    buffer = [];
-  }
-  lines.forEach((line, i)=>{
-    const l = line.trim();
-    if (!l){ flush(); return; }
-    if (/[:：]\s*$/.test(l)){ flush(); out.push({ type:'h2', id:`sec-${i}`, text:l.replace(/[:：]\s*$/,'') }); }
-    else if (/^\-\s+/.test(l)){ // liste
+  let buf = [];
+  const flush = ()=>{ const t = buf.join(' ').trim(); if (t) out.push({ type:'p', text:t }); buf=[]; };
+
+  for (let i=0;i<lines.length;i++){
+    const l = lines[i].trim();
+    if (!l){ flush(); continue; }
+    if (/[:：]\s*$/.test(l)){ flush(); out.push({ type:'h2', id:`sec-${i}`, text:l.replace(/[:：]\s*$/,'') }); continue; }
+    if (/^\-\s+/.test(l)){
       flush();
-      const items = [l, ...collectFollowingList(lines, i+1)].map(x=>x.replace(/^\-\s+/, '').trim());
-      out.push({ type:'ul', items });
-    } else {
-      buffer.push(l);
+      const items = [l];
+      for (let j=i+1;j<lines.length && /^\-\s+/.test(lines[j].trim()); j++, i=j){ items.push(lines[j]); }
+      out.push({ type:'ul', items: items.map(x=>x.replace(/^\-\s+/, '').trim()) });
+      continue;
     }
-  });
+    buf.push(l);
+  }
   flush();
   return promoteHeadings(out);
 }
 
-function collectFollowingList(lines, start){
-  const got = [];
-  for (let i=start;i<lines.length;i++){
-    if (/^\-\s+/.test(lines[i].trim())) got.push(lines[i]);
-    else break;
-  }
-  return got;
-}
-
-// hvis første sætning i et afsnit ligner en overskrift (slutter med ":"),
-// del den ud som h2
+// hvis et afsnit slutter med ":" → lav det til h2
 function promoteHeadings(blocks){
   const out = [];
   blocks.forEach((b, idx)=>{
@@ -150,6 +132,7 @@ function promoteHeadings(blocks){
   return out;
 }
 
+/* ---- render ---- */
 function renderTOC(blocks){
   const wrap = qs('tocWrap');
   const toc  = qs('toc');
@@ -162,38 +145,59 @@ function renderTOC(blocks){
 function renderBlocks(blocks){
   const host = qs('guideContent');
   host.innerHTML = blocks.map(b=>{
-    if (b.type==='h2'){
-      return `<h2 id="${b.id}" class="text-xl font-medium mt-4">${b.text}</h2>`;
-    }
-    if (b.type==='p'){
-      return `<p class="mt-2">${b.text}</p>`;
-    }
-    if (b.type==='ul'){
-      return `<ul class="list-disc ml-6 mt-2">${b.items.map(li=>`<li>${li}</li>`).join('')}</ul>`;
-    }
-    if (b.type==='ol'){
-      return `<ol class="list-decimal ml-6 mt-2">${b.items.map(li=>`<li>${li}</li>`).join('')}</ol>`;
-    }
+    if (b.type==='h2') return `<h2 id="${b.id}" class="text-xl font-medium mt-4">${b.text}</h2>`;
+    if (b.type==='p')  return `<p class="mt-2">${b.text}</p>`;
+    if (b.type==='ul') return `<ul class="list-disc ml-6 mt-2">${(b.items||[]).map(li=>`<li>${li}</li>`).join('')}</ul>`;
+    if (b.type==='ol') return `<ol class="list-decimal ml-6 mt-2">${(b.items||[]).map(li=>`<li>${li}</li>`).join('')}</ol>`;
     return '';
   }).join('');
 }
 
-// lav FAQ ud fra guide.faq eller ud fra spørgsmål i tekst
+/* ---- FAQ: brug “Ofte stillede spørgsmål / FAQ” sektion hvis findes ---- */
 function renderFAQ(guide, blocks){
   const wrap = qs('faqWrap');
   const list = qs('faqList');
 
-  let faqs = Array.isArray(guide.faq) ? guide.faq : [];
+  let faqs = Array.isArray(guide.faq) ? guide.faq.slice() : [];
+
   if (!faqs.length){
+    const h2Idx = blocks.findIndex(b =>
+      b.type==='h2' && /^(ofte\s+stillede\s+spørgsmål|faq)$/i.test((b.text||'').trim())
+    );
+
+    if (h2Idx >= 0){
+      const tail = [];
+      for (let i=h2Idx+1;i<blocks.length;i++){
+        if (blocks[i].type==='h2') break;
+        tail.push(blocks[i]);
+      }
+      for (let i=0;i<tail.length;i++){
+        const b = tail[i];
+        if (b.type==='p' && /\?\s*$/.test((b.text||'').trim())){
+          const q = (b.text||'').trim();
+          let a = '';
+          const n = tail[i+1];
+          if (n){
+            if (n.type==='p'){ a = n.text || ''; i++; }
+            else if (n.type==='ul' || n.type==='ol'){ a = '<ul>' + (n.items||[]).map(x=>`<li>${x}</li>`).join('') + '</ul>'; i++; }
+          }
+          if (q && a) faqs.push({ q, a });
+        }
+      }
+    }
+  }
+
+  if (!faqs.length){
+    // fallback: simpel Q? A-par i hele dokumentet
     const lines = [];
     blocks.forEach(b=>{
       if (b.type==='p') lines.push(b.text);
-      if (b.type==='ul' || b.type==='ol') lines.push(...b.items);
+      if (b.type==='ul' || b.type==='ol') lines.push(...(b.items||[]));
     });
     for (let i=0;i<lines.length;i++){
       const q = (lines[i]||'').trim();
       const a = (lines[i+1]||'').trim();
-      if (/\?\s*$/.test(q) && a){ faqs.push({q, a}); }
+      if (/\?\s*$/.test(q) && a){ faqs.push({ q, a }); }
     }
     faqs = faqs.slice(0,6);
   }
@@ -203,6 +207,7 @@ function renderFAQ(guide, blocks){
     wrap.classList.remove('hidden');
     return;
   }
+
   list.innerHTML = faqs.map(f=>`
     <div class="py-3">
       <div class="font-medium">${f.q}</div>
@@ -212,6 +217,7 @@ function renderFAQ(guide, blocks){
   wrap.classList.remove('hidden');
 }
 
+/* ---- init ---- */
 async function init(){
   const tEl   = qs('guideTitle');
   const iEl   = qs('guideIntro');
@@ -233,8 +239,7 @@ async function init(){
   tEl.textContent = title;
   bread.textContent = title;
   iEl.textContent = guide.intro || '';
-  mEl.textContent = [guide.category, guide.readTime ? `${guide.readTime} min.` : '']
-    .filter(Boolean).join(' · ');
+  mEl.textContent = [guide.category, guide.readTime ? `${guide.readTime} min.` : ''].filter(Boolean).join(' · ');
 
   const blocks = normalizeBlocks(guide);
   renderBlocks(blocks);
@@ -242,19 +247,21 @@ async function init(){
   renderFAQ(guide, blocks);
 
   // relaterede guides
-  const pool = guides.filter(g => g.slug !== guide.slug && (g.category===guide.category ||
-              (g.tags||[]).some(t => (guide.tags||[]).includes(t))));
+  const pool = guides.filter(g =>
+    g.slug !== guide.slug && (g.category===guide.category ||
+    (g.tags||[]).some(t => (guide.tags||[]).includes(t)))
+  );
   relEl.innerHTML = (pool.slice(0,6).map(r=>`
     <li><a class="hover:underline" href="/pages/guide.html?slug=${r.slug}">${r.title}</a></li>
   `).join('')) || '<li class="opacity-70">Ingen relaterede.</li>';
 
-  // PR-widget pr. kategori
+  // PriceRunner widget pr. kategori
   try{
     const keys = chooseWidgetKeys({ category: guide.category, tags: guide.tags });
     if (keys && keys.length){ mountPR('#pr-guide-slot', keys[0]); }
   }catch(e){ console.warn('PR widget skip', e); }
 
-  // kommentarer (lokalt)
+  /* ---- lokale kommentarer ---- */
   const commentList   = qs('commentList');
   const commentText   = qs('commentText');
   const commentSubmit = qs('commentSubmit');
