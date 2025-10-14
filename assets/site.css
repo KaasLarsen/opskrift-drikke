@@ -245,3 +245,12 @@ input[type="search"]::-webkit-search-results-decoration{
   box-shadow: 0 4px 18px rgba(0,0,0,.06);
 }
 #results .card .aspect-\[4\/3\] { display:none; } /* skjul evt. gamle billed-pladsholdere */
+/* PR i opskrift – som kort i flowet */
+#pr-recipe-slot > .card,
+#pr-recipe-slot .pr-wrapper {
+  border: 1px solid var(--line, #e5e7eb);
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm, 0 6px 14px rgba(0,0,0,.06));
+}
