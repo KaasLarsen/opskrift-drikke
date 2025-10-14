@@ -1,71 +1,79 @@
-// /js/seneste.js
-const wrap = document.getElementById('seneste-list');
+// === seneste.js — viser alle opskrifter med pagination (30 pr. side) ===
+import { loadAllRecipes, renderRecipeCard } from '/js/recipes.js';
 
-function card(r){
-  const href = `/pages/opskrift.html?slug=${encodeURIComponent(r.slug || r.id || '')}`;
-  const img  = r.image || r.img || '/assets/placeholder-recipe.jpg';
-  const tag  = r.tag || r.category || r.type || 'Opskrift';
-  const title = r.title || r.name || 'Opskrift';
-  const desc  = r.desc || r.subtitle || r.intro || '';
+const PAGE_SIZE = 30;
+
+function sortByDateOrTitle(a, b) {
+  // Hvis dine data har "date" eller "lastModified", så brug det – ellers fallback til title
+  const da = a.date || a.lastModified || '';
+  const db = b.date || b.lastModified || '';
+  if (da && db) return (new Date(db)) - (new Date(da));
+  return (a.title||'').localeCompare(b.title||'');
+}
+
+function renderPager(total, page, onPage) {
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (pages <= 1) return '';
+
+  const btn = (p, label = p, active = false) =>
+    `<button data-page="${p}" class="px-3 py-1.5 rounded-lg border ${active ? 'bg-orange-500 text-white border-orange-500' : 'bg-white hover:bg-stone-50'}">${label}</button>`;
+
+  const parts = [];
+  // Første & Forrige
+  if (page > 1) {
+    parts.push(btn(1, '«'));
+    parts.push(btn(page - 1, '‹'));
+  }
+
+  // Midtersekvens (max ~7 knapper)
+  const start = Math.max(1, page - 2);
+  const end = Math.min(pages, page + 2);
+  for (let p = start; p <= end; p++) parts.push(btn(p, String(p), p === page));
+
+  // Næste & Sidste
+  if (page < pages) {
+    parts.push(btn(page + 1, '›'));
+    parts.push(btn(pages, '»'));
+  }
+
   return `
-  <a href="${href}" class="card overflow-hidden hover:shadow transition block border bg-white">
-    <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
-      <img src="${img}" alt="${title}" class="w-full h-full object-cover" loading="lazy">
-    </div>
-    <div class="p-4">
-      <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">${tag}</span>
-      <h3 class="text-lg font-semibold mt-2 leading-snug">${title}</h3>
-      ${desc ? `<p class="text-sm text-stone-600 mt-1">${desc}</p>` : ``}
-    </div>
-  </a>`;
+    <div class="mt-6 flex flex-wrap gap-2 items-center justify-center">${parts.join('')}</div>
+  `;
 }
 
-function render(list){
-  if (!wrap) return;
-  if (!Array.isArray(list) || !list.length){
-    wrap.innerHTML = `<p class="opacity-70">Ingen opskrifter fundet.</p>`;
-    return;
+async function mountSeneste() {
+  const grid = document.querySelector('#results');
+  if (!grid) return;
+
+  const list = (await loadAllRecipes()).slice().sort(sortByDateOrTitle);
+
+  // side fra query ?page=2
+  const url = new URL(location.href);
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+  const start = (page - 1) * PAGE_SIZE;
+  const view = list.slice(start, start + PAGE_SIZE);
+
+  grid.innerHTML = view.map(renderRecipeCard).join('');
+
+  const pagerHtml = renderPager(list.length, page, null);
+  const pagerSlotId = 'pager-slot';
+  let pagerSlot = document.getElementById(pagerSlotId);
+  if (!pagerSlot) {
+    pagerSlot = document.createElement('div');
+    pagerSlot.id = pagerSlotId;
+    grid.parentElement.appendChild(pagerSlot);
   }
-  // Seneste først, hvis data har dato; ellers bare top-ny
-  const sorted = [...list].sort((a,b)=>{
-    const da = +new Date(a.date || a.updated || 0);
-    const db = +new Date(b.date || b.updated || 0);
-    return db - da;
+  pagerSlot.innerHTML = pagerHtml;
+
+  // Klikhåndtering
+  pagerSlot.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-page]');
+    if (!btn) return;
+    const p = parseInt(btn.dataset.page, 10);
+    const u = new URL(location.href);
+    u.searchParams.set('page', String(p));
+    location.href = u.toString();
   });
-  wrap.innerHTML = sorted.slice(0, 36).map(card).join('');
 }
 
-async function loadJson(){
-  try{
-    const r = await fetch('/data/recipes.json', { cache:'no-cache' });
-    if (!r.ok) throw 0;
-    return r.json();
-  }catch{return []}
-}
-
-async function loadSitemap(){
-  try{
-    const r = await fetch('/sitemaps/recipes-sitemap.xml', { cache:'no-cache' });
-    if (!r.ok) throw 0;
-    const xml = await r.text();
-    const urls = Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g)).map(m=>m[1]);
-    return urls.map(u=>{
-      const slug = (u.split('slug=')[1] || '').split('&')[0] || u.split('/').pop();
-      return { slug, title: decodeURIComponent(slug.replace(/[-_]/g,' ')), image: '/assets/placeholder-recipe.jpg' };
-    });
-  }catch{return []}
-}
-
-document.addEventListener('DOMContentLoaded', async ()=>{
-  // 1) global RECIPES hvis sat af recipes.js
-  if (Array.isArray(window.RECIPES) && window.RECIPES.length){
-    render(window.RECIPES);
-    return;
-  }
-  // 2) /data/recipes.json
-  let list = await loadJson();
-  if (list.length){ render(list); return; }
-  // 3) nød: sitemap
-  list = await loadSitemap();
-  render(list);
-});
+document.addEventListener('DOMContentLoaded', mountSeneste);
