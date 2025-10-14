@@ -36,7 +36,6 @@
       .toc a { display:block; padding:6px 8px; border-radius:10px; }
       .toc a:hover { background: rgba(249,115,22,.08); }
       .lead { font-size:1.125rem; line-height:1.7; color:#374151 }
-      /* sørg for venstrejusteret indhold */
       #guideContent, #guideContent * { text-align:left; }
       #guideContent img { max-width:100%; height:auto; }
       @media print {
@@ -77,9 +76,16 @@
             <nav id="toc" class="toc grid gap-1"></nav>
           </div>
 
-          <!-- guideindhold -->
-          <div id="guideContent" class="mt-6"></div>
-          <!-- faqWrap indsættes automatisk efter guideContent af /js/guide-page.js -->
+          <!-- guideindhold (nu i boks) -->
+          <div id="guideContentCard" class="card bg-white p-6 mt-6">
+            <div id="guideContent"></div>
+          </div>
+
+          <!-- FAQ (egen boks) -->
+          <div id="faqWrap" class="card bg-white p-6 mt-6 hidden">
+            <h2 class="text-xl font-medium">FAQ</h2>
+            <div id="faqList" class="mt-3 divide-y"></div>
+          </div>
 
           <!-- kommentarer -->
           <div class="card bg-white p-6 mt-6" id="commentsCard">
@@ -122,8 +128,8 @@
         </aside>
       </div>
 
-      <!-- scripts (placeret EFTER grid’et) -->
-      <script type="module" src="/js/guide-page.js?v=7"></script>
+      <!-- scripts -->
+      <script type="module" src="/js/guide-page.js?v=8"></script>
     </main>
 
     <div id="footer"></div>
