@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Forside – opskrift-drikke.dk</title>
 
+  <!-- Tailwind -->
   <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Eget theme -->
   <link rel="stylesheet" href="/assets/site.css">
 
+  <!-- Meta -->
   <meta name="description" content="drikkeopskrifter med søgning, favoritter, guides og kommentarer.">
   <meta property="og:title" content="opskrift-drikke.dk">
   <meta property="og:description" content="5.000 drikkeopskrifter – søg, gem og bedøm.">
@@ -20,21 +23,26 @@
   <meta name="theme-color" content="#f97316">
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
 
-  <!-- Monterer din header/footer -->
+  <!-- Monterer header/footer via IDs -->
   <script type="module" src="/js/app.js"></script>
 
-  <!-- Data / søg (dine eksisterende) -->
+  <!-- Data / søg (uændret – din eksisterende søgelogik) -->
   <script type="module" src="/js/recipes.js"></script>
   <script type="module" src="/js/search.js"></script>
   <script type="module" src="/js/suggest.js"></script>
   <script type="module" src="/js/hero.js"></script>
 
-  <!-- Forside: populære kort + sikker visning af standardresultater -->
+  <!-- Forside: populære kort + fallback-resultater -->
   <script type="module" src="/js/home-popular.js"></script>
   <script type="module" src="/js/home-results-fallback.js"></script>
+
+  <style>
+    .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+    .btn  { border-radius: 1rem; }
+  </style>
 </head>
 <body class="bg-stone-50 text-stone-900">
-  <!-- Din header -->
+  <!-- Header (partials/header.html) -->
   <div id="header"></div>
 
   <main class="container">
@@ -46,10 +54,13 @@
             <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
             <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
+            <!-- “Hairline-proof” søgefelt + forslag -->
             <div class="max-w-xl mt-6">
               <div class="search-box">
                 <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
-                <input type="search" id="homeSearch" placeholder="Søg i 5.000 drikkeopskrifter..." class="w-full bg-transparent outline-none"/>
+                <input type="search" id="homeSearch"
+                       placeholder="Søg i 5.000 drikkeopskrifter..."
+                       class="w-full bg-transparent outline-none" />
               </div>
             </div>
 
@@ -63,6 +74,7 @@
             </div>
           </div>
 
+          <!-- lille promo-boks -->
           <div class="md:w-80 px-1">
             <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
               <div class="text-sm opacity-70">Tip</div>
@@ -91,18 +103,19 @@
       <div id="popularRecipes" class="mt-5 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
     </section>
 
-    <!-- Dine eksisterende kort -->
+    <!-- Dine eksisterende resultater (søgescript udfylder) + fallback -->
     <section class="pt-8">
       <div id="filters" class="flex flex-wrap gap-2"></div>
       <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
+      <!-- PriceRunner -->
       <div class="max-w-6xl mx-auto px-4 mt-8">
         <div id="pr-home-slot"></div>
       </div>
     </section>
   </main>
 
-  <!-- Din footer -->
+  <!-- Footer (partials/footer.html) -->
   <div id="footer"></div>
 
   <script type="module" src="/js/pricerunner-rotator.js"></script>
