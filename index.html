@@ -30,11 +30,8 @@
     <!-- Sitemap hint -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
 
-    <!-- Global app -->
+    <!-- Global app: monterer header/footer -->
     <script type="module" src="/js/app.js"></script>
-
-    <!-- Analytics (valgfri) -->
-    <script defer src="/js/analytics.js"></script>
 
     <!-- Data / søg -->
     <script type="module" src="/js/recipes.js"></script>
@@ -42,13 +39,16 @@
     <script type="module" src="/js/suggest.js"></script>
     <script type="module" src="/js/hero.js"></script>
 
+    <!-- Sektion med populære kort -->
+    <script type="module" src="/js/home-popular.js"></script>
+
     <style>
       .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
       .btn  { border-radius: 1rem; }
     </style>
   </head>
   <body class="bg-stone-50 text-stone-900">
-    <!-- Header partial mount -->
+    <!-- Header mount -->
     <div id="header"></div>
 
     <main class="container">
@@ -60,7 +60,7 @@
               <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
               <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
-              <!-- “Hairline-proof” søgefelt + forslag -->
+              <!-- Søgefelt -->
               <div class="max-w-xl mt-6">
                 <div class="search-box">
                   <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
@@ -109,56 +109,8 @@
           </a>
         </div>
 
-        <!-- 4 faste kort -->
-        <div class="mt-5 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <!-- Gløgg -->
-          <a href="/pages/opskrift.html?slug=gloegg-klassisk-0001" class="card overflow-hidden hover:shadow transition block border bg-white">
-            <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
-              <img src="/assets/recipes/gloegg-klassisk.jpg" alt="Den klassiske gløgg" class="w-full h-full object-cover">
-            </div>
-            <div class="p-4">
-              <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">Gløgg</span>
-              <h3 class="text-lg font-semibold mt-2 leading-snug">Den klassiske gløgg</h3>
-              <p class="text-sm text-stone-600 mt-1">Varm, krydret og nem at lykkes med.</p>
-            </div>
-          </a>
-
-          <!-- Kaffe -->
-          <a href="/pages/opskrift.html?slug=iskaffe-espresso-milk-023" class="card overflow-hidden hover:shadow transition block border bg-white">
-            <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
-              <img src="/assets/recipes/iskaffe-espresso.jpg" alt="Iskaffe med espresso & mælk" class="w-full h-full object-cover">
-            </div>
-            <div class="p-4">
-              <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">Kaffe</span>
-              <h3 class="text-lg font-semibold mt-2 leading-snug">Iskaffe med espresso & mælk</h3>
-              <p class="text-sm text-stone-600 mt-1">Cremet og forfriskende – perfekt hverdagshack.</p>
-            </div>
-          </a>
-
-          <!-- Smoothie -->
-          <a href="/pages/opskrift.html?slug=smoothie-jordbaer-banan-101" class="card overflow-hidden hover:shadow transition block border bg-white">
-            <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
-              <img src="/assets/recipes/smoothie-jordbaer-banan.jpg" alt="Jordbær–banan smoothie" class="w-full h-full object-cover">
-            </div>
-            <div class="p-4">
-              <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">Smoothie</span>
-              <h3 class="text-lg font-semibold mt-2 leading-snug">Jordbær–banan smoothie</h3>
-              <p class="text-sm text-stone-600 mt-1">Sød, mild og hele familiens favorit.</p>
-            </div>
-          </a>
-
-          <!-- Juice -->
-          <a href="/pages/opskrift.html?slug=gron-morgen-juice-077" class="card overflow-hidden hover:shadow transition block border bg-white">
-            <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
-              <img src="/assets/recipes/gron-juice.jpg" alt="Grøn morgen-juice" class="w-full h-full object-cover">
-            </div>
-            <div class="p-4">
-              <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">Juice</span>
-              <h3 class="text-lg font-semibold mt-2 leading-snug">Grøn morgen-juice</h3>
-              <p class="text-sm text-stone-600 mt-1">Sprød, frisk og fuld af grønt.</p>
-            </div>
-          </a>
-        </div>
+        <!-- her injiceres 4 kort af /js/home-popular.js -->
+        <div id="popularRecipes" class="mt-5 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
       </section>
 
       <!-- Filter + resultater -->
@@ -166,16 +118,52 @@
         <div id="filters" class="flex flex-wrap gap-2"></div>
         <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-        <!-- PriceRunner: hjemmewidget-slot (roterer mellem 3 widgets) -->
+        <!-- PriceRunner -->
         <div class="max-w-6xl mx-auto px-4 mt-8">
           <div id="pr-home-slot"></div>
         </div>
       </section>
     </main>
 
-    <!-- Footer partial mount -->
+    <!-- Footer mount -->
     <div id="footer"></div>
 
     <script type="module" src="/js/pricerunner-rotator.js"></script>
+
+    <!-- Fallback: vis simpel header/footer hvis app.js fejler -->
+    <script>
+      (function(){
+        function mountFallback(){
+          const header = document.getElementById('header');
+          if (header && header.childElementCount === 0){
+            header.innerHTML = `
+              <header class="site-header">
+                <div class="container inner">
+                  <a href="/" class="logo">
+                    <svg class="logo-ico" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>opskrift-drikke.dk</span>
+                  </a>
+                  <nav>
+                    <a href="/pages/guides.html">Guides</a>
+                    <a href="/tags/index.html">Kategorier</a>
+                    <a href="/pages/favoritter.html">Favoritter</a>
+                  </nav>
+                </div>
+              </header>`;
+          }
+          const footer = document.getElementById('footer');
+          if (footer && footer.childElementCount === 0){
+            footer.innerHTML = `
+              <footer class="site-footer">
+                <div class="container">© ${new Date().getFullYear()} opskrift-drikke.dk · Bygget med kærlighed 🍊</div>
+              </footer>`;
+          }
+        }
+        window.addEventListener('DOMContentLoaded', mountFallback);
+        window.addEventListener('error', mountFallback, true);
+      })();
+    </script>
   </body>
 </html>
