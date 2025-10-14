@@ -62,15 +62,14 @@
               <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
 
               <!-- “Hairline-proof” søgefelt + forslag -->
-              <div class="hero-search-wrap mt-5 md:w-[420px]">
-                <div class="hero-search">
-                  <svg class="w-5 h-5 text-orange-500 shrink-0"><use href="/assets/icons.svg#search"/></svg>
-                  <input id="searchInput" type="text" placeholder="Søger opskrifter..." aria-autocomplete="list" aria-haspopup="listbox" aria-controls="suggestions" />
+              <div class="max-w-xl mt-6">
+                <div class="search-box">
+                  <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
+                  <input type="search" id="homeSearch"
+                         placeholder="Søg i 5.000 drikkeopskrifter..."
+                         class="w-full bg-transparent outline-none" />
                 </div>
-                <!-- Autocomplete dropdown -->
-                <div id="suggestions" role="listbox" aria-label="Forslag"></div>
               </div>
-
               <div class="mt-4 flex flex-wrap gap-2">
                 <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
                   <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
