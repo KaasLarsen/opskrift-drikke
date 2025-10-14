@@ -11,9 +11,7 @@ async function mountPartial(id, url){
   }
 }
 
-// Kør når DOM er klar
 document.addEventListener('DOMContentLoaded', () => {
-  // Tilpas stierne her hvis dine partials ligger andre steder
   mountPartial('header', '/partials/header.html');
   mountPartial('footer', '/partials/footer.html');
 });
