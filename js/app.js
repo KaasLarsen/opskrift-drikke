@@ -1,83 +1,127 @@
-// /js/app.js
-export function showToast(msg='OK'){
-  const t = document.createElement('div');
-  t.textContent = msg;
-  t.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 bg-black text-white text-sm px-3 py-1.5 rounded-2xl z-[9999]';
-  document.body.appendChild(t); setTimeout(()=>t.remove(),1400);
-}
-export function formatStars(rating=5){
-  const full = Math.round(rating);
-  return Array.from({length:5}).map((_,i)=>
-    `<svg class="w-4 h-4 ${i<full?'':'opacity-30'}"><use href="/assets/icons.svg#star"/></svg>`
-  ).join('');
-}
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forside – opskrift-drikke.dk</title>
 
-async function mountPartial(targetId, url){
-  const el = document.getElementById(targetId);
-  if (!el) return;
-  try{
-    const html = await fetch(url, {cache:'no-cache'}).then(r=>r.text());
-    el.innerHTML = html;
+    <!-- Tailwind -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    if (targetId === 'header'){
-      // auto-load nav + auth når header er på plads
-      import('/js/nav.js').catch(()=>{});
-      import('/js/auth.js').catch(()=>{});
-    }
-  }catch(e){ console.error('Kunne ikke indlæse partial', url, e); }
-}
+    <!-- Eget theme -->
+    <link rel="stylesheet" href="/assets/site.css">
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await mountPartial('header', '/partials/header.html');
-  await mountPartial('footer', '/partials/footer.html');
-});
-<script>
-  // Vælg selv URLs + billeder + tags. (Opdatér href til jeres opskrifts-URL)
-  const POPULAR = [
-    {
-      title: "Den klassiske gløgg",
-      tag: "Gløgg",
-      href: "/pages/opskrift.html?slug=gloegg-klassisk-0001",
-      img: "/assets/recipes/gloegg-klassisk.jpg",
-      blurb: "Varm, krydret og nem at lykkes med."
-    },
-    {
-      title: "Iskaffe med espresso & mælk",
-      tag: "Kaffe",
-      href: "/pages/opskrift.html?slug=iskaffe-espresso-milk-023",
-      img: "/assets/recipes/iskaffe-espresso.jpg",
-      blurb: "Cremet og forfriskende – perfekt hverdagshack."
-    },
-    {
-      title: "Jordbær–banan smoothie",
-      tag: "Smoothie",
-      href: "/pages/opskrift.html?slug=smoothie-jordbaer-banan-101",
-      img: "/assets/recipes/smoothie-jordbaer-banan.jpg",
-      blurb: "Sød, mild og hele familiens favorit."
-    },
-    {
-      title: "Grøn morgen-juice",
-      tag: "Juice",
-      href: "/pages/opskrift.html?slug=gron-morgen-juice-077",
-      img: "/assets/recipes/gron-juice.jpg",
-      blurb: "Sprød, frisk og fuld af grønt."
-    },
-  ];
+    <!-- Meta -->
+    <meta name="description" content="drikkeopskrifter med søgning, favoritter, guides og kommentarer."/>
+    <meta property="og:title" content="opskrift-drikke.dk"/>
+    <meta property="og:description" content="5.000 drikkeopskrifter – søg, gem og bedøm."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/"/>
 
-  const $wrap = document.getElementById('popularRecipes');
-  if ($wrap){
-    $wrap.innerHTML = POPULAR.map(card => `
-      <a href="${card.href}" class="card overflow-hidden hover:shadow transition">
-        <div class="aspect-[4/3] bg-stone-100 overflow-hidden">
-          <img src="${card.img}" alt="${card.title}" class="w-full h-full object-cover">
+    <!-- Icons / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#f97316">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta name="theme-color" content="#f97316">
+
+    <!-- Sitemap hint -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+
+    <!-- Global app: monterer header/footer -->
+    <script type="module" src="/js/app.js"></script>
+
+    <!-- Data / søg -->
+    <script type="module" src="/js/recipes.js"></script>
+    <script type="module" src="/js/search.js"></script>
+    <script type="module" src="/js/suggest.js"></script>
+    <script type="module" src="/js/hero.js"></script>
+    <!-- Populære kort -->
+    <script type="module" src="/js/home-popular.js"></script>
+
+    <style>
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+      .btn  { border-radius: 1rem; }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-stone-900">
+    <!-- Header mount (behold!) -->
+    <div id="header"></div>
+
+    <main class="container">
+      <!-- HERO -->
+      <section class="hero rounded-3xl border mt-6">
+        <div class="hero-body">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 px-4 py-8">
+            <div class="md:max-w-xl">
+              <h1 class="text-3xl md:text-4xl font-semibold">Lækre drikkeopskrifter til hver dag</h1>
+              <p class="hero-sub mt-3">Hurtig søgning, favoritter og guides i et lyst, moderne univers.</p>
+
+              <!-- Søgefelt -->
+              <div class="max-w-xl mt-6">
+                <div class="search-box">
+                  <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
+                  <input type="search" id="homeSearch" placeholder="Søg i 5.000 drikkeopskrifter..." class="w-full bg-transparent outline-none" />
+                </div>
+              </div>
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
+                  <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
+                </a>
+                <a href="/tags/index.html" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border hover:bg-stone-50 transition">
+                  <svg class="w-4 h-4"><use href="/assets/icons.svg#grid"/></svg><span>Udforsk kategorier</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- lille promo-boks -->
+            <div class="md:w-80 px-1">
+              <div class="bg-white/80 backdrop-blur border rounded-2xl p-4 shadow-sm">
+                <div class="text-sm opacity-70">Tip</div>
+                <div class="mt-1 font-medium">Gem favoritter med hjertet</div>
+                <p class="mt-2 text-sm opacity-80">Log ind med e-mail og gem dine bedste opskrifter på tværs af siden.</p>
+                <div class="mt-3 flex items-center gap-2 text-xs">
+                  <span class="px-2 py-1 rounded-full border">Gløgg</span>
+                  <span class="px-2 py-1 rounded-full border">Sunde shots</span>
+                  <span class="px-2 py-1 rounded-full border">Mocktails</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="p-4">
-          <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border
-                         border-orange-200 text-orange-700 bg-orange-50">${card.tag}</span>
-          <h3 class="text-lg font-semibold mt-2 leading-snug">${card.title}</h3>
-          <p class="text-sm text-stone-600 mt-1">${card.blurb}</p>
+      </section>
+
+      <!-- MEST POPULÆRE – egen sektion EFTER hero -->
+      <section class="mt-10">
+        <div class="flex items-end justify-between">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-semibold">Mest populære opskrifter</h2>
+            <p class="text-stone-600 mt-1">Håndplukket favoritter – sæsonens sikre vindere.</p>
+          </div>
+          <a href="/pages/seneste.html" class="hidden sm:inline-flex items-center gap-2 text-sm text-orange-600 hover:underline">Se alle →</a>
         </div>
-      </a>
-    `).join('');
-  }
-</script>
+
+        <div id="popularRecipes" class="mt-5 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
+      </section>
+
+      <!-- Filter + resultater (dine eksisterende kort fortsætter her) -->
+      <section class="pt-8">
+        <div id="filters" class="flex flex-wrap gap-2"></div>
+        <div id="results" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- PriceRunner -->
+        <div class="max-w-6xl mx-auto px-4 mt-8">
+          <div id="pr-home-slot"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer mount (behold!) -->
+    <div id="footer"></div>
+
+    <script type="module" src="/js/pricerunner-rotator.js"></script>
+  </body>
+</html>
