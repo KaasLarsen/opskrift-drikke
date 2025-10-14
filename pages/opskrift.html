@@ -1,88 +1,87 @@
 <!doctype html>
 <html lang="da">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Opskrift – opskrift-drikke.dk</title>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Opskrift – opskrift-drikke.dk</title>
 
-    <!-- Tailwind + tema -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/assets/site.css">
+  <!-- Tailwind -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Partials -->
-    <script type="module" src="/js/app.js"></script>
+  <!-- Dit tema -->
+  <link rel="stylesheet" href="/assets/site.css"/>
 
-    <!-- Data-lag -->
-    <script type="module" src="/js/recipes.js"></script>
-  </head>
-  <body class="bg-stone-50 text-stone-900">
-    <div id="header"></div>
+  <!-- Partials + globale helpers -->
+  <script type="module" src="/js/app.js"></script>
 
-    <main class="container py-6">
-      <!-- breadcrumb -->
-      <nav class="text-sm text-stone-500 mb-3">
-        <a href="/" class="hover:underline">Forside</a>
-        <span class="px-1">/</span>
-        <span id="crumbTitle">Opskrift</span>
-      </nav>
+  <!-- Data -->
+  <script type="module" src="/js/recipes.js"></script>
 
-      <!-- titel + meta -->
-      <header class="mb-5">
-        <h1 id="title" class="text-3xl md:text-4xl font-semibold">Indlæser…</h1>
-        <div id="meta" class="mt-2 flex flex-wrap items-center gap-2 text-sm text-stone-600"></div>
-      </header>
+  <!-- PR-rotator (kan kaldes på flere sider) -->
+  <script type="module" src="/js/pricerunner-rotator.js"></script>
 
-      <!-- 2-kolonne layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Indhold -->
-        <article class="lg:col-span-8 space-y-4">
-          <!-- intro -->
-          <section id="intro" class="card border bg-white p-4"></section>
+  <!-- Denne sides logik -->
+  <script type="module" src="/js/recipe-page.js"></script>
+</head>
+<body class="bg-stone-50 text-stone-900">
+  <!-- Header partial mount -->
+  <div id="header"></div>
 
-          <!-- ingredienser -->
-          <section class="card border bg-white p-4">
-            <h2 class="text-xl font-semibold mb-2">Ingredienser</h2>
-            <ul id="ingredients" class="list-disc pl-5 space-y-1"></ul>
-          </section>
+  <main class="container">
+    <!-- Brødkrumme -->
+    <nav class="text-sm text-stone-500 py-3">
+      <a href="/" class="hover:underline">Forside</a>
+      <span class="px-2">/</span>
+      <span>Opskrift</span>
+    </nav>
 
-          <!-- steps -->
-          <section class="card border bg-white p-4">
-            <h2 class="text-xl font-semibold mb-2">Sådan gør du</h2>
-            <ol id="steps" class="list-decimal pl-5 space-y-2"></ol>
-          </section>
-        </article>
+    <!-- Titel -->
+    <h1 id="recipeTitle" class="text-3xl md:text-4xl font-semibold mb-2">Indlæser…</h1>
+    <p id="recipeSummary" class="text-stone-600"></p>
 
-        <!-- Sidebar -->
-        <aside class="lg:col-span-4 space-y-4">
-          <!-- rating / tags -->
-          <div class="card border bg-white p-4">
-            <div id="rating" class="text-sm"></div>
-            <div id="tags" class="mt-3 flex flex-wrap gap-2"></div>
-          </div>
+    <!-- Meta badges -->
+    <div id="recipeMeta" class="mt-3 flex flex-wrap gap-2"></div>
 
-          <!-- Sponsor-slot -->
-          <div class="card border bg-white p-4">
-            <div class="text-sm opacity-70 mb-1">Annonce</div>
-            <div id="pr-recipe-slot"></div>
-          </div>
-        </aside>
+    <!-- Indhold -->
+    <article class="mt-5 grid lg:grid-cols-12 gap-6">
+      <!-- Main kolonne -->
+      <div id="recipeMain" class="lg:col-span-8">
+        <!-- Ingredienser -->
+        <section id="ingredients" class="card border bg-white p-4">
+          <h2 class="text-xl font-semibold">Ingredienser</h2>
+          <ul id="ingredientsList" class="mt-3 space-y-1"></ul>
+        </section>
+
+        <!-- Sådan gør du -->
+        <section id="steps" class="card border bg-white p-4 mt-4">
+          <h2 class="text-xl font-semibold">Sådan gør du</h2>
+          <ol id="stepsList" class="mt-3 list-decimal pl-5 space-y-2"></ol>
+        </section>
+
+        <!-- PriceRunner-ANNONCE i main (ikke i sidebar) -->
+        <section class="mt-4">
+          <div id="pr-recipe-slot"></div>
+        </section>
+
+        <!-- Relaterede -->
+        <section class="mt-6">
+          <h2 class="text-xl font-semibold">Relaterede opskrifter</h2>
+          <div id="related" class="mt-3 grid gap-4 sm:grid-cols-2"></div>
+        </section>
       </div>
 
-      <!-- Relaterede -->
-      <section class="mt-8">
-        <div class="flex items-end justify-between">
-          <h2 class="text-2xl font-semibold">Relaterede opskrifter</h2>
-          <a href="/pages/seneste.html" class="hidden sm:inline-flex text-sm text-orange-600 hover:underline">Se alle →</a>
-        </div>
-        <div id="related" class="mt-4 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
-      </section>
-    </main>
+      <!-- Valgfrit: ekstra info (kan være tom) -->
+      <aside class="lg:col-span-4 space-y-4">
+        <section class="card border bg-white p-4">
+          <h3 class="font-semibold">Noter</h3>
+          <p id="notes" class="text-sm text-stone-700 mt-2"></p>
+        </section>
+      </aside>
+    </article>
+  </main>
 
-    <div id="footer"></div>
-
-    <!-- Siden’s logik -->
-    <script type="module" src="/js/recipe-page.js"></script>
-    <!-- PriceRunner (genbrugger din rotator) -->
-    <script type="module" src="/js/pricerunner-rotator.js"></script>
-  </body>
+  <!-- Footer partial mount -->
+  <div id="footer"></div>
+</body>
 </html>
