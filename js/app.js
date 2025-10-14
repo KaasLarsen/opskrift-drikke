@@ -2,19 +2,11 @@
 async function mountPartial(id, url){
   const el = document.getElementById(id);
   if (!el) return;
-  try{
-    const res = await fetch(url, { cache: "no-cache" });
-    if(!res.ok) throw new Error(`${url} ${res.status}`);
-    el.innerHTML = await res.text();
-  }catch(err){
-    console.error("Partial mount failed:", url, err);
-  }
+  const res = await fetch(url, { cache: "no-cache" });
+  if(!res.ok) throw new Error(`${url} ${res.status}`);
+  el.innerHTML = await res.text();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  mountPartial('header', '/partials/header.html');
-  mountPartial('footer', '/partials/footer.html');
-});
 function wireMobileMenu(){
   const btn   = document.getElementById('mobileMenuBtn');
   const panel = document.getElementById('mobileMenu');
@@ -30,17 +22,20 @@ function wireMobileMenu(){
   panel.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
 
-  // Del auth-handler mellem desktop & mobil hvis du allerede har login-logik
   const authDesktop = document.getElementById('authBtn');
   const authMobile  = document.getElementById('authBtnMobile');
-  if (authDesktop && authMobile) {
-    authMobile.addEventListener('click', () => authDesktop.click());
-  }
+  if (authDesktop && authMobile) authMobile.addEventListener('click', () => authDesktop.click());
 }
 
-/* Kald wireMobileMenu() når header-partial er indsat */
-(async function mountApp(){
-  // ... din eksisterende kode der loader header/footer ...
-  // når headeren er på plads:
+// Vent på partials før wiring
+document.addEventListener('DOMContentLoaded', async () => {
+  try{
+    await Promise.all([
+      mountPartial('header', '/partials/header.html'),
+      mountPartial('footer', '/partials/footer.html'),
+    ]);
+  }catch(err){
+    console.error('Partial mount failed:', err);
+  }
   wireMobileMenu();
-})();
+});
