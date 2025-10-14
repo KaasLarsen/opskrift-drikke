@@ -307,3 +307,16 @@ document.addEventListener('DOMContentLoaded', () => {
 .faq-item:first-child{ border-top: 0; padding-top: 0; margin-top: 0; }
 .faq-item summary{ cursor: pointer; font-weight: 600; }
 
+/* Ens search-input uden WebKit-dekorationer (fixer den vandrette streg) */
+input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-clip: padding-box;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none;
+}
