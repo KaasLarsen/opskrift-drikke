@@ -70,6 +70,24 @@
                          class="w-full bg-transparent outline-none" />
                 </div>
               </div>
+              <!-- Mest populære opskrifter -->
+              <section class="container mt-8">
+                <div class="flex items-end justify-between">
+                  <div>
+                    <h2 class="text-2xl md:text-3xl font-semibold">Mest populære opskrifter</h2>
+                    <p class="text-stone-600 mt-1">Håndplukket favoritter – sæsonens sikre vindere.</p>
+                  </div>
+                  <a href="/pages/seneste.html" class="hidden sm:inline-flex items-center gap-2 text-sm text-orange-600 hover:underline">
+                    Se alle → 
+                  </a>
+                </div>
+              
+                <!-- grid -->
+                <div id="popularRecipes" class="mt-5 grid gap-4 sm:gap-6
+                                                grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                  <!-- kort bliver injiceret af scriptet herunder -->
+                </div>
+              </section>
               <div class="mt-4 flex flex-wrap gap-2">
                 <a id="dailyBtn" href="#" class="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border bg-white hover:bg-stone-50 transition">
                   <svg class="w-4 h-4"><use href="/assets/icons.svg#sparkles"/></svg><span>Dagens drik</span>
