@@ -1,119 +1,106 @@
-// /js/search.js
-import { loadAllRecipes, renderRecipeCard } from './recipes.js';
+// === search.js — søg + forslag på forsiden ===
+import { loadAllRecipes } from '/js/recipes.js';
 
-// utils
-const fold = (s='') => s.toLowerCase()
-  .replace(/æ/g,'ae').replace(/ø/g,'oe').replace(/å/g,'aa')
-  .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-  .replace(/[^a-z0-9\s\-]/g,' ')
-  .replace(/\s+/g,' ')
-  .trim();
+const MAX_SUGGEST = 8;
 
-const titleCase = (s='') => s ? s[0].toUpperCase() + s.slice(1) : s;
-const tokens = q => fold(q).split(' ').filter(Boolean);
-
-// state
-let DATA=[], INDEX=[], activeCat=null; // activeCat er foldet værdi: 'gloegg', 'sunde shots', ...
-
-const normCat = c => {
-  const f = fold(c||'');
-  if (f === 'gloegg' || f === 'glogg' || f === 'gloeg') return 'gloegg';
-  if (f === 'sunde-shots' || f === 'sundeshots') return 'sunde shots';
-  return f;
-};
-
-const buildHay = r => fold([
-  r.title||'', r.category||'', (r.tags||[]).join(' '), r.description||'', r.slug||''
-].join(' '));
-
-const score = (r, qTokens) => {
-  let s=0, title=fold(r.title||''), cat=fold(r.category||''), tags=fold((r.tags||[]).join(' ')), desc=fold(r.description||'');
-  for (const t of qTokens){
-    if (title.startsWith(t)) s+=12; else if (title.includes(t)) s+=8;
-    if (cat.includes(t)) s+=6; if (tags.includes(t)) s+=3; if (desc.includes(t)) s+=1;
+function ensureSuggestionBox(input) {
+  let box = document.getElementById('suggestions');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'suggestions';
+    input.parentElement.appendChild(box);
   }
-  const m=(r.title||'').match(/#(\d+)/); if (m) s+=parseInt(m[1],10)/10000;
-  return s;
-};
-
-function renderChips(counts){
-  const el = document.getElementById('filters'); if (!el) return;
-  const labels = ['Gløgg','Sunde shots','Mocktail','Kaffe','Smoothie'];
-  el.innerHTML = labels.map(lbl=>{
-    const f = normCat(lbl);
-    const active = activeCat===f ? 'ring-2 ring-blue-500 bg-white' : 'hover:bg-stone-100';
-    const disabled = (counts && counts[f]===0) ? 'opacity-50 pointer-events-none' : '';
-    return `<button data-cat="${f}" class="px-3 py-1.5 border rounded-2xl ${active} ${disabled}">${lbl}</button>`;
-  }).join('');
+  return box;
 }
 
-function applySearch(q){
-  const results = document.getElementById('results');
-  const qTokens = tokens(q);
-  let rows = INDEX;
+function matchScore(q, r) {
+  q = q.toLowerCase();
+  const hay = (r.title || '').toLowerCase() + ' ' + (r.tags || []).join(' ').toLowerCase();
+  // simple contains score
+  if (hay.includes(q)) return 1;
+  return 0;
+}
 
-  if (activeCat) rows = rows.filter(x => x.fcat === activeCat);
+function renderItem(r) {
+  const title = r.title || 'Uden titel';
+  const tags = Array.isArray(r.tags) ? r.tags.slice(0,3).join(', ') : '';
+  return `<div data-slug="${encodeURIComponent(r.slug)}">
+    <strong>${title}</strong>
+    ${tags ? `<span class="suggest-meta">${tags}</span>` : ''}
+  </div>`;
+}
 
-  if (qTokens.length){
-    const out=[];
-    for (const it of rows){
-      let ok=true; for (const t of qTokens){ if (!it.hs.includes(t)){ ok=false; break; } }
-      if (!ok) continue;
-      out.push([score(it.r,qTokens), it.r]);
+async function mountSearch() {
+  const input = document.getElementById('homeSearch');
+  if (!input) return;
+
+  const list = await loadAllRecipes();
+  const box = ensureSuggestionBox(input);
+  let current = -1;
+  let items = [];
+
+  function show(q) {
+    if (!q || q.trim().length < 2) {
+      box.classList.remove('active');
+      box.innerHTML = '';
+      return;
     }
-    out.sort((a,b)=>b[0]-a[0]);
-    rows = out.map(x=>x[1]);
-  } else {
-    rows = rows.map(x=>x.r);
+    const ql = q.trim().toLowerCase();
+    const hits = list
+      .map(r => ({ r, s: matchScore(ql, r) }))
+      .filter(x => x.s > 0)
+      .slice(0, 400) // grov begrænsning
+      .sort((a,b) => b.s - a.s || (a.r.title||'').localeCompare(b.r.title||''))
+      .slice(0, MAX_SUGGEST)
+      .map(x => x.r);
+
+    items = hits;
+    current = -1;
+    box.innerHTML = hits.map(renderItem).join('');
+    box.classList.toggle('active', hits.length > 0);
   }
 
-  results.innerHTML = rows.length
-    ? rows.slice(0,150).map(renderRecipeCard).join('')
-    : `<p class="p-4 bg-amber-50 border rounded-2xl">ingen resultater for “${q || (activeCat ? titleCase(activeCat) : '')}”.</p>`;
-}
+  function goto(r) {
+    if (!r) return;
+    location.href = `/pages/opskrift?slug=${encodeURIComponent(r.slug)}`;
+  }
 
-async function initSearch(){
-  const input = document.getElementById('searchInput');
-  const results = document.getElementById('results');
-  const filters = document.getElementById('filters');
-  if (!input || !results) return;
+  input.addEventListener('input', () => show(input.value));
+  input.addEventListener('focus', () => show(input.value));
 
-  // indlæs ALLE opskrifter (understøtter 1..20 chunks)
-  DATA = await loadAllRecipes(len=>{
-    input.placeholder = `Søg i ${len.toLocaleString('da-DK')} drikkeopskrifter...`;
+  input.addEventListener('keydown', (e) => {
+    const rows = Array.from(box.querySelectorAll('div[data-slug]'));
+    if (!rows.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      current = (current + 1) % rows.length;
+      rows.forEach((el,i) => el.style.background = i===current ? '#fff7f2' : '');
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      current = (current - 1 + rows.length) % rows.length;
+      rows.forEach((el,i) => el.style.background = i===current ? '#fff7f2' : '');
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      goto(current >= 0 ? items[current] : items[0]);
+    } else if (e.key === 'Escape') {
+      box.classList.remove('active');
+      box.innerHTML = '';
+    }
   });
 
-  INDEX = DATA.map(r => ({ r, hs: buildHay(r), fcat: normCat(r.category||'') }));
-
-  // diagnoser (hjælper os at se om data rent faktisk indeholder kategorierne)
-  const counts = INDEX.reduce((acc,x)=>{ acc[x.fcat]=(acc[x.fcat]||0)+1; return acc; },{});
-  window.__diagSearch = { counts, sampleGloegg: INDEX.find(x=>x.fcat==='gloegg')?.r?.title };
-
-  // render kategori-chips (deaktiver hvis der ingen matches er)
-  renderChips(counts);
-
-  // klik på chips: ægte kategori-filter (ikke tekst i input)
-  filters?.addEventListener('click', e=>{
-    const b = e.target.closest('[data-cat]'); if (!b) return;
-    const v = b.getAttribute('data-cat'); activeCat = (activeCat===v)? null : v;
-    renderChips(counts); applySearch(input.value);
+  box.addEventListener('mousedown', (e) => {
+    const row = e.target.closest('div[data-slug]');
+    if (!row) return;
+    const slug = decodeURIComponent(row.getAttribute('data-slug'));
+    const r = items.find(x => String(x.slug) === slug);
+    goto(r);
   });
 
-  // klik på tag-pills i kort → læg teksten i søgefeltet
-  results.addEventListener('click', e=>{
-    const pill = e.target.closest('span'); if (!pill) return;
-    const cls = pill.getAttribute('class')||''; if (!/rounded-full/.test(cls)) return;
-    input.value = (pill.textContent||'').trim(); applySearch(input.value);
-  });
-
-  // initial render
-  results.innerHTML = DATA.slice(0,30).map(renderRecipeCard).join('');
-
-  // søg ved input
-  input.addEventListener('input', ()=>{
-    clearTimeout(window.__od_search_t);
-    window.__od_search_t = setTimeout(()=>applySearch(input.value), 120);
+  document.addEventListener('click', (e) => {
+    if (e.target === input || box.contains(e.target)) return;
+    box.classList.remove('active');
   });
 }
 
-document.addEventListener('DOMContentLoaded', initSearch);
+document.addEventListener('DOMContentLoaded', mountSearch);
