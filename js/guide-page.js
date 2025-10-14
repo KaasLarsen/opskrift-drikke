@@ -1,168 +1,134 @@
-// /js/guide-page.js  (SAFE MODE renderer)
-import { currentUser } from './auth.js';
-import { showToast } from './app.js';
+// /js/guide-page.js
+// Loader guides (chunket el. fallback), finder slug og forbedrer layout så FAQ står for sig selv.
 
-window.__GUIDE_VERSION = 'safe-7';
-
-// --- utils ---
-const qs = (id) => document.getElementById(id);
-const getSlug = () => (new URLSearchParams(location.search).get('slug') || '').trim();
-
-// Ægte sentence case: stort første bogstav i starten OG efter . ! ? :
-function sentenceCase(str = '') {
-  let s = (str || '').replace(/\s+/g, ' ').trim();
+function sentenceCase(str=''){
+  let s = (str || '').replace(/\s+/g,' ').trim().toLowerCase();
   if (!s) return s;
-  s = s.toLowerCase();
-  s = s.replace(/(^|[.!?]\s+|:\s+|\(\s*)([a-zæøå])/g, (_, p1, p2) => p1 + p2.toUpperCase());
+  s = s.replace(/(^|[.!?]\s+|:\s+|\(\s*)([a-zæøå])/g, (_,p1,p2)=> p1 + p2.toUpperCase());
   s = s.replace(/\s*:\s*/g, ': ');
   return s;
 }
 
-// --- PR under kommentarer (samme som før) ---
-async function safeMountPRWidget(guide){
+const V = 'guides-v1'; // bump hvis du opdaterer data
+const j = (p) => fetch(`${p}?${V}`, { cache:'no-cache' }).then(r=>r.json());
+
+async function loadAllGuides(){
   try {
-    const rotator = await import('/js/pricerunner-rotator.js');
-    const mapping = await import('/js/pr-widgets-map.js');
-    let key = null;
-    if (typeof mapping.chooseWidgetKeys === 'function') {
-      const keys = mapping.chooseWidgetKeys(guide) || [];
-      key = Array.isArray(keys) && keys.length ? keys[0] : null;
-    } else if (typeof mapping.chooseWidgetKeyFrom === 'function') {
-      key = mapping.chooseWidgetKeyFrom(guide.category, guide.tags || []);
-    }
-    if (!key) return;
-    rotator.mountPRByKey('#pr-guide-slot', key);
-
-    setTimeout(() => {
-      const slot = document.querySelector('#pr-guide-slot');
-      if (slot && !slot.querySelector('iframe') && !slot.querySelector('[id^="prw-"] iframe')) {
-        const note = document.createElement('div');
-        note.className = 'text-sm opacity-70 mt-2 pr-fallback-note';
-        note.textContent = 'Annonce – kunne ikke indlæse tilbud lige nu.';
-        if (!slot.querySelector('.pr-fallback-note')) slot.appendChild(note);
+    const first = await j('/data/guides-1.json');
+    if (Array.isArray(first) && first.length){
+      let all = [...first];
+      for (let i=2;i<=20;i++){
+        try{
+          const arr = await j(`/data/guides-${i}.json`);
+          if (!Array.isArray(arr) || !arr.length) break;
+          all = all.concat(arr);
+        }catch{ break; }
       }
-    }, 4000);
-  } catch (err) {
-    console.warn('PR-widget valgfri, sprang over:', err);
+      return all;
+    }
+  } catch { /* fallback */ }
+  return await j('/data/guides.json');
+}
+
+function getSlug(){
+  const p = new URLSearchParams(location.search);
+  return (p.get('slug')||'').trim();
+}
+
+function enhanceGuideContent(root){
+  // find “ofte stillede spørgsmål” overskriften
+  const h2s = [...root.querySelectorAll('h2')];
+  const faqH2 = h2s.find(h => /ofte\s+stillede\s+spørgsmål/i.test(h.textContent || ''));
+  if (!faqH2) return;
+
+  // lav en separat kort-sektion i siden
+  let faqWrap = document.getElementById('faqWrap');
+  if (!faqWrap){
+    faqWrap = document.createElement('section');
+    faqWrap.id = 'faqWrap';
+    faqWrap.className = 'faq-card mt-6';
+    // indsæt efter artiklen (eller hvor du vil have den)
+    root.parentElement.appendChild(faqWrap);
   }
-}
 
-// --- comments ---
-function commentsKey(slug){ return `od_guide_comments_${slug}`; }
-function loadComments(slug){ try { return JSON.parse(localStorage.getItem(commentsKey(slug))||'[]'); } catch { return []; } }
-function saveComments(slug, list){ localStorage.setItem(commentsKey(slug), JSON.stringify(list.slice(-200))); }
-function addComment(slug, entry){ const list = loadComments(slug); list.push(entry); saveComments(slug, list); return list; }
-function renderComments(slug, wrap){
-  const list = loadComments(slug).sort((a,b)=>b.ts-a.ts);
-  wrap.innerHTML = list.length
-    ? list.map(c => `
-        <div class="border rounded-2xl p-3">
-          <div class="text-sm opacity-70">${new Date(c.ts).toLocaleString('da-DK')}</div>
-          <div class="mt-1">${c.text}</div>
-          <div class="text-sm opacity-70 mt-1">${c.user||'Anonym'}</div>
-        </div>`).join('')
-    : '<p class="opacity-70">Ingen kommentarer endnu.</p>';
-}
+  // flyt FAQ-overskrift og alle søskende derefter over i faqWrap
+  const frag = document.createDocumentFragment();
+  frag.appendChild(faqH2);
+  let n = faqH2.nextSibling;
+  while (n){
+    const next = n.nextSibling;
+    frag.appendChild(n);
+    n = next;
+  }
+  faqWrap.innerHTML = ''; // reset
+  faqWrap.appendChild(frag);
 
-// --- render (SAFE: ingen splitting i kort) ---
-function renderContentAsArticle(html, mount){
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html || '';
-
-  // fjern et evt. første H1 der duplikerer sidens titel
-  const firstH1 = tmp.querySelector('h1');
-  if (firstH1) firstH1.remove();
-
-  // neutralisér styles der kan skubbe indholdet til højre
-  tmp.querySelectorAll('p, ul, ol, h2, h3, h4, table, blockquote, div, figure, img').forEach(el => {
-    el.style.float = 'none';
-    el.style.clear = 'none';
-    el.style.textAlign = 'left';
-    el.style.marginLeft = '';
-    el.style.marginRight = '';
-    el.style.maxWidth = '100%';
+  // lav <p><strong>Q</strong><br>A</p> om til details/summary
+  const ps = [...faqWrap.querySelectorAll('p')];
+  const items = [];
+  ps.forEach(p=>{
+    const strong = p.querySelector('strong');
+    if (!strong) return;
+    const q = strong.textContent.trim().replace(/[:\s]+$/,'');
+    // svar = alt i p, efter <strong>...</strong><br>
+    const html = p.innerHTML || '';
+    const after = html.split('</strong>')[1] || '';
+    const ans = after.replace(/^<br\s*\/?>/i,'').trim();
+    const details = document.createElement('details');
+    details.className = 'faq-item';
+    const summary = document.createElement('summary');
+    summary.textContent = sentenceCase(q);
+    const body = document.createElement('div');
+    body.className = 'mt-2 opacity-90';
+    body.innerHTML = ans || '';
+    details.appendChild(summary);
+    details.appendChild(body);
+    items.push({ orig:p, node:details });
   });
+  // erstat p’erne med details
+  items.forEach(({orig,node})=> orig.replaceWith(node));
 
-  // sentence-case på H2/H3-overskrifter
-  tmp.querySelectorAll('h2, h3').forEach(h => {
-    const t = (h.textContent || '').trim();
-    h.textContent = sentenceCase(t);
-  });
-
-  const article = document.createElement('article');
-  article.className = 'card bg-white p-6 mt-6';
-  article.style.lineHeight = '1.7';
-  article.style.color = '#1f2937';
-  article.append(...Array.from(tmp.childNodes));
-  mount.appendChild(article);
+  // hvis ingen items blev lavet, behold bare teksten
 }
 
-// --- init ---
+function renderGuide(g){
+  const titleEl = document.getElementById('guideTitle');
+  const introEl = document.getElementById('guideIntro');
+  const bodyEl  = document.getElementById('guideContent');
+
+  document.title = `${g.title} – opskrift-drikke.dk`;
+  titleEl.textContent = sentenceCase(g.title||'Guide');
+  introEl.textContent = sentenceCase(g.intro||'');
+  bodyEl.classList.add('guide-article');
+  bodyEl.innerHTML = g.content || '';
+
+  // forbedr layout for FAQ
+  enhanceGuideContent(bodyEl);
+}
+
 async function init(){
   const slug = getSlug();
-  const titleEl = qs('guideTitle');
-  const introEl = qs('guideIntro');
-  const metaEl  = qs('guideMeta');
-  const breadEl = qs('breadcrumbTitle');
-  const relatedEl = qs('relatedGuides');
-  const commentList = qs('commentList');
-  const commentText = qs('commentText');
-  const commentSubmit = qs('commentSubmit');
-  const commentHint = qs('commentHint');
-  const contentMount = qs('guideContent');
+  const titleEl = document.getElementById('guideTitle');
+  const bodyEl  = document.getElementById('guideContent');
+  if (!slug){ titleEl.textContent='Slug mangler'; return; }
 
-  if (!slug){ titleEl.textContent = 'Slug mangler i URL'; return; }
-
-  // hent guides
-  let guides = [];
+  let data = [];
   try {
-    const res = await fetch('/data/guides.json', { cache: 'no-cache' });
-    guides = await res.json();
-  } catch (e){
+    data = await loadAllGuides();
+  } catch(e){
     titleEl.textContent = 'Kunne ikke indlæse guides';
     console.error(e);
     return;
   }
 
-  const guide = guides.find(g => (g.slug||'').toLowerCase() === decodeURIComponent(slug).toLowerCase());
-  if (!guide){ titleEl.textContent = 'Guide ikke fundet'; return; }
+  const g = data.find(x => (x.slug||'') === slug);
+  if (!g){
+    titleEl.textContent = 'Guide ikke fundet';
+    bodyEl.innerHTML = '<p class="opacity-70">Prøv at gå tilbage til <a class="underline" href="/pages/guides.html">guides</a>.</p>';
+    return;
+  }
 
-  // meta + sentence-case
-  const niceTitle = sentenceCase(guide.title || '');
-  const niceIntro = guide.intro ? sentenceCase(guide.intro) : '';
-
-  document.title = `${niceTitle} – opskrift-drikke.dk`;
-  breadEl.textContent = niceTitle;
-  titleEl.textContent = niceTitle;
-  introEl.textContent = niceIntro;
-  metaEl.textContent = [guide.category, (guide.tags||[]).join(' · ')].filter(Boolean).join(' · ');
-
-  // indhold som én artikel (stabil)
-  contentMount.innerHTML = '';
-  renderContentAsArticle(guide.content || '', contentMount);
-
-  // relaterede
-  const rel = guides.filter(g => g.slug !== guide.slug && g.category === guide.category).slice(0,5);
-  relatedEl.innerHTML = rel.length
-    ? rel.map(r => `<li><a class="hover:underline" href="/pages/guide.html?slug=${r.slug}">${sentenceCase(r.title)}</a></li>`).join('')
-    : '<li class="opacity-70">Ingen relaterede guides fundet.</li>';
-
-  // kommentarer
-  const u = currentUser();
-  commentHint.textContent = u ? `Logget ind som ${u.email}` : 'Du skal være logget ind.';
-  renderComments(slug, commentList);
-  commentSubmit.addEventListener('click', ()=>{
-    const u = currentUser(); if (!u){ showToast('Du skal være logget ind for at kommentere'); return; }
-    const txt = (commentText.value||'').trim(); if (!txt){ showToast('Skriv en kommentar først'); return; }
-    const entry = { text: txt, ts: Date.now(), user: u.email };
-    addComment(slug, entry);
-    renderComments(slug, commentList);
-    commentText.value = '';
-    showToast('Kommentar tilføjet');
-  });
-
-  // PR under kommentarer
-  await safeMountPRWidget(guide);
+  renderGuide(g);
 }
 
 document.addEventListener('DOMContentLoaded', init);
