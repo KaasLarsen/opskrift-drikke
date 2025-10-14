@@ -1,4 +1,4 @@
-<!-- Global Header Partial -->
+<!-- Global Header Partial (tight spacing + right-aligned login) -->
 <header class="w-full border-b bg-white/80 backdrop-blur sticky top-0 z-40">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
     <!-- logo -->
@@ -7,13 +7,13 @@
       <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
     </a>
 
-    <!-- desktop nav -->
-    <nav class="hidden md:flex items-center gap-6 text-sm">
-      <a href="/index.html" class="hover:underline">Forside</a>
+    <!-- desktop nav (tighter spacing) -->
+    <nav class="hidden md:flex items-center gap-3 text-sm">
+      <a href="/index.html" class="hover:underline px-1.5">Forside</a>
 
       <!-- kategorier dropdown (desktop) -->
       <div class="relative group">
-        <button class="inline-flex items-center gap-1 hover:underline" aria-haspopup="true" aria-expanded="false">
+        <button class="inline-flex items-center gap-1 hover:underline px-1.5" aria-haspopup="true" aria-expanded="false">
           Kategorier
           <svg class="w-4 h-4 opacity-70"><use href="/assets/icons.svg#chevron-down"/></svg>
         </button>
@@ -28,13 +28,13 @@
         </div>
       </div>
 
-      <a href="/pages/seneste.html" class="hover:underline">Seneste opskrifter</a>
-      <a href="/pages/guides.html" class="hover:underline">Guides</a>
-      <a href="/pages/favoritter.html" class="hover:underline">Favoritter</a>
+      <a href="/pages/seneste.html" class="hover:underline px-1.5">Seneste opskrifter</a>
+      <a href="/pages/guides.html" class="hover:underline px-1.5">Guides</a>
+      <a href="/pages/favoritter.html" class="hover:underline px-1.5">Favoritter</a>
     </nav>
 
-    <!-- actions + hamburger -->
-    <div class="flex items-center gap-2">
+    <!-- actions + hamburger (login pulled further right) -->
+    <div class="flex items-center gap-2 ml-4 md:ml-12">
       <a href="/pages/login.html" class="hidden sm:inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border">
         <svg class="w-4 h-4"><use href="/assets/icons.svg#user"/></svg><span>Log ind</span>
       </a>
@@ -49,7 +49,6 @@
   <!-- mobile panel -->
   <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
     <nav class="max-w-6xl mx-auto px-4 py-3 grid gap-2 text-sm">
-      <!-- mobil “kategorier” som accordion -->
       <details class="rounded-xl border p-2">
         <summary class="cursor-pointer flex items-center justify-between px-1 py-1.5">
           <span>Kategorier</span>
