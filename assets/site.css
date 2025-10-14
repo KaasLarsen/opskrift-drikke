@@ -237,3 +237,11 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration{
   display:none;
 }
+/* Kompakte resultatskort (uden billede) */
+#results .card {
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(0,0,0,.06);
+}
+#results .card .aspect-\[4\/3\] { display:none; } /* skjul evt. gamle billed-pladsholdere */
