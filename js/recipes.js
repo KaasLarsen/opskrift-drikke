@@ -14,6 +14,23 @@ const CANDIDATE_SOURCES = [
   '/recipes.json',
   '/recipes-1.json','/recipes-2.json','/recipes-3.json','/recipes-4.json','/recipes-5.json'
 ];
+function normalizeRecipe(r) {
+  // rating
+  const ratingRaw = r.rating ?? r.stars ?? r.score ?? r.avgRating ?? null;
+  const rating = typeof ratingRaw === 'number' ? ratingRaw
+              : ratingRaw ? parseFloat(String(ratingRaw).replace(',', '.')) : null;
+
+  // votes / reviews count
+  const votesRaw = r.votes ?? r.reviews ?? r.reviewCount ?? r.ratingCount ?? r.votesCount ?? (Array.isArray(r.ratings) ? r.ratings.length : null);
+  const votes = typeof votesRaw === 'number' ? votesRaw
+              : votesRaw ? parseInt(votesRaw, 10) : 0;
+
+  return {
+    ...r,
+    rating: (rating != null && !Number.isNaN(rating)) ? rating : 4, // pæn fallback
+    votes: (!Number.isNaN(votes) && votes != null) ? votes : 0,
+  };
+}
 
 export async function loadAllRecipes() {
   if (ALL_RECIPES_CACHE) return ALL_RECIPES_CACHE;
