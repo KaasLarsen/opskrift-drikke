@@ -1,57 +1,63 @@
-// === recipes.js — dataload + render + favoritter ===
+// === recipes.js — robust dataload + favoritter + kort-render ===
 
-// ---- Data ----
+// ---------- ROBUST DATALOAD ----------
 let ALL_RECIPES_CACHE = null;
+
+// Alle mulige stier vi prøver – tilpas rækkefølge frit
+const CANDIDATE_SOURCES = [
+  '/data/recipes.json',
+  '/data/recipes-1.json','/data/recipes-2.json','/data/recipes-3.json','/data/recipes-4.json','/data/recipes-5.json',
+  '/data/recipes-6.json','/data/recipes-7.json','/data/recipes-8.json','/data/recipes-9.json','/data/recipes-10.json',
+  // Fallbacks hvis data ligger uden /data
+  '/recipes.json',
+  '/recipes-1.json','/recipes-2.json','/recipes-3.json','/recipes-4.json','/recipes-5.json'
+];
 
 export async function loadAllRecipes() {
   if (ALL_RECIPES_CACHE) return ALL_RECIPES_CACHE;
 
-  // Hent alle bundter – tilpas stier hvis nødvendigt
-  const files = [
-    '/data/recipes-1.json',
-    '/data/recipes-2.json',
-    '/data/recipes-3.json',
-    '/data/recipes-4.json',
-    '/data/recipes-5.json'
-  ];
-  const parts = await Promise.all(files.map(async (url) => {
-    try{
+  const chunks = await Promise.all(CANDIDATE_SOURCES.map(async (url) => {
+    try {
       const r = await fetch(url, { cache: 'no-cache' });
-      if (!r.ok) throw new Error(url + ' ' + r.status);
-      return await r.json();
-    }catch(e){
-      console.warn('Kunne ikke hente', url, e);
+      if (!r.ok) throw new Error(`${url} ${r.status}`);
+      const json = await r.json();
+      if (!Array.isArray(json)) throw new Error(`${url} no array`);
+      return json;
+    } catch (e) {
+      // Stille fejl – vi logger kun i konsollen så siden ikke dør
+      console.debug('[recipes] skip', url, e.message);
       return [];
     }
   }));
 
-  ALL_RECIPES_CACHE = parts.flat();
+  // Dedupe (id/slug)
+  const seen = new Set();
+  const all  = [];
+  for (const arr of chunks) {
+    for (const r of arr) {
+      const key = String(r.id || r.slug || r.key || '');
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      all.push(r);
+    }
+  }
+
+  ALL_RECIPES_CACHE = all;
+  if (!ALL_RECIPES_CACHE.length) {
+    console.error('[recipes] Ingen opskrifter blev fundet. Tjek at datafilerne findes og kan hentes.');
+  }
   return ALL_RECIPES_CACHE;
 }
 
-// ---- Favoritter (localStorage) ----
+// ---------- FAVORITTER (localStorage) ----------
 const FAV_KEY = 'od_favs_v1';
-
-function readFavSet(){
-  try{
-    const raw = localStorage.getItem(FAV_KEY);
-    return new Set(raw ? JSON.parse(raw) : []);
-  }catch{ return new Set(); }
-}
-function writeFavSet(set){
-  try{ localStorage.setItem(FAV_KEY, JSON.stringify([...set])); }catch{}
-}
+function readFavSet(){ try{ return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]')); }catch{ return new Set(); } }
+function writeFavSet(s){ try{ localStorage.setItem(FAV_KEY, JSON.stringify([...s])); }catch{} }
 export function isFav(id){ return readFavSet().has(String(id)); }
-export function toggleFav(id){
-  const set = readFavSet();
-  const key = String(id);
-  if (set.has(key)) set.delete(key); else set.add(key);
-  writeFavSet(set);
-  return set.has(key);
-}
+export function toggleFav(id){ const s=readFavSet(); const k=String(id); s.has(k)?s.delete(k):s.add(k); writeFavSet(s); return s.has(k); }
 export function getFavIds(){ return [...readFavSet()]; }
 
-// ---- UI helpers ----
+// ---------- UI: hjerte + kort ----------
 function heartBtnHTML(id){
   const active = isFav(id);
   return `
@@ -60,7 +66,7 @@ function heartBtnHTML(id){
     </button>`;
 }
 
-export function bindFavoriteClicks(root = document){
+export function bindFavoriteClicks(root=document){
   root.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-fav]');
     if (!btn) return;
@@ -71,22 +77,18 @@ export function bindFavoriteClicks(root = document){
   });
 }
 
-// ---- Card render ----
 export function renderRecipeCard(rec){
   const id    = rec.id || rec.slug || rec.key || '';
   const slug  = rec.slug || id;
   const title = rec.title || 'Uden titel';
   const desc  = rec.subtitle || rec.description || '—';
   const tags  = (rec.tags || []).slice(0,3);
-
   const tagsHtml = tags.map(t => `
     <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">${t}</span>
   `).join(' ');
 
   const stars = Math.round(rec.rating || 4);
-  const starHtml = '★★★★★'.split('').map((s,i) =>
-    `<span>${i < stars ? '★' : '☆'}</span>`
-  ).join('');
+  const starHtml = '★★★★★'.split('').map((s,i)=>`<span>${i<stars?'★':'☆'}</span>`).join('');
 
   return `
     <a href="/pages/opskrift?slug=${encodeURIComponent(slug)}"
@@ -102,5 +104,20 @@ export function renderRecipeCard(rec){
   `;
 }
 
-// Auto-wire favorites (for sider der bare importerer recipes.js)
-document.addEventListener('DOMContentLoaded', () => bindFavoriteClicks(document));
+// ---------- AUTO-MOUNT: vis første batch hvis #results findes ----------
+async function mountFrontpageGrid(){
+  const grid = document.getElementById('results');
+  if (!grid) return;                   // ikke på denne side
+  try{
+    const list = await loadAllRecipes();
+    // vis 24 stk som standard
+    grid.innerHTML = list.slice(0,24).map(renderRecipeCard).join('');
+  }catch(e){
+    console.error('[recipes] kunne ikke rendere forsiden', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  bindFavoriteClicks(document);
+  mountFrontpageGrid();  // gør intet hvis #results ikke findes
+});
