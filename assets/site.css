@@ -283,20 +283,6 @@ input[type="search"]::-webkit-search-results-decoration{
   text-align: left !important;
   float: none !important;
 }
-/* TOC: venstre-justér og undgå at den kryber mod højre */
-#toc {
-  display: grid;
-  grid-template-columns: 1fr;   /* én kolonne */
-  gap: 8px;
-  justify-items: start;         /* venstre */
-}
-#toc a { display:block; padding:6px 8px; border-radius:10px; }
-#toc a:hover { background: rgba(249,115,22,.08); }
-
-/* Fail-safe hvis noget indlejret HTML sætter højrejustering */
-#guideContent, #guideContent * {
-  text-align: left !important;
-}
 /* TOC – tving venstrejustering */
 #toc{
   display:flex !important;
