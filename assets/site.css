@@ -271,3 +271,10 @@ input[type="search"]::-webkit-search-results-decoration{
 .fav-btn svg{ width:20px; height:20px; fill:none; stroke:#222; stroke-width:2; }
 .fav-btn.is-fav{ background:#ffefe6; border-color:#f97316; }
 .fav-btn.is-fav svg{ fill:#f97316; stroke:#f97316; }
+/* Hjerter der kræver login (før man er logget ind) */
+.fav-requires-auth {
+  opacity: .75;
+}
+.fav-requires-auth:hover {
+  opacity: 1;
+}
