@@ -254,3 +254,7 @@ input[type="search"]::-webkit-search-results-decoration{
   padding: 16px;
   box-shadow: var(--shadow-sm, 0 6px 14px rgba(0,0,0,.06));
 }
+.site-header .logo{font-size:1.05rem}
+@media (min-width:768px){
+  .site-header nav a{font-weight:500}
+}
