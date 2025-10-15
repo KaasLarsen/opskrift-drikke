@@ -1,22 +1,35 @@
-// /js/guide-page.js — robust guidevisning + PR-rotator + Relaterede opskrifter
-const VERSION = 'v6';
+// /js/guide-page.js — robust guidevisning + PR-rotator + relateret indhold
+const VERSION = 'v7';
 
+// --------------------------------------------------
+// Utils
+// --------------------------------------------------
 function getSlug() {
   const u = new URL(location.href);
   return u.searchParams.get('slug') || '';
 }
+function setHTML(id, html){ const el = document.getElementById(id); if (el) el.innerHTML = html || ''; }
+function setText(id, txt){ const el = document.getElementById(id); if (el) el.textContent = txt || ''; }
 async function j(url){
   const r = await fetch(`${url}?${VERSION}`, { cache: 'no-cache' });
   if (!r.ok) throw new Error(`HTTP ${r.status} @ ${url}`);
   return r.json();
 }
+
+// --------------------------------------------------
+// Data: guides (chunk + fallback) med cache
+// --------------------------------------------------
+let __ALL_GUIDES_CACHE = null;
+
 async function loadAllGuides(){
+  if (__ALL_GUIDES_CACHE) return __ALL_GUIDES_CACHE;
+
   let all = [];
   try{
     const first = await j('/data/guides-1.json');
     if (Array.isArray(first) && first.length){
       all = all.concat(first);
-      for(let i=2;i<=40;i++){
+      for (let i = 2; i <= 40; i++){
         try{
           const more = await j(`/data/guides-${i}.json`);
           if (!Array.isArray(more) || !more.length) break;
@@ -25,14 +38,19 @@ async function loadAllGuides(){
       }
     }
   }catch{}
+
   if (!all.length){
-    try{ all = await j('/data/guides.json'); }catch(e){ console.error('[guide] data-fejl', e); }
+    try { all = await j('/data/guides.json'); }
+    catch(e){ console.error('[guide] data-fejl', e); all = []; }
   }
+
+  __ALL_GUIDES_CACHE = all;
   return all;
 }
-function setHTML(id, html){ const el=document.getElementById(id); if(el) el.innerHTML = html || ''; }
-function setText(id, txt){ const el=document.getElementById(id); if(el) el.textContent = txt || ''; }
 
+// --------------------------------------------------
+// Render helpers
+// --------------------------------------------------
 function pickContent(g){
   if (g.contentHtml) return g.contentHtml;
   if (g.html)        return g.html;
@@ -58,7 +76,7 @@ function renderTOC(g, contentRoot){
     const hs = contentRoot.querySelectorAll('h2, h3');
     items = [...hs].map(h => {
       if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]+/g,'');
-      return { id:h.id, title:h.textContent.trim() };
+      return { id: h.id, title: h.textContent.trim() };
     });
   }
   if (!items.length){ wrap.classList.add('hidden'); return; }
@@ -100,8 +118,10 @@ async function renderPRSlot(){
   }catch(e){ console.warn('[guide] PR-rotator kunne ikke loades', e); }
 }
 
+// --------------------------------------------------
+// Relaterede opskrifter (under indhold)
+// --------------------------------------------------
 async function renderRelatedRecipes(guide){
-  // tilføj en sektion lige under indholdet hvis ikke eksisterer
   let existing = document.getElementById('relatedRecipes');
   if (!existing){
     const mainCol = document.getElementById('guideMainCol');
@@ -123,16 +143,11 @@ async function renderRelatedRecipes(guide){
     if (gtags.size){
       pool = all.filter(r => (r.tags||[]).some(t => gtags.has(String(t).toLowerCase())));
     }
-    // Fald tilbage hvis for få matches
     if (pool.length < 8){
       const byTitle = String(guide.title||'').toLowerCase().split(/\s+/).filter(Boolean);
-      pool = all.filter(r => byTitle.some(w =>
-        String(r.title||'').toLowerCase().includes(w)
-      )).concat(pool);
+      pool = all.filter(r => byTitle.some(w => String(r.title||'').toLowerCase().includes(w))).concat(pool);
     }
-    // dedupe + max 8
-    const seen = new Set();
-    const pick = [];
+    const seen = new Set(); const pick = [];
     for (const r of pool){
       const k = r.slug || r.id; if (!k || seen.has(k)) continue;
       seen.add(k); pick.push(r);
@@ -144,77 +159,9 @@ async function renderRelatedRecipes(guide){
   }
 }
 
-async function mount(){
-  setText('guideTitle','Indlæser…');
-  const slug = getSlug();
-  try{
-    const all   = await loadAllGuides();
-    const guide = all.find(g => (g.slug||'') === slug);
-    if (!guide){
-      setText('guideTitle','Ikke fundet');
-      setHTML('guideContent','<p>Kunne ikke finde guiden.</p>');
-      return;
-    }
-
-    setText('breadcrumbTitle', guide.title || 'Guide');
-    setText('guideTitle',      guide.title || 'Guide');
-    setText('guideIntro',      guide.intro || '');
-    setHTML('guideMeta',       guide.meta  || '');
-
-    // Indhold (venstrejustér fail-safe)
-    const contentHtml = pickContent(guide);
-    const holder = document.getElementById('guideContent');
-    if (holder){
-      holder.innerHTML = contentHtml;
-      holder.style.textAlign = 'left';
-      holder.querySelectorAll('*').forEach(n => {
-        if (!n.style.textAlign) n.style.textAlign = 'left';
-      });
-    }
-
-    renderTOC(guide, holder);
-    renderFAQ(guide.faq || []);
-    await renderPRSlot();
-    await renderRelatedRecipes(guide);
-
-  }catch(e){
-    console.error('[guide] fejl', e);
-    setText('guideTitle','Noget gik galt');
-    setHTML('guideContent','<p>Kunne ikke indlæse guiden.</p>');
-  }
-}
-document.addEventListener('DOMContentLoaded', mount);
-// === Relaterede guides (let og stabil) ======================================
-let __ALL_GUIDES_CACHE = null;
-
-async function loadAllGuides() {
-  if (__ALL_GUIDES_CACHE) return __ALL_GUIDES_CACHE;
-
-  async function getJson(p){
-    try{ const r = await fetch(p, {cache:'no-cache'}); if(!r.ok) throw 0; return await r.json(); }
-    catch{ return []; }
-  }
-
-  // Prøv chunkede filer først
-  let all = [];
-  const first = await getJson('/data/guides-1.json');
-  if (Array.isArray(first) && first.length){
-    all = all.concat(first);
-    for (let i=2;i<=20;i++){
-      const part = await getJson(`/data/guides-${i}.json`);
-      if (!Array.isArray(part) || !part.length) break;
-      all = all.concat(part);
-    }
-  }
-  // Fallback: samlet fil
-  if (!all.length){
-    all = await getJson('/data/guides.json');
-  }
-
-  __ALL_GUIDES_CACHE = all;
-  return all;
-}
-
+// --------------------------------------------------
+// Relaterede guides (højre kolonne)
+// --------------------------------------------------
 function pickRelatedGuides(all, current, limit = 6){
   const curSlug = current.slug || current.id;
   const curCat  = (current.category || '').toLowerCase();
@@ -228,11 +175,10 @@ function pickRelatedGuides(all, current, limit = 6){
       for (const t of (g.tags || [])) {
         if (curTags.has(String(t).toLowerCase())) s += 2;
       }
-      // lille bonus hvis titler deler ord
-      const wt = new Set(String((current.title||'') + ' ' + (current.subtitle||'')).toLowerCase().split(/\W+/));
-      const wt2= new Set(String((g.title||'')      + ' ' + (g.subtitle||'')).toLowerCase().split(/\W+/));
-      let titleOverlap = 0; for (const w of wt) if (w.length>3 && wt2.has(w)) titleOverlap++;
-      s += Math.min(2, titleOverlap);
+      const wt  = new Set(String((current.title||'') + ' ' + (current.subtitle||'')).toLowerCase().split(/\W+/));
+      const wt2 = new Set(String((g.title||'')      + ' ' + (g.subtitle||'')).toLowerCase().split(/\W+/));
+      let overlap = 0; for (const w of wt) if (w.length>3 && wt2.has(w)) overlap++;
+      s += Math.min(2, overlap);
       return { g, s };
     })
     .filter(x => x.s > 0)
@@ -240,7 +186,6 @@ function pickRelatedGuides(all, current, limit = 6){
     .slice(0, limit)
     .map(x => x.g);
 
-  // fallback hvis ingen scorede
   return scored.length ? scored : all.filter(g => (g.slug||g.id)!==curSlug).slice(0, limit);
 }
 
@@ -260,3 +205,48 @@ async function renderRelatedGuides(current){
     </li>
   `).join('') || `<div class="text-sm opacity-60">Ingen relaterede guides lige nu.</div>`;
 }
+
+// --------------------------------------------------
+// Mount
+// --------------------------------------------------
+async function mount(){
+  setText('guideTitle','Indlæser…');
+  const slug = getSlug();
+
+  try{
+    const all   = await loadAllGuides();
+    const guide = all.find(g => (g.slug||'') === slug);
+
+    if (!guide){
+      setText('guideTitle','Ikke fundet');
+      setHTML('guideContent','<p>Kunne ikke finde guiden.</p>');
+      return;
+    }
+
+    setText('breadcrumbTitle', guide.title || 'Guide');
+    setText('guideTitle',      guide.title || 'Guide');
+    setText('guideIntro',      guide.intro || '');
+    setHTML('guideMeta',       guide.meta  || '');
+
+    // Indhold (venstrejustér fail-safe)
+    const holder = document.getElementById('guideContent');
+    if (holder){
+      holder.innerHTML = pickContent(guide);
+      holder.style.textAlign = 'left';
+      holder.querySelectorAll('*').forEach(n => { if (!n.style.textAlign) n.style.textAlign = 'left'; });
+    }
+
+    renderTOC(guide, holder);
+    renderFAQ(guide.faq || []);
+    await renderPRSlot();
+    await renderRelatedRecipes(guide);
+    await renderRelatedGuides(guide);   // <-- VIGTIG: fylder højre-boksen
+
+  }catch(e){
+    console.error('[guide] fejl', e);
+    setText('guideTitle','Noget gik galt');
+    setHTML('guideContent','<p>Kunne ikke indlæse guiden.</p>');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', mount);
