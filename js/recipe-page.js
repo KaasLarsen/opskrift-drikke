@@ -51,10 +51,11 @@ function renderRecipe(r) {
         </section>
 
         <aside>
-          <h2 class="text-lg font-semibold mb-2">Noter</h2>
-          <div class="prose prose-stone max-w-none text-[15px] leading-relaxed">
-            ${(r.notes && Array.isArray(r.notes) ? r.notes.map(n=>`<p>${n}</p>`).join('') : (r.notes || '<p>—</p>'))}
-          </div>
+      <h2 class="text-lg font-semibold mb-2">Serveringsforslag & tips</h2>
+      <div class="prose prose-stone max-w-none text-[15px] leading-relaxed space-y-3">
+        <p><strong>Serveringsforslag:</strong> Nyd drinken iskold med isterninger og et frisk twist af citron eller lime. Perfekt som velkomstdrink eller sommerforfriskning.</p>
+        <p><strong>Tip:</strong> Prøv at bruge tonic med lavendel eller tilsæt et stænk vaniljesirup for en rundere smag. Servér evt. i et koldt glas med frisk mynte på toppen.</p>
+      </div>
         </aside>
 
         <section class="md:col-span-2">
