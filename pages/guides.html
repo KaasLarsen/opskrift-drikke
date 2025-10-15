@@ -40,6 +40,7 @@
       .search-box:focus-within{ box-shadow:0 0 0 3px rgba(249,115,22,.2); }
       .select { appearance:none; background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:.5rem .75rem; }
       .select:focus{ outline:none; box-shadow:0 0 0 3px rgba(249,115,22,.2); border-color:#fed7aa; }
+      .empty-note{padding:14px;border:1px dashed #e5e7eb;border-radius:12px;background:#fff}
     </style>
   </head>
 
@@ -92,45 +93,72 @@
       const sortEl   = document.getElementById('sortBy');
       const moreBtn  = document.getElementById('loadMore');
 
-      const PAGE_CHUNK = 24; // hvor mange kort vises ad gangen
+      const PAGE_CHUNK = 24;
       let guides = [];
       let filtered = [];
       let shown = 0;
 
-      const V = 'guides-v2'; // cache-bust
-      const j = (p) => fetch(`${p}?${V}`, { cache:'no-cache' }).then(r => r.ok ? r.json() : []);
+      const V = 'guides-v3'; // cache-bust
+      const fetchJson = (p) => fetch(p, { cache:'no-cache' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.status)));
 
-      // --- Loader guides (chunkede eller samlet) ---
+      async function tryMany(urls){
+        for (const u of urls){
+          try {
+            const data = await fetchJson(u + (u.includes('?') ? '' : `?${V}`));
+            if (Array.isArray(data) && data.length) return data;
+          } catch {}
+        }
+        return [];
+      }
+
+      // --- Loader guides fra flere mulige placeringer ---
       async function loadGuides(){
         let all = [];
-        try {
-          const first = await j('/data/guides-1.json');
-          if (Array.isArray(first) && first.length){
-            all = all.concat(first);
-            for (let i=2;i<=50;i++){
-              try{
-                const arr = await j(`/data/guides-${i}.json`);
-                if (!Array.isArray(arr) || !arr.length) break;
-                all = all.concat(arr);
-              }catch{ break; }
-            }
-          }
-        } catch {}
 
-        if (!all.length){
-          try { all = await j('/data/guides.json'); }
-          catch (e){ console.error('Kunne ikke indlæse guides', e); }
+        // 1) chunkede /data/guides-*.json
+        const dataChunk1 = await tryMany(['/data/guides-1.json']);
+        if (dataChunk1.length){
+          all = all.concat(dataChunk1);
+          // hent /data/guides-2..50
+          for (let i=2;i<=50;i++){
+            const arr = await tryMany([`/data/guides-${i}.json`]);
+            if (!arr.length) break;
+            all = all.concat(arr);
+          }
         }
 
-        // let op: normaliser felter vi bruger til sortering/visning
-        guides = (all || []).map(g => ({
+        // 2) chunkede i roden /guides-*.json (fallback)
+        if (!all.length){
+          const rootChunk1 = await tryMany(['/guides-1.json']);
+          if (rootChunk1.length){
+            all = all.concat(rootChunk1);
+            for (let i=2;i<=50;i++){
+              const arr = await tryMany([`/guides-${i}.json`]);
+              if (!arr.length) break;
+              all = all.concat(arr);
+            }
+          }
+        }
+
+        // 3) samlet fil i /data eller roden
+        if (!all.length){
+          all = await tryMany(['/data/guides.json','/guides.json']);
+        }
+
+        if (!all.length){
+          listEl.innerHTML = '<div class="empty-note">Kunne ikke indlæse guides (hverken i /data/ eller i roden). Tjek at filerne fx <code>/guides.json</code> eller <code>/guides-1.json</code> ligger online.</div>';
+          return;
+        }
+
+        guides = all.map(g => ({
           ...g,
           title: g.title || 'Uden titel',
           intro: g.intro || g.description || '',
           category: g.category || '',
           tags: Array.isArray(g.tags) ? g.tags : [],
           date: g.date || g.lastModified || g.updatedAt || '',
-          views: g.views || g.popularity || 0
+          views: g.views || g.popularity || 0,
+          slug: g.slug || g.id || ''
         }));
 
         buildFilters();
@@ -138,7 +166,6 @@
         if (searchEl) searchEl.placeholder = `Søg i ${guides.length.toLocaleString('da-DK')} guides...`;
       }
 
-      // --- Filtre/dropdowns fyldes dynamisk ---
       function buildFilters(){
         const cats = new Set();
         const tags = new Set();
@@ -154,16 +181,15 @@
           [...tags].sort((a,b)=>a.localeCompare(b,'da')).map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       }
 
-      // --- Render ét kort (samme vibe som opskriftskort) ---
       function card(g){
         const tags = (g.tags||[]).slice(0,3).map(t=>`<span class="chip">#${escapeHtml(t)}</span>`).join(' ');
         const meta =
-          [g.category && \`<span class="text-xs text-stone-500">${escapeHtml(g.category)}</span>\`,
+          [g.category && \`<span class="text-xs text-stone-500">\${escapeHtml(g.category)}</span>\`,
            g.date && \`<span class="text-xs text-stone-500">Opdateret: \${fmtDate(g.date)}</span>\`]
           .filter(Boolean).join(' · ');
 
         return `
-          <a href="/pages/guide.html?slug=${encodeURIComponent(g.slug)}"
+          <a href="/pages/guide?slug=${encodeURIComponent(g.slug)}"
              class="relative card block border bg-white p-4 hover:shadow transition rounded-2xl">
             <div class="flex flex-col gap-2">
               <div class="flex gap-2 flex-wrap">${tags}</div>
@@ -190,7 +216,6 @@
         return (s||'').toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'');
       }
 
-      // --- Filtrering + sortering ---
       function applyFilters(reset=true){
         const q   = normalize(searchEl.value || '');
         const cat = catEl.value;
@@ -204,18 +229,15 @@
           return okQ && okC && okT;
         });
 
-        // sortér
         const sort = sortEl.value;
         filtered.sort((a,b)=>{
           if (sort === 'titleAsc') return a.title.localeCompare(b.title,'da');
           if (sort === 'popular')  return (b.views||0) - (a.views||0);
-          // dateDesc default
           const da = a.date ? new Date(a.date).getTime() : 0;
           const db = b.date ? new Date(b.date).getTime() : 0;
           return db - da;
         });
 
-        // render med “Vis flere”
         if (reset) shown = 0;
         renderMore();
       }
@@ -229,11 +251,13 @@
         }
         shown += slice.length;
 
-        // styr “Vis flere”
         if (shown < filtered.length){
           moreBtn.classList.remove('hidden');
         } else {
           moreBtn.classList.add('hidden');
+          if (filtered.length === 0){
+            listEl.innerHTML = '<div class="empty-note">Ingen guides fundet med de valgte filtre/søgning.</div>';
+          }
         }
       }
 
