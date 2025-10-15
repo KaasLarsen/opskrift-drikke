@@ -278,3 +278,8 @@ input[type="search"]::-webkit-search-results-decoration{
 .fav-requires-auth:hover {
   opacity: 1;
 }
+/* Guide content should never be right-aligned */
+#guideContent, #guideContent * {
+  text-align: left !important;
+  float: none !important;
+}
