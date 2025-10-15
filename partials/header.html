@@ -1,89 +1,63 @@
-<header class="site-header bg-white/90 backdrop-blur border-b border-stone-200">
-  <div class="container mx-auto px-4">
-    <div class="h-16 flex items-center gap-4">
-      <!-- Logo (no orange icon) -->
-      <a href="/index.html" class="flex items-center gap-2">
-  <span class="text-orange-500 text-xl">🍹</span>
-  <span class="font-semibold tracking-tight">Opskrift-drikke.dk</span>
-</a>
-      <!-- Nav (desktop) -->
-      <nav class="hidden md:flex items-center gap-8 ml-auto">
-        <a href="/" class="hover:underline">Forside</a>
-        <details id="navCategories" class="relative group">
-          <summary class="list-none cursor-pointer hover:underline">Kategorier</summary>
-          <div class="absolute right-0 mt-3 w-64 rounded-xl border bg-white shadow-lg p-2 z-40">
-            <div class="grid grid-cols-2 gap-1 text-sm">
-              <a href="/tags/kaffe.html" class="px-2 py-1 rounded hover:bg-stone-50">Kaffe</a>
-              <a href="/tags/juice.html" class="px-2 py-1 rounded hover:bg-stone-50">Juice</a>
-              <a href="/tags/smoothie.html" class="px-2 py-1 rounded hover:bg-stone-50">Smoothie</a>
-              <a href="/tags/mocktail.html" class="px-2 py-1 rounded hover:bg-stone-50">Mocktail</a>
-              <a href="/tags/shot.html" class="px-2 py-1 rounded hover:bg-stone-50">Shots</a>
-              <a href="/tags/te.html" class="px-2 py-1 rounded hover:bg-stone-50">Te</a>
-            </div>
-          </div>
-        </details>
-        <a href="/pages/seneste.html" class="hover:underline">Seneste</a>
-        <a href="/pages/guides.html" class="hover:underline">Guides</a>
-        <a href="/favorites.html" class="hover:underline">Favoritter</a>
-      </nav>
+<header class="site-header border-b bg-white/85 backdrop-blur">
+  <div class="container mx-auto px-4 h-14 flex items-center gap-3">
+    <!-- Logo / brand -->
+    <a href="/index.html" class="flex items-center gap-2">
+      <span class="text-orange-500 text-xl">🍹</span>
+      <span class="font-semibold tracking-tight">opskrift-drikke.dk</span>
+    </a>
 
-      <!-- Space before login button -->
-      <div class="hidden md:block w-2"></div>
+    <!-- Desktop nav -->
+    <nav class="ml-auto hidden md:flex items-center gap-3">
+      <a href="/tags/index.html" class="px-3 py-2 rounded-lg hover:bg-orange-50">Kategorier</a>
+      <a href="/pages/seneste.html" class="px-3 py-2 rounded-lg hover:bg-orange-50">Seneste</a>
+      <a href="/pages/guides.html" class="px-3 py-2 rounded-lg hover:bg-orange-50">Guides</a>
+      <a href="/favorites" class="px-3 py-2 rounded-lg hover:bg-orange-50">Favoritter</a>
+      <!-- Login helt til højre -->
+      <a id="authBtn" href="/login" class="ml-4 px-3 py-2 rounded-xl border border-orange-500 text-orange-600 hover:bg-orange-50">Log ind</a>
+    </nav>
 
-      <!-- Login (desktop) -->
-      <a id="authBtn"
-         href="/login"
-         class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition">
-        Log ind
-      </a>
-
-      <!-- Mobile hamburger -->
-      <button id="mobileMenuBtn"
-              class="md:hidden ml-auto inline-flex items-center justify-center w-10 h-10 rounded-xl border bg-white"
-              aria-label="Åbn menu" aria-expanded="false" aria-controls="mobileMenu">
-        <!-- 3 bars icon -->
-        <svg viewBox="0 0 24 24" class="w-6 h-6"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-    </div>
+    <!-- Mobile burger -->
+    <button id="mobileMenuBtn"
+            class="md:hidden ml-auto inline-flex items-center justify-center w-10 h-10 rounded-xl border border-orange-200"
+            aria-controls="mobileMenu" aria-expanded="false" aria-label="Åbn menu">
+      <!-- 3 streger -->
+      <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
   </div>
 
-  <!-- Mobile slide-over -->
-  <div id="mobileMenu" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 bg-black/40" data-close></div>
-    <div class="absolute right-0 top-0 h-full w-80 max-w-[85%] bg-white shadow-xl p-4 flex flex-col">
-      <div class="flex items-center justify-between">
-        <div class="font-extrabold text-lg">Menu</div>
-        <button class="w-10 h-10 inline-flex items-center justify-center rounded-lg border" data-close aria-label="Luk">
-          <svg viewBox="0 0 24 24" class="w-6 h-6"><path d="M6 6l12 12M18 6l-12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
+  <!-- Mobile overlay + panel (hidden by default) -->
+  <div id="mobileMenu" class="mobile-overlay hidden">
+    <aside class="mobile-panel">
+      <div class="panel-head">
+        <div class="flex items-center gap-2">
+          <span class="text-orange-500 text-xl">🍹</span>
+          <strong>Menu</strong>
+        </div>
+        <button type="button" class="px-3 py-1.5 rounded-lg border" data-close> Luk </button>
       </div>
 
-      <nav class="mt-4 grid gap-2 text-base">
-        <a href="/" class="px-3 py-2 rounded-lg hover:bg-stone-50">Forside</a>
-        <details class="rounded-lg">
-          <summary class="px-3 py-2 rounded-lg hover:bg-stone-50 cursor-pointer">Kategorier</summary>
-          <div class="mt-1 grid grid-cols-2 gap-1 pl-3 pr-1 pb-2 text-sm">
-            <a href="/tags/kaffe.html" class="px-2 py-1 rounded hover:bg-stone-50">Kaffe</a>
-            <a href="/tags/juice.html" class="px-2 py-1 rounded hover:bg-stone-50">Juice</a>
-            <a href="/tags/smoothie.html" class="px-2 py-1 rounded hover:bg-stone-50">Smoothie</a>
-            <a href="/tags/mocktail.html" class="px-2 py-1 rounded hover:bg-stone-50">Mocktail</a>
-            <a href="/tags/shot.html" class="px-2 py-1 rounded hover:bg-stone-50">Shots</a>
-            <a href="/tags/te.html" class="px-2 py-1 rounded hover:bg-stone-50">Te</a>
-          </div>
-        </details>
-        <a href="/pages/seneste.html" class="px-3 py-2 rounded-lg hover:bg-stone-50">Seneste</a>
-        <a href="/pages/guides.html" class="px-3 py-2 rounded-lg hover:bg-stone-50">Guides</a>
-        <a href="/favorites.html" class="px-3 py-2 rounded-lg hover:bg-stone-50">Favoritter</a>
+      <nav class="mobile-nav">
+        <a href="/tags/index.html">Kategorier</a>
+        <a href="/pages/seneste.html">Seneste</a>
+        <a href="/pages/guides.html">Guides</a>
+        <a href="/favorites">Favoritter</a>
       </nav>
 
-      <div class="mt-auto pt-4 border-t">
-        <a id="authBtnMobile"
-           href="/login"
-           data-auth
-           class="w-full inline-flex items-center justify-center px-4 py-2 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition">
+      <div class="mobile-auth">
+        <!-- Mobil login knap—triggerer desktop-login flow via app.js -->
+        <a id="authBtnMobile" href="/login" class="btn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 0 1 2 2v4"/>
+            <path d="M10 14 21 3"/>
+            <path d="M21 10v10a2 2 0 0 1-2 2H9"/>
+            <path d="M3 15v4a2 2 0 0 0 2 2h4"/>
+          </svg>
           Log ind
         </a>
+        <div class="mt-2 text-xs opacity-70 text-center">Log ind for at gemme med ❤️</div>
       </div>
-    </div>
+    </aside>
   </div>
 </header>
