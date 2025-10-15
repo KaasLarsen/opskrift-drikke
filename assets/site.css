@@ -258,3 +258,16 @@ input[type="search"]::-webkit-search-results-decoration{
 @media (min-width:768px){
   .site-header nav a{font-weight:500}
 }
+/* ---- Favoritknap (hjerte) ---- */
+.fav-btn{
+  position:absolute; top:10px; right:10px;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:36px; height:36px;
+  border-radius:999px; border:1px solid rgba(0,0,0,.08);
+  background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06);
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
+}
+.fav-btn:hover{ transform:translateY(-1px); background:#fff8f3; border-color:#f7c6a4; }
+.fav-btn svg{ width:20px; height:20px; fill:none; stroke:#222; stroke-width:2; }
+.fav-btn.is-fav{ background:#ffefe6; border-color:#f97316; }
+.fav-btn.is-fav svg{ fill:#f97316; stroke:#f97316; }
