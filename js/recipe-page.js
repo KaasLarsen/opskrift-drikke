@@ -1,10 +1,13 @@
-// /js/recipe-page.js — detaljeret opskriftvisning (kompatibel med /pages/opskrift og /pages/opskrift.html)
+// /js/recipe-page.js — detaljeret opskriftvisning
 import { loadAllRecipes, renderRecipeCard, isFav, toggleFav } from '/js/recipes.js';
 
 function getSlug() {
   const url = new URL(location.href);
-  // Tillad både ?slug=… og fallback til /…/opskrift/<slug> hvis man bruger rewrites
-  return url.searchParams.get('slug') || decodeURIComponent((location.pathname.split('/').pop() || '').replace(/^opskrift(\.html)?$/i,''));
+  // Tillad både ?slug=… og fallback til /…/opskrift/<slug> (hvis rewrites)
+  const q = url.searchParams.get('slug');
+  if (q) return q;
+  const last = (location.pathname.split('/').pop() || '');
+  return decodeURIComponent(last.replace(/^opskrift(\.html)?$/i,''));
 }
 
 function html(strings, ...vals){ return strings.map((s,i)=>s+(vals[i]??'')).join(''); }
@@ -72,7 +75,7 @@ function renderRecipe(r) {
     </section>
   `;
 
-  // Favorit-knap (med login-krav i recipes.js)
+  // Favorit-knap (login-krav håndteres i recipes.js)
   document.getElementById('favBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
     const ok = toggleFav(id);
@@ -90,16 +93,36 @@ function renderRelated(all, r) {
   grid.innerHTML = pool.slice(0, 8).map(renderRecipeCard).join('');
 }
 
-function renderSponsored() {
+/* === Sponsor/PriceRunner rotator (robust) ===
+   Prøver først at dynamic-importe modulet (ESM).
+   Hvis du i /js/pricerunner-rotator.js også sætter window.mountPR = mountPR,
+   vil fallback’et nedenfor virke uden import. */
+async function renderSponsored() {
   const slot = document.getElementById('sponsoredSlot');
   if (!slot) return;
+
   slot.innerHTML = `
     <div class="card bg-white p-4 border rounded-2xl">
       <div class="text-sm opacity-70 mb-2">Annonce i samarbejde med PriceRunner</div>
       <div id="pr-recipe-slot"></div>
     </div>
   `;
-  if (window.mountPR) window.mountPR('#pr-recipe-slot'); // bruger dit eksisterende rotator-script hvis til stede
+
+  try {
+    // Forsøg ESM import
+    const mod = await import('/js/pricerunner-rotator.js');
+    if (mod?.mountPR) {
+      mod.mountPR('#pr-recipe-slot');
+      return;
+    }
+  } catch (e) {
+    console.debug('[sponsor] ESM import fejlede – prøver window.mountPR', e);
+  }
+
+  // Fallback hvis rotatoren eksponerer sig globalt
+  if (window.mountPR) {
+    try { window.mountPR('#pr-recipe-slot'); } catch {}
+  }
 }
 
 async function mount() {
@@ -107,7 +130,12 @@ async function mount() {
   if (!root) return;
 
   const slug = getSlug();
-  root.querySelector('h1')?.replaceWith(Object.assign(document.createElement('h1'), {className:'text-4xl font-semibold', textContent:'Indlæser…'}));
+  root.querySelector('h1')?.replaceWith(
+    Object.assign(document.createElement('h1'), {
+      className:'text-4xl font-semibold',
+      textContent:'Indlæser…'
+    })
+  );
 
   try {
     const all = await loadAllRecipes();
