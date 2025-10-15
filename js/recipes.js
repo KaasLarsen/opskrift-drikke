@@ -3,17 +3,17 @@
 // ---------- ROBUST DATALOAD ----------
 let ALL_RECIPES_CACHE = null;
 
+// Alle mulige stier vi prøver – tilpas rækkefølge frit
 const CANDIDATE_SOURCES = [
+  // primær placering
   '/data/recipes.json',
+  // shards
   '/data/recipes-1.json','/data/recipes-2.json','/data/recipes-3.json','/data/recipes-4.json','/data/recipes-5.json',
   '/data/recipes-6.json','/data/recipes-7.json','/data/recipes-8.json','/data/recipes-9.json','/data/recipes-10.json',
+  // fallback hvis de ligger i roden
   '/recipes.json',
   '/recipes-1.json','/recipes-2.json','/recipes-3.json','/recipes-4.json','/recipes-5.json'
 ];
-
-// Debug + global adgang i konsollen
-window.__RECIPES = ALL_RECIPES_CACHE;
-console.log('[recipes] total loaded:', ALL_RECIPES_CACHE.length);
 
 export async function loadAllRecipes() {
   if (ALL_RECIPES_CACHE) return ALL_RECIPES_CACHE;
@@ -24,13 +24,15 @@ export async function loadAllRecipes() {
       if (!r.ok) throw new Error(`${url} ${r.status}`);
       const json = await r.json();
       if (!Array.isArray(json)) throw new Error(`${url} no array`);
+      console.debug('[recipes] OK', url, `(${json.length})`);
       return json;
     } catch (e) {
-      console.debug('[recipes] skip', url, e.message);
+      console.debug('[recipes] SKIP', url, e.message);
       return [];
     }
   }));
 
+  // Dedupe (id/slug)
   const seen = new Set();
   const all  = [];
   for (const arr of chunks) {
@@ -43,8 +45,13 @@ export async function loadAllRecipes() {
   }
 
   ALL_RECIPES_CACHE = all;
+
+  // Eksponer til Console-debug
+  try { window.__RECIPES = ALL_RECIPES_CACHE; } catch {}
+
+  console.log('[recipes] total loaded:', ALL_RECIPES_CACHE.length);
   if (!ALL_RECIPES_CACHE.length) {
-    console.error('[recipes] Ingen opskrifter blev fundet. Tjek datafilerne.');
+    console.error('[recipes] Ingen opskrifter blev fundet. Tjek at datafilerne findes og kan hentes.');
   }
   return ALL_RECIPES_CACHE;
 }
@@ -77,12 +84,6 @@ export function bindFavoriteClicks(root=document){
   });
 }
 
-function getRating(rec){
-  const rating = rec.rating ?? rec.stars ?? rec.avg ?? rec.average ?? 4;
-  const count  = rec.votes ?? rec.reviews ?? rec.reviewCount ?? rec.ratingsCount ?? rec.count ?? 0;
-  return { rating, count };
-}
-
 export function renderRecipeCard(rec){
   const id    = rec.id || rec.slug || rec.key || '';
   const slug  = rec.slug || id;
@@ -93,8 +94,7 @@ export function renderRecipeCard(rec){
     <span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">${t}</span>
   `).join(' ');
 
-  const { rating, count } = getRating(rec);
-  const stars = Math.round(rating);
+  const stars = Math.round(rec.rating || 4);
   const starHtml = '★★★★★'.split('').map((s,i)=>`<span>${i<stars?'★':'☆'}</span>`).join('');
 
   return `
@@ -105,25 +105,42 @@ export function renderRecipeCard(rec){
         <div class="flex gap-2 flex-wrap">${tagsHtml}</div>
         <h3 class="text-lg font-semibold leading-snug">${title}</h3>
         <p class="text-sm text-stone-600">${desc}</p>
-        <div class="text-sm mt-1">${starHtml} <span class="text-stone-500">(${count})</span></div>
+        <div class="text-sm mt-1">${starHtml} <span class="text-stone-500">(${rec.votes || 0})</span></div>
       </div>
     </a>
   `;
 }
 
-// ---------- AUTO-MOUNT: forside grid (viser 24) ----------
+// ---------- AUTO-MOUNT: vis første batch hvis #results findes ----------
 async function mountFrontpageGrid(){
   const grid = document.getElementById('results');
-  if (!grid) return;
+  if (!grid) return;                   // ikke på denne side
   try{
     const list = await loadAllRecipes();
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="col-span-full">
+          <div class="card border bg-white p-4 rounded-2xl">
+            <div class="font-medium">Kunne ikke indlæse opskrifter lige nu.</div>
+            <p class="text-sm text-stone-600 mt-1">Tjek at dine datafiler ligger under <code>/data/</code> eller i roden og at de er tilgængelige.</p>
+          </div>
+        </div>`;
+      return;
+    }
+    // vis 24 stk som standard
     grid.innerHTML = list.slice(0,24).map(renderRecipeCard).join('');
   }catch(e){
     console.error('[recipes] kunne ikke rendere forsiden', e);
+    grid.innerHTML = `
+      <div class="col-span-full">
+        <div class="card border bg-white p-4 rounded-2xl">
+          Noget gik galt ved indlæsning.
+        </div>
+      </div>`;
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   bindFavoriteClicks(document);
-  mountFrontpageGrid();
+  mountFrontpageGrid();  // gør intet hvis #results ikke findes
 });
