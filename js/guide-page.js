@@ -184,3 +184,79 @@ async function mount(){
   }
 }
 document.addEventListener('DOMContentLoaded', mount);
+// === Relaterede guides (let og stabil) ======================================
+let __ALL_GUIDES_CACHE = null;
+
+async function loadAllGuides() {
+  if (__ALL_GUIDES_CACHE) return __ALL_GUIDES_CACHE;
+
+  async function getJson(p){
+    try{ const r = await fetch(p, {cache:'no-cache'}); if(!r.ok) throw 0; return await r.json(); }
+    catch{ return []; }
+  }
+
+  // Prøv chunkede filer først
+  let all = [];
+  const first = await getJson('/data/guides-1.json');
+  if (Array.isArray(first) && first.length){
+    all = all.concat(first);
+    for (let i=2;i<=20;i++){
+      const part = await getJson(`/data/guides-${i}.json`);
+      if (!Array.isArray(part) || !part.length) break;
+      all = all.concat(part);
+    }
+  }
+  // Fallback: samlet fil
+  if (!all.length){
+    all = await getJson('/data/guides.json');
+  }
+
+  __ALL_GUIDES_CACHE = all;
+  return all;
+}
+
+function pickRelatedGuides(all, current, limit = 6){
+  const curSlug = current.slug || current.id;
+  const curCat  = (current.category || '').toLowerCase();
+  const curTags = new Set((current.tags || []).map(t => String(t).toLowerCase()));
+
+  const scored = all
+    .filter(g => (g.slug || g.id) !== curSlug)
+    .map(g => {
+      let s = 0;
+      if ((g.category || '').toLowerCase() === curCat && curCat) s += 3;
+      for (const t of (g.tags || [])) {
+        if (curTags.has(String(t).toLowerCase())) s += 2;
+      }
+      // lille bonus hvis titler deler ord
+      const wt = new Set(String((current.title||'') + ' ' + (current.subtitle||'')).toLowerCase().split(/\W+/));
+      const wt2= new Set(String((g.title||'')      + ' ' + (g.subtitle||'')).toLowerCase().split(/\W+/));
+      let titleOverlap = 0; for (const w of wt) if (w.length>3 && wt2.has(w)) titleOverlap++;
+      s += Math.min(2, titleOverlap);
+      return { g, s };
+    })
+    .filter(x => x.s > 0)
+    .sort((a,b) => b.s - a.s)
+    .slice(0, limit)
+    .map(x => x.g);
+
+  // fallback hvis ingen scorede
+  return scored.length ? scored : all.filter(g => (g.slug||g.id)!==curSlug).slice(0, limit);
+}
+
+async function renderRelatedGuides(current){
+  const box = document.getElementById('relatedGuides');
+  if (!box) return;
+  const all = await loadAllGuides();
+  const picks = pickRelatedGuides(all, current);
+
+  box.innerHTML = picks.map(g => `
+    <li>
+      <a class="block p-3 rounded-xl border hover:bg-stone-50"
+         href="/pages/guide?slug=${encodeURIComponent(g.slug || g.id)}">
+        <div class="text-sm font-medium">${g.title || 'Guide'}</div>
+        ${g.category ? `<div class="text-xs opacity-60 mt-0.5">${g.category}</div>` : ''}
+      </a>
+    </li>
+  `).join('') || `<div class="text-sm opacity-60">Ingen relaterede guides lige nu.</div>`;
+}
