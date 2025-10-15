@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log ind – opskrift-drikke.dk</title>
+
+  <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="/assets/site.css">
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/login.js"></script>
+</head>
+<body class="bg-stone-50 text-stone-900">
+  <div id="header"></div>
+
+  <main class="container">
+    <section class="max-w-md mx-auto mt-10 p-6 bg-white border rounded-2xl">
+      <h1 class="text-2xl font-semibold">Log ind eller opret</h1>
+      <p class="text-stone-600 mt-1">Brug din e-mail for at gemme favoritter m.m.</p>
+
+      <form id="loginForm" class="mt-6 space-y-3">
+        <div>
+          <label for="email" class="text-sm">E-mail</label>
+          <input id="email" type="email" required
+                 class="mt-1 w-full px-3 py-2 border rounded-xl outline-none"
+                 placeholder="dig@example.com">
+        </div>
+        <button class="px-4 py-2 rounded-xl bg-orange-500 text-white">Fortsæt</button>
+      </form>
+
+      <p id="msg" class="mt-3 text-sm text-stone-600"></p>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+</body>
+</html>
