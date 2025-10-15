@@ -1,19 +1,16 @@
-// /js/guide-page.js — robust guidevisning + PriceRunner-rotator (dynamic import)
-const VERSION = 'v5'; // bump for cache-bust
+// /js/guide-page.js — robust guidevisning + PR-rotator + Relaterede opskrifter
+const VERSION = 'v6';
 
 function getSlug() {
   const u = new URL(location.href);
   return u.searchParams.get('slug') || '';
 }
-
 async function j(url){
   const r = await fetch(`${url}?${VERSION}`, { cache: 'no-cache' });
   if (!r.ok) throw new Error(`HTTP ${r.status} @ ${url}`);
   return r.json();
 }
-
 async function loadAllGuides(){
-  // Prøv chunks
   let all = [];
   try{
     const first = await j('/data/guides-1.json');
@@ -28,25 +25,25 @@ async function loadAllGuides(){
       }
     }
   }catch{}
-  // Fallback samlet
   if (!all.length){
     try{ all = await j('/data/guides.json'); }catch(e){ console.error('[guide] data-fejl', e); }
   }
   return all;
 }
-
 function setHTML(id, html){ const el=document.getElementById(id); if(el) el.innerHTML = html || ''; }
 function setText(id, txt){ const el=document.getElementById(id); if(el) el.textContent = txt || ''; }
 
 function pickContent(g){
-  // gør visning tolerant ift. feltnavne
   if (g.contentHtml) return g.contentHtml;
   if (g.html)        return g.html;
   if (g.bodyHtml)    return g.bodyHtml;
   if (g.content)     return g.content;
   if (g.body)        return g.body;
   if (Array.isArray(g.sections) && g.sections.length){
-    return g.sections.map(s => `<h2 id="${(s.heading||'').toLowerCase().replace(/\s+/g,'-')}">${s.heading||''}</h2>${s.html||s.text||''}`).join('');
+    return g.sections.map(s => {
+      const id = (s.heading||'').toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]+/g,'');
+      return `<h2 id="${id}">${s.heading||''}</h2>${s.html||s.text||''}`;
+    }).join('');
   }
   return '<p>—</p>';
 }
@@ -95,25 +92,61 @@ async function renderPRSlot(){
       <div id="pr-guide-inner"></div>
     </div>
   `;
-  // 1) Hvis rotatoren allerede er global (ikke typisk for ES modules)
   if (window.mountPR) { window.mountPR('#pr-guide-inner'); return; }
-  // 2) Dynamic import af modulet og kald dets export
   try{
     const mod = await import('/js/pricerunner-rotator.js');
-    if (mod && typeof mod.mountPR === 'function'){
-      mod.mountPR('#pr-guide-inner');
-    } else if (window.mountPR){
-      window.mountPR('#pr-guide-inner');
+    if (mod && typeof mod.mountPR === 'function') mod.mountPR('#pr-guide-inner');
+    else if (window.mountPR) window.mountPR('#pr-guide-inner');
+  }catch(e){ console.warn('[guide] PR-rotator kunne ikke loades', e); }
+}
+
+async function renderRelatedRecipes(guide){
+  // tilføj en sektion lige under indholdet hvis ikke eksisterer
+  let existing = document.getElementById('relatedRecipes');
+  if (!existing){
+    const mainCol = document.getElementById('guideMainCol');
+    if (!mainCol) return;
+    const sec = document.createElement('section');
+    sec.className = 'card bg-white p-6 mt-6';
+    sec.innerHTML = `
+      <h2 class="text-xl font-medium">Relaterede opskrifter</h2>
+      <div id="relatedRecipes" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"></div>
+    `;
+    mainCol.appendChild(sec);
+    existing = sec.querySelector('#relatedRecipes');
+  }
+  try{
+    const recipesMod = await import('/js/recipes.js');
+    const all = await recipesMod.loadAllRecipes();
+    const gtags = new Set((guide.tags||[]).map(t => String(t).toLowerCase()));
+    let pool = all;
+    if (gtags.size){
+      pool = all.filter(r => (r.tags||[]).some(t => gtags.has(String(t).toLowerCase())));
     }
+    // Fald tilbage hvis for få matches
+    if (pool.length < 8){
+      const byTitle = String(guide.title||'').toLowerCase().split(/\s+/).filter(Boolean);
+      pool = all.filter(r => byTitle.some(w =>
+        String(r.title||'').toLowerCase().includes(w)
+      )).concat(pool);
+    }
+    // dedupe + max 8
+    const seen = new Set();
+    const pick = [];
+    for (const r of pool){
+      const k = r.slug || r.id; if (!k || seen.has(k)) continue;
+      seen.add(k); pick.push(r);
+      if (pick.length >= 8) break;
+    }
+    existing.innerHTML = pick.map(recipesMod.renderRecipeCard).join('');
   }catch(e){
-    console.warn('[guide] kunne ikke loade PriceRunner-rotator', e);
+    console.warn('[guide] relaterede opskrifter fejl', e);
   }
 }
 
 async function mount(){
-  const slug = getSlug();
   setText('guideTitle','Indlæser…');
-
+  const slug = getSlug();
   try{
     const all   = await loadAllGuides();
     const guide = all.find(g => (g.slug||'') === slug);
@@ -123,26 +156,26 @@ async function mount(){
       return;
     }
 
-    // Hero
     setText('breadcrumbTitle', guide.title || 'Guide');
     setText('guideTitle',      guide.title || 'Guide');
     setText('guideIntro',      guide.intro || '');
     setHTML('guideMeta',       guide.meta  || '');
 
-    // Indhold
+    // Indhold (venstrejustér fail-safe)
     const contentHtml = pickContent(guide);
     const holder = document.getElementById('guideContent');
     if (holder){
       holder.innerHTML = contentHtml;
       holder.style.textAlign = 'left';
-      holder.querySelectorAll('*').forEach(n => n.style.textAlign = n.style.textAlign || 'left');
+      holder.querySelectorAll('*').forEach(n => {
+        if (!n.style.textAlign) n.style.textAlign = 'left';
+      });
     }
 
     renderTOC(guide, holder);
     renderFAQ(guide.faq || []);
-
-    // PriceRunner
     await renderPRSlot();
+    await renderRelatedRecipes(guide);
 
   }catch(e){
     console.error('[guide] fejl', e);
@@ -150,5 +183,4 @@ async function mount(){
     setHTML('guideContent','<p>Kunne ikke indlæse guiden.</p>');
   }
 }
-
 document.addEventListener('DOMContentLoaded', mount);
