@@ -1,36 +1,61 @@
-// === search.js — global søg + forslag (bruger loadAllRecipes) ===
+// === search.js — accent-fri, synonym-baseret søgning + forslag ===
 import { loadAllRecipes } from '/js/recipes.js';
 
 const INPUT_ID = 'homeSearch';
 const SUGGEST_ID = 'suggestions';
 
+// Enkle synonymer (så "kaffe" rammer espresso/latte/iskaffe m.m.)
+const SYNONYMS = {
+  'kaffe': ['kaffe','espresso','latte','cappuccino','americano','macchiato','iskaffe','cold brew'],
+  'juice': ['juice','saft'],
+  'mocktail': ['mocktail','alkoholfri','virgin'],
+  'gløgg': ['gløgg','glogg','mulled wine','glogg']
+};
+
 function norm(s){
   return String(s || '')
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'')   // fjern diakritiske tegn
+    .replace(/[\u0300-\u036f]/g,'') // fjern diakritik
     .replace(/\s+/g,' ')
     .trim();
 }
 
-function score(rec, qn){
-  // enkel scoring: title match > tags > desc
+function expandQuery(q){
+  const qn = norm(q);
+  const tokens = qn.split(' ').filter(Boolean);
+  const expanded = new Set();
+  for (const t of tokens){
+    expanded.add(t);
+    (SYNONYMS[t] || []).forEach(x => expanded.add(norm(x)));
+  }
+  return [...expanded];
+}
+
+function fieldText(rec){
   const t = norm(rec.title);
   const d = norm(rec.subtitle || rec.description || '');
   const tags = norm((rec.tags || []).join(' '));
+  return { t, d, tags };
+}
+
+function score(rec, expanded){
+  const { t, d, tags } = fieldText(rec);
   let s = 0;
-  if (t.includes(qn)) s += 5;
-  if (tags.includes(qn)) s += 2;
-  if (d.includes(qn)) s += 1;
+  for (const q of expanded){
+    if (t.includes(q))   s += 5;
+    if (tags.includes(q)) s += 3;
+    if (d.includes(q))   s += 1;
+  }
   return s;
 }
 
 async function runSearch(q){
   const all = await loadAllRecipes();
-  const qn  = norm(q);
-  if (!qn) return [];
+  const expanded = expandQuery(q);
+  if (!expanded.length) return [];
   return all
-    .map(r => ({ r, s: score(r, qn) }))
+    .map(r => ({ r, s: score(r, expanded) }))
     .filter(x => x.s > 0)
     .sort((a,b) => b.s - a.s)
     .map(x => x.r);
@@ -41,7 +66,9 @@ function ensureSuggestEl(){
   if (!box){
     box = document.createElement('div');
     box.id = SUGGEST_ID;
-    document.querySelector('.hero-search-wrap, .max-w-xl')?.appendChild(box);
+    // sæt under søgefeltet (din CSS styrer udseende)
+    const host = document.querySelector('.hero-search-wrap, .max-w-xl') || document.body;
+    host.appendChild(box);
   }
   return box;
 }
@@ -64,17 +91,16 @@ async function wireSearch(){
   if (!input) return;
   ensureSuggestEl();
 
-  let lock = 0;
+  let seq = 0;
   input.addEventListener('input', async (e) => {
     const val = e.target.value;
-    const my = ++lock;
+    const my = ++seq;
     if (!val.trim()){ renderSuggestions([]); return; }
     const hits = await runSearch(val);
-    if (my !== lock) return;  // afbrudte
+    if (my !== seq) return;
     renderSuggestions(hits);
   });
 
-  // klik på forslag
   document.getElementById(SUGGEST_ID)?.addEventListener('click', (e) => {
     const el = e.target.closest('[data-slug]');
     if (!el) return;
@@ -82,7 +108,6 @@ async function wireSearch(){
     location.href = `/pages/opskrift?slug=${encodeURIComponent(slug)}`;
   });
 
-  // Enter -> gå til første match eller seneste-siden med query
   input.addEventListener('keydown', async (e) => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
@@ -90,10 +115,8 @@ async function wireSearch(){
     if (hits[0]){
       location.href = `/pages/opskrift?slug=${encodeURIComponent(hits[0].slug || hits[0].id)}`;
     }else{
-      // fallback til liste
       location.href = `/pages/seneste.html?query=${encodeURIComponent(input.value)}`;
     }
   });
 }
-
 document.addEventListener('DOMContentLoaded', wireSearch);
