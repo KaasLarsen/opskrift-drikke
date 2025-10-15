@@ -1,76 +1,81 @@
-// /js/guide-page.js — loader & viser en enkelt guide + PR-widget
-const VERSION = 'v3'; // bump for cache-bust
+// /js/guide-page.js — robust guidevisning + PriceRunner-rotator (dynamic import)
+const VERSION = 'v5'; // bump for cache-bust
 
 function getSlug() {
   const u = new URL(location.href);
   return u.searchParams.get('slug') || '';
 }
 
-async function json(url) {
+async function j(url){
   const r = await fetch(`${url}?${VERSION}`, { cache: 'no-cache' });
   if (!r.ok) throw new Error(`HTTP ${r.status} @ ${url}`);
   return r.json();
 }
 
-async function loadAllGuides() {
-  // Prøv chunkede filer først
+async function loadAllGuides(){
+  // Prøv chunks
   let all = [];
-  try {
-    const first = await json('/data/guides-1.json');
-    if (Array.isArray(first) && first.length) {
+  try{
+    const first = await j('/data/guides-1.json');
+    if (Array.isArray(first) && first.length){
       all = all.concat(first);
-      for (let i = 2; i <= 30; i++) {
-        try {
-          const chunk = await json(`/data/guides-${i}.json`);
-          if (!Array.isArray(chunk) || !chunk.length) break;
-          all = all.concat(chunk);
-        } catch { break; }
+      for(let i=2;i<=40;i++){
+        try{
+          const more = await j(`/data/guides-${i}.json`);
+          if (!Array.isArray(more) || !more.length) break;
+          all = all.concat(more);
+        }catch{ break; }
       }
     }
-  } catch {/* ignorer, vi prøver samlet fil nedenfor */}
-
-  if (!all.length) {
-    try { all = await json('/data/guides.json'); }
-    catch (e) { console.error('[guide] kunne ikke hente data', e); }
+  }catch{}
+  // Fallback samlet
+  if (!all.length){
+    try{ all = await j('/data/guides.json'); }catch(e){ console.error('[guide] data-fejl', e); }
   }
   return all;
 }
 
-function setText(id, html) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = html || '';
+function setHTML(id, html){ const el=document.getElementById(id); if(el) el.innerHTML = html || ''; }
+function setText(id, txt){ const el=document.getElementById(id); if(el) el.textContent = txt || ''; }
+
+function pickContent(g){
+  // gør visning tolerant ift. feltnavne
+  if (g.contentHtml) return g.contentHtml;
+  if (g.html)        return g.html;
+  if (g.bodyHtml)    return g.bodyHtml;
+  if (g.content)     return g.content;
+  if (g.body)        return g.body;
+  if (Array.isArray(g.sections) && g.sections.length){
+    return g.sections.map(s => `<h2 id="${(s.heading||'').toLowerCase().replace(/\s+/g,'-')}">${s.heading||''}</h2>${s.html||s.text||''}`).join('');
+  }
+  return '<p>—</p>';
 }
 
-function renderTOC(toc, contentRoot) {
+function renderTOC(g, contentRoot){
   const wrap = document.getElementById('tocWrap');
   const nav  = document.getElementById('toc');
   if (!wrap || !nav) return;
 
-  let items = Array.isArray(toc) && toc.length ? toc.slice() : [];
-
-  // Hvis der ikke er en toc i dataen, så generér ud fra H2/H3 i indholdet
-  if (!items.length && contentRoot) {
+  let items = Array.isArray(g.toc) ? g.toc.slice() : [];
+  if (!items.length && contentRoot){
     const hs = contentRoot.querySelectorAll('h2, h3');
     items = [...hs].map(h => {
       if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]+/g,'');
-      return { id: h.id, title: h.textContent.trim() };
+      return { id:h.id, title:h.textContent.trim() };
     });
   }
-
-  if (!items.length) { wrap.classList.add('hidden'); return; }
+  if (!items.length){ wrap.classList.add('hidden'); return; }
 
   nav.innerHTML = items.map(i => `<a href="#${i.id}">${i.title}</a>`).join('');
   wrap.classList.remove('hidden');
 }
 
-function renderFAQ(faqArr) {
+function renderFAQ(faq){
   const wrap = document.getElementById('faqWrap');
   const list = document.getElementById('faqList');
   if (!wrap || !list) return;
-  if (!Array.isArray(faqArr) || !faqArr.length) { wrap.classList.add('hidden'); return; }
-
-  list.innerHTML = faqArr.map(q => `
+  if (!Array.isArray(faq) || !faq.length){ wrap.classList.add('hidden'); return; }
+  list.innerHTML = faq.map(q => `
     <div class="py-3 first:pt-0 last:pb-0">
       <details>
         <summary class="cursor-pointer font-semibold">${q.q || q.question}</summary>
@@ -81,60 +86,68 @@ function renderFAQ(faqArr) {
   wrap.classList.remove('hidden');
 }
 
-function renderPRSlot() {
-  const slot = document.getElementById('pr-guide-slot');
-  if (!slot) return;
-  slot.innerHTML = `
+async function renderPRSlot(){
+  const outer = document.getElementById('pr-guide-slot');
+  if (!outer) return;
+  outer.innerHTML = `
     <div class="card bg-white p-4 border rounded-2xl">
       <div class="text-sm opacity-70 mb-2">Annonce i samarbejde med PriceRunner</div>
       <div id="pr-guide-inner"></div>
     </div>
   `;
-  // Brug din eksisterende rotator, hvis den er indlæst på siden
-  if (window.mountPR) {
-    window.mountPR('#pr-guide-inner');
+  // 1) Hvis rotatoren allerede er global (ikke typisk for ES modules)
+  if (window.mountPR) { window.mountPR('#pr-guide-inner'); return; }
+  // 2) Dynamic import af modulet og kald dets export
+  try{
+    const mod = await import('/js/pricerunner-rotator.js');
+    if (mod && typeof mod.mountPR === 'function'){
+      mod.mountPR('#pr-guide-inner');
+    } else if (window.mountPR){
+      window.mountPR('#pr-guide-inner');
+    }
+  }catch(e){
+    console.warn('[guide] kunne ikke loade PriceRunner-rotator', e);
   }
 }
 
-async function mount() {
+async function mount(){
   const slug = getSlug();
-  const titleEl = document.getElementById('guideTitle');
-  if (titleEl) titleEl.textContent = 'Indlæser…';
+  setText('guideTitle','Indlæser…');
 
-  try {
-    const all = await loadAllGuides();
-    const guide = all.find(g => (g.slug || '') === slug);
-    if (!guide) {
-      setText('guideContent', '<p>Kunne ikke finde guiden.</p>');
-      if (titleEl) titleEl.textContent = 'Ikke fundet';
+  try{
+    const all   = await loadAllGuides();
+    const guide = all.find(g => (g.slug||'') === slug);
+    if (!guide){
+      setText('guideTitle','Ikke fundet');
+      setHTML('guideContent','<p>Kunne ikke finde guiden.</p>');
       return;
     }
 
     // Hero
     setText('breadcrumbTitle', guide.title || 'Guide');
-    setText('guideTitle', guide.title || 'Guide');
-    setText('guideIntro', guide.intro || '');
-    setText('guideMeta', guide.meta || '');
+    setText('guideTitle',      guide.title || 'Guide');
+    setText('guideIntro',      guide.intro || '');
+    setHTML('guideMeta',       guide.meta  || '');
 
     // Indhold
-    const contentHolder = document.getElementById('guideContent');
-    if (contentHolder) {
-      contentHolder.innerHTML = guide.contentHtml || guide.content || '<p>—</p>';
-      // Tving venstrejustering af indlejret HTML fra CMS
-      contentHolder.style.textAlign = 'left';
+    const contentHtml = pickContent(guide);
+    const holder = document.getElementById('guideContent');
+    if (holder){
+      holder.innerHTML = contentHtml;
+      holder.style.textAlign = 'left';
+      holder.querySelectorAll('*').forEach(n => n.style.textAlign = n.style.textAlign || 'left');
     }
 
-    // TOC + FAQ
-    renderTOC(guide.toc || [], contentHolder);
+    renderTOC(guide, holder);
     renderFAQ(guide.faq || []);
 
-    // PR widget
-    renderPRSlot();
+    // PriceRunner
+    await renderPRSlot();
 
-  } catch (e) {
+  }catch(e){
     console.error('[guide] fejl', e);
-    setText('guideTitle', 'Noget gik galt');
-    setText('guideContent', '<p>Kunne ikke indlæse guiden.</p>');
+    setText('guideTitle','Noget gik galt');
+    setHTML('guideContent','<p>Kunne ikke indlæse guiden.</p>');
   }
 }
 
