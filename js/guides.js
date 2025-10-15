@@ -1,120 +1,77 @@
-<!doctype html>
-<html lang="da">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Guides – opskrift-drikke.dk</title>
+// === guides.js — robust dataload + simple kort-render ===
 
-    <!-- Tailwind -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
-    <script src="https://cdn.tailwindcss.com"></script>
+let ALL_GUIDES_CACHE = null;
 
-    <meta name="description" content="Find inspiration og viden i vores guides om kaffe, te, smoothies, mocktails og meget mere."/>
-    <meta property="og:title" content="Guides – opskrift-drikke.dk"/>
-    <meta property="og:description" content="Læs vores bedste guides om drikke, maskiner og udstyr."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/guides.html"/>
+// Prøv flere placeringer (samme mønster som recipes)
+const GUIDE_SOURCES = [
+  '/data/guides.json',
+  '/data/guides-1.json','/data/guides-2.json','/data/guides-3.json','/data/guides-4.json','/data/guides-5.json',
+  '/guides.json',
+  '/guides-1.json','/guides-2.json','/guides-3.json','/guides-4.json','/guides-5.json'
+];
 
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="/assets/manifest.json">
+export async function loadAllGuides(){
+  if (ALL_GUIDES_CACHE) return ALL_GUIDES_CACHE;
 
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
-    <script type="module" src="/js/app.js"></script>
-    <script defer src="/js/analytics.js"></script>
+  const chunks = await Promise.all(GUIDE_SOURCES.map(async (url) => {
+    try{
+      const r = await fetch(url, { cache: 'no-cache' });
+      if (!r.ok) throw new Error(`${url} ${r.status}`);
+      const json = await r.json();
+      if (!Array.isArray(json)) throw new Error(`${url} no array`);
+      return json;
+    }catch(e){
+      console.debug('[guides] skip', url, e.message);
+      return [];
+    }
+  }));
 
-    <style>
-      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn { border-radius: 1rem; }
-      input[type="search"] { border-radius: 1rem; border: 1px solid #ddd; padding: 0.5rem 1rem; width: 100%; }
-      .tag { background: #f4f4f4; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.875rem; cursor: pointer; }
-      .tag.active { background: #f97316; color: #fff; }
-    </style>
-  </head>
+  // Dedupe på slug/id
+  const seen = new Set();
+  const all = [];
+  for(const arr of chunks){
+    for(const g of arr){
+      const key = String(g.slug || g.id || g.key || '');
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      all.push(g);
+    }
+  }
+  ALL_GUIDES_CACHE = all;
+  if (!ALL_GUIDES_CACHE.length){
+    console.error('[guides] Ingen guides fundet. Tjek datafiler.');
+  }
+  return ALL_GUIDES_CACHE;
+}
 
-  <body class="bg-stone-50 text-stone-900">
-    <div id="header"></div>
+export function renderGuideCard(g){
+  const slug  = g.slug || g.id || '';
+  const title = g.title || 'Uden titel';
+  const desc  = g.subtitle || g.description || '';
+  const tags  = (g.tags || []).slice(0,3).map(t =>
+    `<span class="inline-flex text-[11px] px-2 py-0.5 rounded-full border border-orange-200 text-orange-700 bg-orange-50">${t}</span>`
+  ).join(' ');
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
-      <h1 class="text-3xl font-semibold mb-4">Guides</h1>
-      <p class="opacity-80 mb-6">Find trin-for-trin guides om kaffe, te, smoothies, mocktails, juice, udstyr og meget mere.</p>
+  return `
+    <a href="/pages/guide?slug=${encodeURIComponent(slug)}"
+       class="card block border bg-white p-4 hover:shadow transition rounded-2xl">
+      <div class="flex gap-2 flex-wrap mb-1">${tags}</div>
+      <h3 class="text-lg font-semibold leading-snug">${title}</h3>
+      ${desc ? `<p class="text-sm text-stone-600 mt-1">${desc}</p>` : ''}
+    </a>
+  `;
+}
 
-      <!-- søg + filter -->
-      <div class="flex flex-col md:flex-row md:items-center gap-4 mb-8">
-        <div class="flex-1">
-          <input type="search" id="guideSearch" placeholder="Søg i guides..." />
-        </div>
-        <div class="flex flex-wrap gap-2 text-sm" id="guideTags"></div>
-      </div>
-
-      <div id="guideList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </main>
-
-    <div id="footer"></div>
-
-    <script type="module">
-      const listEl = document.getElementById('guideList');
-      const searchEl = document.getElementById('guideSearch');
-      const tagWrap = document.getElementById('guideTags');
-
-      let guides = [];
-      let activeTag = '';
-
-      async function loadGuides(){
-        try {
-          const res = await fetch('/data/guides.json', { cache: 'no-cache' });
-          guides = await res.json();
-          renderGuides(guides);
-          renderTags();
-        } catch(err){
-          listEl.innerHTML = '<p class="opacity-70">Kunne ikke indlæse guides.</p>';
-          console.error(err);
-        }
-      }
-
-      function renderGuides(list){
-        if(!list.length){
-          listEl.innerHTML = '<p class="opacity-70">Ingen guides fundet.</p>';
-          return;
-        }
-        listEl.innerHTML = list.map(g => `
-          <a href="/pages/guide.html?slug=${g.slug}" class="block card bg-white p-5 hover:shadow-md transition">
-            <h2 class="font-semibold text-lg mb-2">${g.title}</h2>
-            <p class="text-sm opacity-80">${g.intro || ''}</p>
-            <div class="text-xs opacity-60 mt-3">${g.category || ''}</div>
-          </a>
-        `).join('');
-      }
-
-      function renderTags(){
-        const tagSet = new Set();
-        guides.forEach(g => (g.tags||[]).forEach(t => tagSet.add(t)));
-        const tags = Array.from(tagSet).sort();
-        tagWrap.innerHTML = tags.map(t => `
-          <span class="tag ${t === activeTag ? 'active' : ''}" data-tag="${t}">${t}</span>
-        `).join('');
-      }
-
-      function applyFilters(){
-        const q = searchEl.value.toLowerCase().trim();
-        const filtered = guides.filter(g => {
-          const matchText = g.title.toLowerCase().includes(q) || (g.intro||'').toLowerCase().includes(q);
-          const matchTag = !activeTag || (g.tags||[]).includes(activeTag);
-          return matchText && matchTag;
-        });
-        renderGuides(filtered);
-      }
-
-      searchEl.addEventListener('input', applyFilters);
-
-      tagWrap.addEventListener('click', e => {
-        const tag = e.target.closest('[data-tag]');
-        if(!tag) return;
-        activeTag = activeTag === tag.dataset.tag ? '' : tag.dataset.tag;
-        renderTags();
-        applyFilters();
-      });
-
-      loadGuides();
-    </script>
-  </body>
-</html>
+// Valgfri auto-mount hvis en oversigtsside har #guideResults
+async function mountGuidesGrid(){
+  const grid = document.getElementById('guideResults');
+  if (!grid) return;
+  try{
+    const list = await loadAllGuides();
+    grid.innerHTML = list.map(renderGuideCard).join('');
+  }catch(e){
+    console.error('[guides] kunne ikke rendere oversigt', e);
+    grid.innerHTML = `<div class="card border bg-white rounded-2xl p-4">Noget gik galt ved indlæsning.</div>`;
+  }
+}
+document.addEventListener('DOMContentLoaded', mountGuidesGrid);
