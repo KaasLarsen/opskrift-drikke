@@ -108,3 +108,74 @@ async function wireSearch(){
   });
 }
 document.addEventListener('DOMContentLoaded', wireSearch);
+// --- pagination defaults ---
+const PAGE_SIZE = 30;
+
+function normalize(s){
+  return (s||'')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD').replace(/\p{Diacritic}/gu, ''); // æøå håndteres bedre
+}
+
+// Score: simple AND-match pr. ord i title/subtitle/tags/ingredients
+function matches(rec, terms){
+  const bag = normalize([
+    rec.title, rec.subtitle, (rec.tags||[]).join(' '),
+    (rec.ingredients||[]).join(' '), (rec.notes||'')
+  ].join(' • '));
+  return terms.every(t => bag.includes(t));
+}
+
+async function runSearch(query){
+  const list = (await loadAllRecipes()) || [];
+  const terms = normalize(query).split(/\s+/).filter(Boolean);
+  if (!terms.length) return [];
+
+  // Ingen cap her – vi filtrerer alt og paginerer i render
+  const out = list.filter(r => matches(r, terms));
+  console.log('[search] matches:', out.length); // debug
+  return out;
+}
+
+function renderPager(total, page){
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (pages <= 1) return '';
+  const btn = (p, label = p, active = false) =>
+    `<button data-page="${p}" class="px-3 py-1.5 rounded-lg border ${active ? 'bg-orange-500 text-white border-orange-500' : 'bg-white hover:bg-stone-50'}">${label}</button>`;
+  const parts = [];
+  if (page > 1){ parts.push(btn(1,'«')); parts.push(btn(page-1,'‹')); }
+  const start = Math.max(1, page-2), end = Math.min(pages, page+2);
+  for (let p=start; p<=end; p++) parts.push(btn(p, String(p), p===page));
+  if (page < pages){ parts.push(btn(page+1,'›')); parts.push(btn(pages,'»')); }
+  return `<div class="mt-6 flex flex-wrap gap-2 items-center justify-center">${parts.join('')}</div>`;
+}
+
+async function renderSearch(query, page=1){
+  const resultsEl = document.getElementById('results');
+  if (!resultsEl) return;
+  const all = await runSearch(query);
+  const start = (page-1)*PAGE_SIZE;
+  const view = all.slice(start, start+PAGE_SIZE);
+  resultsEl.innerHTML = view.map(renderRecipeCard).join('') + renderPager(all.length, page);
+
+  // pager clicks
+  resultsEl.addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-page]');
+    if(!b) return;
+    const p = parseInt(b.dataset.page,10);
+    renderSearch(query, p);
+  }, { once:true }); // rebind per render
+}
+
+// Hook til dit input
+document.addEventListener('DOMContentLoaded', ()=>{
+  const input = document.getElementById('homeSearch');
+  if (!input) return;
+  let t;
+  input.addEventListener('input', ()=>{
+    clearTimeout(t);
+    const q = input.value.trim();
+    t = setTimeout(()=>{ if(q){ renderSearch(q,1); } }, 150);
+  });
+});
