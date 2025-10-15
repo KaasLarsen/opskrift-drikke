@@ -108,7 +108,7 @@
       let filtered = [];
       let shown = 0;
 
-      const V = 'guides-v4'; // cache-bust
+      const V = 'guides-v6'; // cache-bust
 
       async function fetchJson(url){
         const u = url + (url.includes('?') ? '' : `?${V}`);
@@ -135,25 +135,30 @@
 
       async function loadGuides(){
         const attempts = [];
+        const roots = [
+          '/data',            // typisk placering
+          '/pages/data',      // fallback
+          '/assets/data',     // fallback
+          ''                  // roden
+        ];
 
-        // 1) /data/guides-1..50.json
-        attempts.push('/data/guides-1.json');
-        for (let i=2;i<=50;i++) attempts.push(`/data/guides-${i}.json`);
+        // chunkede filer
+        for (const root of roots){
+          attempts.push(`${root}/guides-1.json`);
+          for (let i=2;i<=50;i++) attempts.push(`${root}/guides-${i}.json`);
+        }
 
-        // 2) /guides-1..50.json
-        attempts.push('/guides-1.json');
-        for (let i=2;i<=50;i++) attempts.push(`/guides-${i}.json`);
-
-        // 3) /data/guides.json og /guides.json
-        attempts.push('/data/guides.json','/guides.json');
+        // enkeltfil-fallback
+        for (const root of roots){
+          attempts.push(`${root}/guides.json`);
+        }
 
         const { all, log } = await loadMany(attempts);
 
         if (!all.length){
-          // vis debug
           dbgWrap.classList.remove('hidden');
-          dbgLog.textContent = log.map(r => `${r.ok ? 'OK ' : 'FAIL'} ${r.status}  ${r.url}`).join('\n');
-          listEl.innerHTML = '<div class="empty-note">Ingen guides blev indlæst. Se fejlloggen herunder for at finde den rigtige sti/filnavn.</div>';
+          dbgLog.textContent = log.map(r => `${r.ok ? 'OK  ' : 'FAIL'} ${String(r.status).padEnd(6)} ${r.url}`).join('\n');
+          listEl.innerHTML = '<div class="empty-note">Ingen guides blev indlæst. Se “Fejl ved indlæsning af guides” herunder for præcis sti/status.</div>';
           return;
         }
 
@@ -191,8 +196,8 @@
       function card(g){
         const tags = (g.tags||[]).slice(0,3).map(t=>`<span class="chip">#${escapeHtml(t)}</span>`).join(' ');
         const meta =
-          [g.category && \`<span class="text-xs text-stone-500">\${escapeHtml(g.category)}</span>\`,
-           g.date && \`<span class="text-xs text-stone-500">Opdateret: \${fmtDate(g.date)}</span>\`]
+          [g.category && `<span class="text-xs text-stone-500">${escapeHtml(g.category)}</span>`,
+           g.date && `<span class="text-xs text-stone-500">Opdateret: ${fmtDate(g.date)}</span>`]
           .filter(Boolean).join(' · ');
 
         return `
@@ -223,7 +228,7 @@
         const tag = tagEl.value;
 
         filtered = guides.filter(g => {
-          const text = normalize(\`\${g.title} \${g.intro} \${(g.tags||[]).join(' ')} \${g.category}\`);
+          const text = normalize(`${g.title} ${g.intro} ${(g.tags||[]).join(' ')} ${g.category}`);
           const okQ  = !q || text.includes(q);
           const okC  = !cat || g.category === cat;
           const okT  = !tag || (g.tags||[]).includes(tag);
@@ -269,7 +274,7 @@
       sortEl.addEventListener('change', () => applyFilters());
       moreBtn.addEventListener('click', renderMore);
 
-      // go
+      // start
       loadGuides();
     </script>
   </body>
