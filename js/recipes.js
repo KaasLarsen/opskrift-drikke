@@ -11,6 +11,10 @@ const CANDIDATE_SOURCES = [
   '/recipes-1.json','/recipes-2.json','/recipes-3.json','/recipes-4.json','/recipes-5.json'
 ];
 
+// Debug + global adgang i konsollen
+window.__RECIPES = ALL_RECIPES_CACHE;
+console.log('[recipes] total loaded:', ALL_RECIPES_CACHE.length);
+
 export async function loadAllRecipes() {
   if (ALL_RECIPES_CACHE) return ALL_RECIPES_CACHE;
 
