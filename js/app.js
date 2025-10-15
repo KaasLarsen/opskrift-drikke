@@ -1,5 +1,6 @@
-<script type="module">
-// Loader en partial og returnerer en Promise når den er indsat
+// /js/app.js  (NO <script> TAGS IN THIS FILE)
+
+// Load a partial and resolve when inserted
 function mountPartial(id, url) {
   return new Promise(async (resolve) => {
     const el = document.getElementById(id);
@@ -16,74 +17,62 @@ function mountPartial(id, url) {
   });
 }
 
-/* Fælles auth-handler: klik på ALLE elementer med [data-auth] */
+/* Shared auth handler: any element with [data-auth] */
 function wireAuth() {
-  const authTargets = document.querySelectorAll('[data-auth]');
-  const clickAuth = (e) => {
+  const targets = document.querySelectorAll('[data-auth]');
+  const onClick = (e) => {
     e.preventDefault();
-    // 1) Hvis der findes en fælles desktop-knap (#authBtn), trig den
     const desktop = document.getElementById('authBtn');
-    if (desktop) {
-      desktop.click();
-      return;
-    }
-    // 2) Hvis der findes en global auth-funktion (din app), kald den
-    if (typeof window.openAuth === 'function') {
-      window.openAuth();
-      return;
-    }
-    // 3) Fallback: gå til /login
+    if (desktop) { desktop.click(); return; }
+    if (typeof window.openAuth === 'function') { window.openAuth(); return; }
     window.location.href = '/login';
   };
-  authTargets.forEach(el => {
-    el.removeEventListener('click', clickAuth); // undgå dobbel-binding ved side-skift
-    el.addEventListener('click', clickAuth);
+  targets.forEach(el => {
+    el.removeEventListener('click', onClick);
+    el.addEventListener('click', onClick);
   });
 }
 
-/* Mobilmenu */
+/* Mobile menu */
 function wireMobileMenu() {
   const btn   = document.getElementById('mobileMenuBtn');
   const panel = document.getElementById('mobileMenu');
-  const closeBtn = panel?.querySelector('[data-close]');
-
   if (!btn || !panel) return;
 
+  const closeBtn = panel.querySelector('[data-close]');
   const open  = () => { panel.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); };
   const close = () => { panel.classList.add('hidden');    btn.setAttribute('aria-expanded','false'); };
 
   btn.addEventListener('click', (e) => { e.preventDefault(); open(); });
   closeBtn?.addEventListener('click', (e) => { e.preventDefault(); close(); });
-
-  // Luk hvis man klikker på overlayet
-  panel.addEventListener('click', (e) => {
-    if (e.target === panel) close();
-  });
+  panel.addEventListener('click', (e) => { if (e.target === panel) close(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+  // Make mobile login trigger desktop flow or fallback to /login
+  const authMobile = document.getElementById('authBtnMobile');
+  if (authMobile) {
+    authMobile.addEventListener('click', (e) => {
+      e.preventDefault();
+      const desktop = document.getElementById('authBtn');
+      if (desktop) desktop.click(); else window.location.href = '/login';
+      close();
+    });
+  }
 }
 
-/* Kategori-dropdown (desktop) med <details> — sikrer klik virker og ikke “forsvinder” */
+/* Categories dropdown (desktop) */
 function wireCategories() {
   const d = document.querySelector('#navCategories');
   if (!d) return;
-  // Luk, når man klikker et link
-  d.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      d.removeAttribute('open');
-    });
-  });
+  d.querySelectorAll('a').forEach(a => a.addEventListener('click', () => d.removeAttribute('open')));
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Sørg for at ALLE sider loader den samme header/footer:
   await Promise.all([
     mountPartial('header', '/partials/header.html'),
     mountPartial('footer', '/partials/footer.html'),
   ]);
-
-  // Når partials er på plads, wire alt
   wireMobileMenu();
   wireCategories();
   wireAuth();
 });
-</script>
