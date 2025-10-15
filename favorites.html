@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Favoritter – opskrift-drikke.dk</title>
+
+  <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="/assets/site.css">
+  <meta name="description" content="Dine gemte drikkeopskrifter." />
+
+  <!-- Partials + app -->
+  <script type="module" src="/js/app.js"></script>
+
+  <!-- Data + UI -->
+  <script type="module" src="/js/recipes.js"></script>
+  <script type="module" src="/js/favorites.js"></script>
+</head>
+<body class="bg-stone-50 text-stone-900">
+  <div id="header"></div>
+
+  <main class="container">
+    <section class="mt-6">
+      <h1 class="text-3xl md:text-4xl font-semibold">Favoritter</h1>
+      <p class="text-stone-600 mt-1">Dine gemte opskrifter på tværs af siden.</p>
+
+      <div class="mt-4 flex gap-2">
+        <button id="clearFavs" class="px-3 py-1.5 rounded-xl border hover:bg-stone-50">Ryd favoritter</button>
+      </div>
+
+      <div id="emptyState" class="hidden mt-8 p-6 border rounded-2xl bg-white">
+        <div class="text-stone-700">
+          Du har ingen favoritter endnu. Brug hjertet på en opskrift for at gemme den.
+        </div>
+      </div>
+
+      <div id="favGrid" class="mt-6 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+</body>
+</html>
