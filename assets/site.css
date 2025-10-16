@@ -91,7 +91,6 @@ nav a:hover{background:rgba(24,165,109,.10)}
 .hero-sub{color:var(--muted); font-size:18px}
 
 /* -------- Søgefelt (shared) -------- */
-/* Wrapper som bruges både på forsiden og guides-siden */
 .search-box{
   display:flex; align-items:center; gap:10px;
   padding:12px 14px;
@@ -113,11 +112,11 @@ nav a:hover{background:rgba(24,165,109,.10)}
 .search-box input::placeholder{color:#a1775c}
 .search-box svg{color:var(--accent); width:20px; height:20px}
 
-/* Hero-varianten for kompatibilitet med eksisterende markup */
+/* Hero-varianten */
 .hero-search-wrap{position:relative; max-width:520px}
-.hero-search{ composes: search-box; } /* no-op for ren CSS, men lader navnet leve */
+.hero-search{ composes: search-box; }
 
-/* -------- Autocomplete (forslag) -------- */
+/* -------- Autocomplete -------- */
 #suggestions {
   position:absolute; top:100%; left:0; right:0; margin-top:6px; z-index:50;
   background:#fff;
@@ -154,7 +153,7 @@ nav a:hover{background:rgba(24,165,109,.10)}
   text-align:center;
 }
 
-/* -------- Input neutralisering (fjerner webkit-streg) -------- */
+/* -------- Input neutralisering -------- */
 input, input[type="search"]{
   border:none !important;
   outline:none !important;
@@ -197,24 +196,24 @@ input[type="search"]::-webkit-search-results-decoration{ display:none !important
 @media (max-width:640px){
   h1{font-size:30px}
 }
-/* — Header spacing (mindre afstand mellem punkter) — */
+/* — Header spacing — */
 .site-header .inner nav { gap: 6px; }
 .site-header .inner nav a { padding: 6px 8px; }
 
-/* — Kort uden billeder skal ikke blive “høje” — */
+/* — Kort uden billeder — */
 .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
 #results .card .aspect-[4/3],
-#popularRecipes .card .aspect-[4/3] { display:none; } /* hvis noget har forsøgt at lave en billed-holder */
+#popularRecipes .card .aspect-[4/3] { display:none; }
 
-/* — Grid på lister (forside/seneste) — */
-#results { display:grid; gap: 1.5rem; grid-template-columns: repeat(1,minmax(0,1fr)); }
-@media (min-width: 640px){ #results{ grid-template-columns: repeat(2,minmax(0,1fr)); } }
-@media (min-width: 1024px){ #results{ grid-template-columns: repeat(3,minmax(0,1fr)); } }
-#popularRecipes { display:grid; gap: 1.5rem; grid-template-columns: repeat(1,minmax(0,1fr)); }
-@media (min-width: 640px){ #popularRecipes{ grid-template-columns: repeat(2,minmax(0,1fr)); } }
-@media (min-width: 1024px){ #popularRecipes{ grid-template-columns: repeat(4,minmax(0,1fr)); } }
+/* — Grid på lister — */
+#results { display:grid; gap:1.5rem; grid-template-columns:repeat(1,minmax(0,1fr)); }
+@media (min-width:640px){ #results{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (min-width:1024px){ #results{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+#popularRecipes { display:grid; gap:1.5rem; grid-template-columns:repeat(1,minmax(0,1fr)); }
+@media (min-width:640px){ #popularRecipes{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (min-width:1024px){ #popularRecipes{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
 
-/* — Søgefelt (behold orange stil + ingen “hårstreg”) — */
+/* — Søgefelt — */
 .search-box{
   display:flex; align-items:center; gap:10px;
   padding:12px 14px; border-radius:16px;
@@ -227,37 +226,32 @@ input[type="search"]::-webkit-search-results-decoration{ display:none !important
 }
 .search-box input::placeholder{ color:#a1775c }
 
-/* Nulstiller WebKit-søgedekorationer */
+/* — WebKit fix — */
 input[type="search"]{
   -webkit-appearance:none; appearance:none; background-clip:padding-box;
 }
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-results-button,
-input[type="search"]::-webkit-search-results-decoration{
-  display:none;
-}
-/* Kompakte resultatskort (uden billede) */
+input[type="search"]::-webkit-search-results-decoration{ display:none; }
+
+/* — Kompakte kort — */
 #results .card {
-  padding: 16px;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 4px 18px rgba(0,0,0,.06);
+  padding:16px; border-radius:16px; background:#fff;
+  box-shadow:0 4px 18px rgba(0,0,0,.06);
 }
-#results .card .aspect-\[4\/3\] { display:none; } /* skjul evt. gamle billed-pladsholdere */
-/* PR i opskrift – som kort i flowet */
+#results .card .aspect-\[4\/3\]{display:none;}
+
+/* — PriceRunner kort — */
 #pr-recipe-slot > .card,
 #pr-recipe-slot .pr-wrapper {
-  border: 1px solid var(--line, #e5e7eb);
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: var(--shadow-sm, 0 6px 14px rgba(0,0,0,.06));
+  border:1px solid var(--line,#e5e7eb);
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:var(--shadow-sm,0 6px 14px rgba(0,0,0,.06));
 }
-.site-header .logo{font-size:1.05rem}
-@media (min-width:768px){
-  .site-header nav a{font-weight:500}
-}
+
 /* ---- Favoritknap (hjerte) ---- */
 .fav-btn{
   position:absolute; top:10px; right:10px;
@@ -271,24 +265,25 @@ input[type="search"]::-webkit-search-results-decoration{
 .fav-btn svg{ width:20px; height:20px; fill:none; stroke:#222; stroke-width:2; }
 .fav-btn.is-fav{ background:#ffefe6; border-color:#f97316; }
 .fav-btn.is-fav svg{ fill:#f97316; stroke:#f97316; }
-/* Hjerter der kræver login (før man er logget ind) */
-.fav-requires-auth {
-  opacity: .75;
-}
-.fav-requires-auth:hover {
-  opacity: 1;
-}
-/* Guide content should never be right-aligned */
+.fav-requires-auth { opacity:.75; }
+.fav-requires-auth:hover { opacity:1; }
+
+/* ---- Guide content fix ---- */
 #guideContent, #guideContent * {
-  text-align: left !important;
-  float: none !important;
+  text-align:left !important;
+  float:none !important;
 }
-/* TOC – tving venstrejustering */
+
+/* ---- TOC venstrejustering ---- */
 #toc{
   display:flex !important;
   flex-direction:column;
   align-items:flex-start;
   justify-content:flex-start;
-  text-align:left;
+  text-align:left !important;
 }
-#toc a{ display:block; width:100%; }
+#toc a{
+  display:block;
+  width:100%;
+  text-align:left !important;
+}
