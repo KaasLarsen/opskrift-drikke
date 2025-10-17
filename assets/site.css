@@ -355,3 +355,15 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
     50%    { transform: translateY(-2px) rotate(-6deg); }
   }
 }
+/* Sparkle after "Mest populære opskrifter" */
+#popular h2{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+}
+#popular h2::after{
+  content:"✨";          /* swap to 🏆 or 🔥 if you prefer */
+  font-size:1.15em;
+  line-height:1;
+  transform:translateY(1px);
+}
