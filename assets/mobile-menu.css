@@ -4,7 +4,7 @@
 .mobile-overlay{
   position: fixed;
   inset: 0;
-  z-index: 100;                /* over header */
+  z-index: 1000;               /* above header */
   background: rgba(0,0,0,.45);
 }
 
