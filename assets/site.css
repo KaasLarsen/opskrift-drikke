@@ -394,4 +394,29 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
 #popular .section-head p { margin-bottom: 0 !important; } /* fjern p’s default mb */
 #popular .section-head     { margin-bottom: .5rem !important; } /* bevidst lille bundmargin */
 #popular #popularRecipes   { margin-top: .5rem !important; }    /* lille afstand til grid */
+/* ==== Stram ALT under "Mest populære" (hard reset) ==== */
+#popular .section-head { margin-bottom: .25rem !important; }
+#popular .section-head p { margin-top: .25rem !important; margin-bottom: 0 !important; }
+
+/* Gridens topafstand helt i bund (uanset hvad JS/utility sætter) */
+#popular #popularRecipes {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Hvis renderen lægger wrappers med mt/pt på første række */
+#popular #popularRecipes > * {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+#popular #popularRecipes > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Og selve kortet – ingen utils “siver igennem” */
+#popular #popularRecipes .card {
+  margin-top: 0 !important;
+  padding-top: inherit; /* behold kortets egen padding, men ingen ekstra på toppen */
+}
 
