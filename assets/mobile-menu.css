@@ -1,95 +1,57 @@
-/* === Mobile Menu — isolated styles === */
+/* Mobile menu — isolated styles */
 
-/* Overlay (baggrund) */
-.mobile-overlay {
+/* Overlay baggrund */
+.mobile-overlay{
   position: fixed;
   inset: 0;
-  z-index: 60;
-  display: none;              /* toggles via .is-open */
-  background: rgba(15, 23, 42, 0.55); /* mørk baggrund */
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  z-index: 100;                /* over header */
+  background: rgba(0,0,0,.45);
 }
 
-/* Aktiv tilstand */
-.mobile-overlay.is-open { display: block; }
-
-/* Panel (selve menuen) */
-.mobile-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: min(92vw, 360px);
-  background: #ffffff;
-  color: #0f172a;
-  box-shadow: -8px 0 28px rgba(0,0,0,.18);
-  transform: translateX(100%);
+/* Panel der glider ind fra højre */
+.mobile-panel{
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 86%;
+  max-width: 360px;
+  background: #fff;
+  border-left: 1px solid #eee;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+  transform: translateX(100%);              /* start off-canvas */
   transition: transform .22s ease;
-  z-index: 61;
   display: flex;
   flex-direction: column;
 }
 
-/* Dark-mode */
-@media (prefers-color-scheme: dark) {
-  .mobile-panel { background: #0f1914; color: #e7f4ed; }
+/* Når overlayet er synligt (altså IKKE .hidden), skal panelet være inde */
+.mobile-overlay:not(.hidden) .mobile-panel{
+  transform: translateX(0);
 }
 
-/* Panel åben */
-.mobile-overlay.is-open .mobile-panel { transform: translateX(0); }
-
-/* Header i panelet */
-.mobile-panel .panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(0,0,0,.06);
-}
-@media (prefers-color-scheme: dark) {
-  .mobile-panel .panel-head { border-bottom-color: #223428; }
+/* Topbar i panelet */
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:12px 14px; border-bottom:1px solid #eee;
 }
 
-/* Links-liste */
-.mobile-nav {
-  padding: 10px 8px;
-}
-.mobile-nav a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 10px;
-  border-radius: 12px;
-  text-decoration: none;
-}
-.mobile-nav a:hover {
-  background: rgba(249, 115, 22, 0.08); /* orange-500 tint */
+/* Linkliste */
+.mobile-nav{ display:flex; flex-direction:column; padding:8px; }
+.mobile-nav a{ padding:10px 12px; border-radius:12px; }
+.mobile-nav a:hover{ background:#fff7f2; }
+
+/* Loginblok nederst */
+.mobile-auth{ margin-top:auto; padding:12px; }
+.mobile-auth .btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:10px 12px;
+  border:1px solid #f97316; border-radius:12px;
+  color:#f97316; background:#fff;
 }
 
-/* Login-blok */
-.mobile-auth {
-  margin-top: auto;
-  padding: 14px 16px;
-  border-top: 1px solid rgba(0,0,0,.06);
-}
-@media (prefers-color-scheme: dark) {
-  .mobile-auth { border-top-color: #223428; }
-}
-.mobile-auth .btn {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid #f97316;
-  background: #f97316;
-  color: #fff;
-  font-weight: 600;
-}
-.mobile-auth .btn.outline {
-  background: transparent;
-  color: #f97316;
+/* Lås scroll når menu er åben */
+body.menu-open{ overflow:hidden; }
+
+/* Skjul hele overlay på større skærme */
+@media (min-width: 768px){
+  .mobile-overlay{ display:none !important; }
 }
