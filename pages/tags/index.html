@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Tags & kategorier – opskrift-drikke.dk</title>
+
+    <!-- Tailwind -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tema -->
+    <link rel="stylesheet" href="/assets/site.css"/>
+    <link rel="stylesheet" href="/assets/mobile-menu.css"/>
+
+    <!-- Meta -->
+    <meta name="description" content="Udforsk alle tags og kategorier. Filtrér og find opskrifter efter emne – kaffe, juice, smoothies, mocktails, te og meget mere."/>
+    <meta property="og:title" content="Tags – opskrift-drikke.dk"/>
+    <meta property="og:description" content="Se populære tags og filtrér i tusindvis af drikkeopskrifter."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/tags"/>
+
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/assets/manifest.json">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+
+    <!-- Global app (indsætter header/footer) -->
+    <script type="module" src="/js/app.js"></script>
+    <!-- Mobilmenu wire (sørg for at denne fil findes) -->
+    <script defer src="/js/nav.js"></script>
+
+    <!-- Data -->
+    <script type="module" src="/js/recipes.js"></script>
+
+    <!-- Tags-side logik -->
+    <script type="module" src="/js/tags-page.js"></script>
+
+    <style>
+      .chip { border-radius: 9999px; padding: 6px 10px; border: 1px solid #eee; background:#fff; }
+      .chip.active { border-color:#f97316; background:#fff7f2; }
+      .btn    { border-radius: 12px; }
+      .card   { border-radius: 16px; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+      .toolbar { position: sticky; top: 64px; z-index: 10; background: rgba(255,255,255,.85); backdrop-filter: blur(8px); }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-stone-900">
+    <div id="header"></div>
+
+    <main class="container">
+      <!-- HERO -->
+      <section class="hero rounded-3xl border mt-6 card">
+        <div class="p-6 md:p-8">
+          <h1 class="text-3xl md:text-4xl font-semibold">Udforsk tags & kategorier</h1>
+          <p class="hero-sub mt-2">Filtrér i hele samlingen – vælg et tag og få alle relaterede opskrifter.</p>
+
+          <!-- Søg i tags -->
+          <div class="max-w-xl mt-6">
+            <div class="search-box">
+              <svg class="w-5 h-5"><use href="/assets/icons.svg#search"/></svg>
+              <input type="search" id="tagSearch" placeholder="Søg i tags (fx kaffe, smoothie, gløgg)..." />
+            </div>
+          </div>
+
+          <!-- Hurtige filtre -->
+          <div class="mt-4 flex flex-wrap gap-2" id="quickFilters">
+            <button data-qf="kaffe"    class="chip">☕ Kaffe</button>
+            <button data-qf="smoothie" class="chip">🥤 Smoothie</button>
+            <button data-qf="juice"    class="chip">🧃 Juice</button>
+            <button data-qf="mocktail" class="chip">🍹 Mocktail</button>
+            <button data-qf="te"       class="chip">🍵 Te</button>
+            <button data-qf="varm"     class="chip">🔥 Varm</button>
+            <button data-qf="kold"     class="chip">❄️ Kold</button>
+            <button data-qf="sund"     class="chip">💪 Sund</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Toolbar -->
+      <section class="toolbar mt-6 p-3 md:p-4 border rounded-2xl card">
+        <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+          <div class="flex items-center gap-2">
+            <label class="text-sm opacity-70">Sortering:</label>
+            <select id="sortSelect" class="border rounded-xl px-3 py-1.5 bg-white">
+              <option value="countDesc">Mest populære</option>
+              <option value="countAsc">Mindst populære</option>
+              <option value="alphaAsc">A–Å</option>
+              <option value="alphaDesc">Å–A</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="text-sm opacity-70">Vis:</label>
+            <select id="viewSelect" class="border rounded-xl px-3 py-1.5 bg-white">
+              <option value="grid">Kort (grid)</option>
+              <option value="list">Liste</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2 md:ml-auto">
+            <label class="text-sm opacity-70">Kun tags med mindst</label>
+            <select id="minCount" class="border rounded-xl px-2 py-1.5 bg-white">
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+            <span class="text-sm opacity-70">opskrifter</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Indhold: venstre tags, højre affiliate -->
+      <section class="mt-6 grid lg:grid-cols-4 gap-6">
+        <!-- Venstre: tags + resultater -->
+        <div class="lg:col-span-3">
+          <!-- Tag cloud -->
+          <div id="tagCloud" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+          <!-- Valgt tag + opskrifter -->
+          <div id="selectedWrap" class="mt-8 hidden">
+            <div class="flex items-center justify-between gap-2">
+              <h2 id="selectedTitle" class="text-xl md:text-2xl font-semibold"></h2>
+              <button id="clearTag" class="text-sm text-orange-600 hover:underline">Ryd valg</button>
+            </div>
+            <div id="results" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="pager" class="mt-6 flex flex-wrap gap-2 items-center justify-center"></div>
+          </div>
+        </div>
+
+        <!-- Højre: affiliate / PR -->
+        <aside class="lg:col-span-1">
+          <div class="card border bg-white p-4">
+            <div class="text-sm opacity-70">Annonce i samarbejde med PriceRunner</div>
+            <div id="pr-tags-slot" class="mt-2"></div>
+          </div>
+
+          <div class="card border bg-white p-4 mt-6">
+            <h3 class="font-medium">Populære kategorier</h3>
+            <ul id="popularList" class="mt-2 space-y-1 text-sm"></ul>
+          </div>
+
+          <div class="card border bg-white p-4 mt-6">
+            <h3 class="font-medium">Anbefalet udstyr</h3>
+            <ul class="mt-2 space-y-1 text-sm">
+              <li><a class="text-orange-600 hover:underline" href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=67785" rel="nofollow">Kaffekværne</a></li>
+              <li><a class="text-orange-600 hover:underline" href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=105877" rel="nofollow">Blendere</a></li>
+              <li><a class="text-orange-600 hover:underline" href="https://www.partner-ads.com/dk/klikbanner.php?partnerid=52794&bannerid=56458" rel="nofollow">Juicere</a></li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <!-- PriceRunner rotator -->
+    <script type="module" src="/js/pricerunner-rotator.js"></script>
+  </body>
+</html>
