@@ -332,3 +332,26 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
 #seasonalGrid .card .text-sm{
   font-size: 0.9rem;       /* en anelse mindre brødtekst */
 }
+/* Leaf after "Sæsonens favoritter" */
+#seasonal h2{
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;          /* space between text and leaf */
+}
+#seasonal h2::after{
+  content: "🍁";
+  font-size: 1.15em;   /* a touch larger than text */
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+/* (Optional) subtle float animation */
+@media (prefers-reduced-motion: no-preference){
+  #seasonal h2::after{
+    animation: leaf-float 4s ease-in-out infinite;
+  }
+  @keyframes leaf-float{
+    0%,100% { transform: translateY(1px) rotate(0deg); }
+    50%    { transform: translateY(-2px) rotate(-6deg); }
+  }
+}
