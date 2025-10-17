@@ -386,3 +386,7 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
 
 /* If seasonal sits right above, keep the junction tight */
 .seasonal-section + #popular{ margin-top: 1rem !important; }
+/* --- Fix gap under "Mest populære" --- */
+#popular #popularRecipes{ margin-top:.5rem !important; }     /* tighten grid start */
+#popular #popularRecipes > *{ margin-top:0 !important; }      /* kill wrapper mt-* */
+#popular #popularRecipes .card{ margin-top:0 !important; }    /* kill card mt-* */
