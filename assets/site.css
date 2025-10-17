@@ -367,24 +367,22 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
   line-height:1;
   transform:translateY(1px);
 }
-/* Popular section spacing + icon */
-#popular .text-stone-600 { margin-top: .25rem !important; }
-#popular #popularRecipes   { margin-top: .75rem !important; }
-
-/* Title icon (no need for a <span>) */
+/* Popular title icon */
 #popularTitle{
-  display:inline-flex;
-  align-items:center;
-  gap:.5rem;
+  display:inline-flex; align-items:center; gap:.5rem;
 }
 #popularTitle::after{
   content:"🏆 ✨";
-  font-size:1.05em;
-  line-height:1;
-  transform: translateY(1px);
+  font-size:1.05em; line-height:1; transform:translateY(1px);
 }
 
-/* Optional: if the seasonal block sits right above, tighten that junction a touch */
-.seasonal-section + #popular { margin-top: 1rem !important; }
+/* Tight spacing under the header and into the grid */
+#popular .section-head{ margin-bottom: .5rem !important; }
+#popular .text-stone-600{ margin-top: .25rem !important; }
+#popular #popularRecipes{ margin-top: .5rem !important; }
 
+/* Just in case: remove any stray top-margins on first row cards */
+#popular #popularRecipes > *{ margin-top: 0 !important; }
 
+/* If seasonal sits right above, keep the junction tight */
+.seasonal-section + #popular{ margin-top: 1rem !important; }
