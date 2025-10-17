@@ -318,3 +318,17 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
   background: #fff;
   box-shadow: 0 6px 14px rgba(0,0,0,.05);
 }
+/* Sæsonens favoritter – kompakte kort */
+#seasonalGrid .card{
+  padding: 14px;           /* lidt mindre end standard */
+  border-radius: 14px;
+}
+
+#seasonalGrid .card h3{
+  font-size: 1rem;         /* kompakt titel (≈ text-base) */
+  line-height: 1.35;
+}
+
+#seasonalGrid .card .text-sm{
+  font-size: 0.9rem;       /* en anelse mindre brødtekst */
+}
