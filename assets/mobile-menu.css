@@ -1,135 +1,132 @@
-/* === Opskrift-Drikke — Mobile menu (clean, white, animated) === */
+/* === Opskrift-Drikke — Mobile menu (clean, compact, visible) === */
 
-/* Baggrund (overlay) */
+/* --- Overlay baggrund --- */
 .mobile-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;                 /* over header */
-  background: rgba(0,0,0,.45);  /* mørk gennemsigtig baggrund */
-  transition: opacity .2s ease;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5); /* mørk baggrund */
+  transition: opacity 0.25s ease;
 }
 
-/* Panel der glider ind fra højre */
+/* skjul helt når .hidden */
+.mobile-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.mobile-overlay:not(.hidden) {
+  opacity: 1;
+}
+
+/* --- Menu-panel --- */
 .mobile-panel {
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
-  width: 86%;
-  max-width: 360px;
-  background: #fff;             /* ren hvid baggrund */
-  border-left: 1px solid #eee;
-  box-shadow: 0 12px 30px rgba(0,0,0,.18);
-  transform: translateX(100%);  /* starter skjult */
-  transition: transform .22s ease;
+  width: 80%;                /* smallere panel */
+  max-width: 320px;
+  background: #fff;          /* hvid, ikke gennemsigtig */
+  border-left: 1px solid #e5e5e5;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
   display: flex;
   flex-direction: column;
 }
 
-/* Når overlayet er synligt (altså IKKE .hidden), skal panelet være inde */
+/* aktiv tilstand */
 .mobile-overlay:not(.hidden) .mobile-panel {
   transform: translateX(0);
 }
 
-/* Topbar i panelet */
+/* --- Topbar i menuen --- */
 .panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
+  padding: 12px 14px;
   background: #fff;
+  border-bottom: 1px solid #eee;
   position: sticky;
   top: 0;
   z-index: 5;
 }
 
 .panel-head strong {
-  font-weight: 600;
   font-size: 1rem;
-  color: #333;
+  font-weight: 600;
+  color: #222;
 }
 
 .panel-head button {
-  background: #fff7f2;
-  color: #f97316;
-  border: 1px solid #f97316;
+  background: #f97316;
+  color: #fff;
+  border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
-  cursor: pointer;
   padding: 6px 10px;
-  transition: background .15s ease;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-
 .panel-head button:hover {
-  background: #ffe6d4;
+  background: #ea580c;
 }
 
-/* Linkliste */
+/* --- Navigation links --- */
 .mobile-nav {
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  gap: 2px;
+  padding: 10px;
+  gap: 4px;
 }
-
 .mobile-nav a {
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
   font-size: 1rem;
   color: #0f1712;
-  transition: background .15s ease;
+  font-weight: 500;
+  transition: background 0.15s ease;
 }
-
 .mobile-nav a:hover {
   background: #fff7f2;
 }
 
-/* Loginblok nederst */
+/* --- Login / auth blok nederst --- */
 .mobile-auth {
   margin-top: auto;
-  padding: 14px;
-  border-top: 1px solid #f2f2f2;
+  padding: 12px;
+  border-top: 1px solid #eee;
   background: #fafafa;
+  text-align: center;
 }
 
 .mobile-auth .btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border: 1px solid #f97316;
-  border-radius: 12px;
+  border-radius: 8px;
   color: #f97316;
   background: #fff;
-  font-weight: 500;
-  transition: all .15s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-
 .mobile-auth .btn:hover {
   background: #fff7f2;
 }
 
-/* Luk scroll på body når menu er åben */
+/* --- Lås scroll når menuen er åben --- */
 body.menu-open {
   overflow: hidden;
 }
 
-/* Skjul hele overlayet på større skærme */
+/* --- Skjul overlay på desktop --- */
 @media (min-width: 768px) {
   .mobile-overlay {
     display: none !important;
   }
-}
-
-/* Animation fade ind/ud */
-.mobile-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.mobile-overlay:not(.hidden) {
-  opacity: 1;
 }
