@@ -390,3 +390,8 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
 #popular #popularRecipes{ margin-top:.5rem !important; }     /* tighten grid start */
 #popular #popularRecipes > *{ margin-top:0 !important; }      /* kill wrapper mt-* */
 #popular #popularRecipes .card{ margin-top:0 !important; }    /* kill card mt-* */
+/* Stram “Mest populære” spacing */
+#popular .section-head p { margin-bottom: 0 !important; } /* fjern p’s default mb */
+#popular .section-head     { margin-bottom: .5rem !important; } /* bevidst lille bundmargin */
+#popular #popularRecipes   { margin-top: .5rem !important; }    /* lille afstand til grid */
+
