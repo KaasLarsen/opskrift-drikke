@@ -367,6 +367,7 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
   line-height:1;
   transform:translateY(1px);
 }
-/* Tighten spacing for "Mest populære" section */
-#popular .text-stone-600 { margin-top: .25rem !important; }
-#popular #popularRecipes { margin-top: .75rem !important; } /* was ~1rem */
+/* Tighten spacing for "Mest populære" even without #popular wrapper */
+#popularRecipes { margin-top: .75rem !important; }
+#popularRecipes ~ * { /* nothing */ } /* (no-op, just to show scope) */
+
