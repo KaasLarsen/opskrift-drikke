@@ -40,19 +40,6 @@
   <body class="bg-stone-50 text-stone-900">
     <div id="header"></div>
 
-    <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Fjern sektioner med H2 = "Top indhold"
-    document.querySelectorAll('h2').forEach(h => {
-      if (h.textContent.trim().toLowerCase().startsWith('top indhold')) {
-        const sec = h.closest('section');
-        if (sec) sec.remove();
-      }
-    });
-  });
-</script>
-
-    
     <main class="container">
       <!-- HERO -->
       <section class="hero rounded-3xl border mt-6">
