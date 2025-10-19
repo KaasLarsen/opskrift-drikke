@@ -1,41 +1,35 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "trailingSlash": false,
+
   "headers": [
     {
-      "source": "/opskrifter/(.*)\\.html",
+      "source": "/(.*)\\.html",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
+        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
       ]
     },
     {
       "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/opskrifter",
-      "destination": "/seneste",
-      "permanent": true
-    }
-  ]
-}
-{
-  "headers": [
+    },
     {
       "source": "/pages/topindhold/(.*)\\.html",
       "headers": [
         { "key": "Content-Type", "value": "text/html; charset=utf-8" }
       ]
+    }
+  ],
+
+  "redirects": [
+    {
+      "source": "/opskrifter",
+      "destination": "/seneste",
+      "permanent": true
     }
   ]
 }
