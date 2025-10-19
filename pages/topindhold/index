@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Top indhold – opskrift-drikke.dk</title>
-
   <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/site.css">
@@ -26,7 +25,6 @@
   <script type="module">
     import { mountTopContent } from '/js/top-content.js';
     document.addEventListener('DOMContentLoaded', () => {
-      // Infinity = hent alle fra manifestet
       mountTopContent({ gridId: 'topIndexGrid', limit: Infinity });
     });
   </script>
