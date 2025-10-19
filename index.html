@@ -85,6 +85,7 @@
         </div>
       </section>
 
+<!-- TOP INDHOLD -->
 <section class="py-10 bg-stone-50">
   <div class="max-w-6xl mx-auto px-4">
     <div class="flex items-end justify-between flex-wrap gap-3">
@@ -99,23 +100,28 @@
           <p class="opacity-80">Udvalgte guides fra vores redaktion – dyk ned i de bedste temaer.</p>
         </div>
       </div>
-      <a href="./Topindhold/index.html" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
+      <!-- VIGTIGT: absolut path + lowercase mappe -->
+      <a href="/pages/topindhold/index.html" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
     </div>
 
     <div class="grid md:grid-cols-4 gap-4 mt-6">
-      <a href="./Topindhold/ingefaershot-guide.html" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
+      <!-- Brug guide-visningen med slug, så du ikke skal lave statiske HTML-filer -->
+      <a href="/pages/guide?slug=ingefaershot-guide" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
         <h3 class="font-medium">Alt om ingefærshots</h3>
         <p class="text-sm opacity-70 mt-1">Opskrift, styrke, holdbarhed.</p>
       </a>
-      <a href="./Topindhold/iste-uden-sukker-guide.html" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
+
+      <a href="/pages/guide?slug=iste-uden-sukker-guide" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
         <h3 class="font-medium">Iste uden sukker</h3>
         <p class="text-sm opacity-70 mt-1">Koldbryg og smagstricks.</p>
       </a>
-      <a href="./Topindhold/matcha-komplet-guide.html" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
+
+      <a href="/pages/guide?slug=matcha-komplet-guide" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
         <h3 class="font-medium">Matcha – guide</h3>
         <p class="text-sm opacity-70 mt-1">Temperatur og teknik.</p>
       </a>
-      <a href="./Topindhold/maelkeskum-barista-guide.html" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
+
+      <a href="/pages/guide?slug=maelkeskum-barista-guide" class="block border bg-white rounded-2xl p-5 hover:shadow transition-shadow">
         <h3 class="font-medium">Mælkeskum som en barista</h3>
         <p class="text-sm opacity-70 mt-1">Mikroskum og latte art.</p>
       </a>
