@@ -4,29 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Top indhold – opskrift-drikke.dk</title>
+
   <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/assets/site.css">
-  <link rel="stylesheet" href="/assets/mobile-menu.css">
+  <link rel="stylesheet" href="/assets/site.css" />
+  <link rel="stylesheet" href="/assets/mobile-menu.css" />
+
+  <!-- Header/footer mount -->
+  <script type="module" src="/js/app.js"></script>
+  <!-- Top indhold modul -->
+  <script type="module" src="/js/top-content.js"></script>
 </head>
 <body class="bg-stone-50 text-stone-900">
   <div id="header"></div>
 
   <main class="container px-4 py-8">
-    <h1 class="text-3xl md:text-4xl font-semibold">Top indhold</h1>
-    <p class="opacity-80 mt-2">Hele samlingen af redaktionens udvalgte.</p>
+    <div class="flex items-end justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-semibold">Top indhold</h1>
+        <p id="topStatus" class="opacity-80 mt-2">Indlæser…</p>
+      </div>
+      <a href="/index.html" class="text-sm font-medium text-orange-600 hover:underline">← Til forsiden</a>
+    </div>
 
     <div id="topIndexGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6"></div>
   </main>
 
   <div id="footer"></div>
-
-  <script type="module" src="/js/app.js"></script>
-  <script type="module">
-    import { mountTopContent } from '/js/top-content.js';
-    document.addEventListener('DOMContentLoaded', () => {
-      mountTopContent({ gridId: 'topIndexGrid', limit: Infinity });
-    });
-  </script>
 </body>
 </html>
