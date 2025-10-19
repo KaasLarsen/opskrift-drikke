@@ -17,7 +17,7 @@
     <meta property="og:url" content="https://www.opskrift-drikke.dk/"/>
 
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">Fsæs
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#f97316">
     <link rel="manifest" href="/assets/manifest.json">
@@ -85,31 +85,48 @@
         </div>
       </section>
 
-<!-- ============================================
-Snippet: Forside-sektion med 4 kort (indsæt på forsiden)
-============================================ -->
-<section class="max-w-5xl mx-auto px-4 mt-10">
+<!-- =============================
+Forside-sektion (match eksisterende stil)
+Indsæt hvor sektionen skal vises på forsiden
+============================= -->
+<section class="py-10">
+<div class="max-w-6xl mx-auto px-4">
+<div class="flex items-end justify-between flex-wrap gap-3">
+<div class="flex items-center gap-3">
+<span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 border border-orange-100">
+<svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M9.5 3 8 7 4 8.5 8 10l1.5 4L11 10l4-1.5L11 7 9.5 3Zm8 4-1 2.5L14 11l2.5 1.5L18 15l1.5-2.5L22 11l-2.5-1.5L17.5 7Zm-9 7L7 13l1.5 2.5L7 18l2.5-1.5L12 18l-1.5-2.5L12 13l-2.5 1Z"/></svg>
+</span>
+<div>
 <h2 class="text-2xl md:text-3xl font-semibold">Top indhold</h2>
-<p class="opacity-80 mt-1">Udvalgte guides fra vores redaktion – dyk ned i de bedste temaer.</p>
-<div class="grid md:grid-cols-4 gap-4 mt-4">
-<a href="/Topindhold/ingefaershot-guide.html" class="block border rounded-2xl p-4 bg-white hover:shadow">
-<h3 class="font-medium">Alt om ingefærshots</h3>
-<p class="text-sm opacity-70 mt-1">Opskrift, styrke, holdbarhed.</p>
-</a>
-<a href="/Topindhold/iste-uden-sukker-guide.html" class="block border rounded-2xl p-4 bg-white hover:shadow">
-<h3 class="font-medium">Iste uden sukker</h3>
-<p class="text-sm opacity-70 mt-1">Koldbryg og smagstricks.</p>
-</a>
-<a href="/Topindhold/matcha-komplet-guide.html" class="block border rounded-2xl p-4 bg-white hover:shadow">
-<h3 class="font-medium">Matcha – guide</h3>
-<p class="text-sm opacity-70 mt-1">Temperatur og teknik.</p>
-</a>
-<a href="/Topindhold/maelkeskum-barista-guide.html" class="block border rounded-2xl p-4 bg-white hover:shadow">
-<h3 class="font-medium">Mælkeskum som en barista</h3>
-<p class="text-sm opacity-70 mt-1">Mikroskum og latte art.</p>
-</a>
+<p class="opacity-80">Udvalgte guides fra vores redaktion – dyk ned i de bedste temaer.</p>
+</div>
+</div>
+<a href="/Topindhold/" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
+</div>
+
+
+<div id="topindhold-grid" class="grid md:grid-cols-4 gap-4 mt-4"></div>
 </div>
 </section>
+
+
+<script>
+// Let forside-snippet hente 4 emner fra Topindhold (via fallback-listen fra index-siden)
+const HOME_ITEMS = [
+{ title: 'Alt om ingefærshots', url: '/Topindhold/ingefaershot-guide.html', desc: 'Opskrift, styrke, holdbarhed.' },
+{ title: 'Iste uden sukker', url: '/Topindhold/iste-uden-sukker-guide.html', desc: 'Koldbryg og smagstricks.' },
+{ title: 'Matcha – guide', url: '/Topindhold/matcha-komplet-guide.html', desc: 'Temperatur og teknik.' },
+{ title: 'Mælkeskum som en barista', url: '/Topindhold/maelkeskum-barista-guide.html', desc: 'Mikroskum og latte art.' }
+]
+const homeGrid = document.getElementById('topindhold-grid')
+if (homeGrid){
+homeGrid.innerHTML = HOME_ITEMS.map(it => `
+<a href="${it.url}" class="block border bg-white rounded-2xl p-5 hover:shadow">
+<h3 class="font-medium">${it.title}</h3>
+<p class="text-sm opacity-70 mt-1">${it.desc}</p>
+</a>`).join('')
+}
+</script>
       
       <!-- SÆSONENS FAVORITTER -->
       <section class="mt-10" id="seasonal">
