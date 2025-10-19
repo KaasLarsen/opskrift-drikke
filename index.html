@@ -108,8 +108,7 @@
   </head>
   <body class="bg-stone-50 text-stone-900">
     <div id="header"></div>
-
-    <!-- TOP INDHOLD -->
+<!-- TOP INDHOLD (forside) -->
 <section class="py-10 bg-stone-50">
   <div class="max-w-6xl mx-auto px-4">
     <div class="flex items-end justify-between flex-wrap gap-3">
@@ -124,27 +123,22 @@
           <p class="opacity-80">Udvalgte guides fra vores redaktion – dyk ned i de bedste temaer.</p>
         </div>
       </div>
-      <a id="topContentMore" href="/pages/topindhold/index.html" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
+      <a id="topMoreLink" href="/pages/topindhold/index.html" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
     </div>
 
-    <!-- TOM GRID — udfyldes af JS -->
-    <div id="topContentGrid"
+    <div id="topPreviewGrid"
          data-top-content-grid
          data-limit="4"
-         data-more-id="topContentMore"
+         data-more-id="topMoreLink"
          class="grid md:grid-cols-4 gap-4 mt-6"></div>
   </div>
 </section>
 
-<!-- læg efter dine andre modules -->
-<script type="module" src="/js/top-content.js"></script>
+<!-- nederst på forsiden (efter /js/app.js) -->
 <script type="module">
-  import { mountTopContent } from '/js/top-content.js';
-  document.addEventListener('DOMContentLoaded', () => {
-    // Eksplicit mount (selv om auto-mount også fanger det)
-    mountTopContent({ gridId: 'topContentGrid', limit: 4, moreId: 'topContentMore' });
-  });
+  import '/js/top-content.js'; // auto-mounteren læser data-* og renderer 4 kort
 </script>
+
 
 
       <!-- SÆSONENS FAVORITTER -->
