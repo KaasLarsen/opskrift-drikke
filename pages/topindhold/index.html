@@ -1,58 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Her finder du alle vores top guides, udvalgt af redaktionen – fra ingefærshots til iste, kaffe og matcha.">
-  <title>Top indhold – redaktionens udvalgte guides | Opskrift-drikke.dk</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Top indhold – redaktionens udvalgte | opskrift-drikke.dk</title>
 
-  <link rel="stylesheet" href="/css/style.css">
-  <script type="module" src="/js/app.js"></script>
-</head>
-<body class="bg-stone-50 text-stone-900">
-  <!-- Header partial -->
-  <div id="header"></div>
+    <!-- Tailwind + dit tema (vigtigt for udseendet) -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/mobile-menu.css">
 
-  <main class="max-w-6xl mx-auto px-4 py-12">
-    <header class="mb-10 text-center">
-      <h1 class="text-3xl md:text-4xl font-semibold mb-3">⭐ Top indhold</h1>
-      <p class="text-stone-600 max-w-2xl mx-auto">
-        Udvalgte guides fra vores redaktion — nøje udvalgt for dig, der elsker gode drikkeopskrifter, viden og tips.
-      </p>
-    </header>
+    <meta name="description" content="Alle vores top-guides: ingefærshots, iste uden sukker, matcha, mælkeskum m.m."/>
+  </head>
+  <body class="bg-stone-50 text-stone-900">
+    <div id="header"></div>
 
-    <!-- Grid -->
-    <div id="topIndexGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    <main class="container px-4 py-10">
+      <!-- Side-hero -->
+      <div class="flex items-start gap-3 mb-6">
+        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 border border-orange-100">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true">
+            <path fill="currentColor" d="M12 17.3l-4.12 2.45 1.1-4.72L5.9 11l4.84-.41L12 6l1.26 4.59 4.84.41-3.08 4.03 1.1 4.72z"/>
+          </svg>
+        </span>
+        <div class="flex-1">
+          <h1 class="text-3xl md:text-4xl font-semibold">Top indhold</h1>
+          <p class="opacity-80">Udvalgte guides fra vores redaktion — alt samlet ét sted.</p>
+        </div>
+      </div>
 
-    <!-- Status / fejlbesked -->
-    <div id="topStatus" class="text-center text-sm opacity-70 mt-6"></div>
+      <!-- Grid med ALLE kort (nyt id for at undgå auto-mount dubletter) -->
+      <div id="topIndexGridAll" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+      <div id="topStatus" class="text-center text-sm opacity-70 mt-4"></div>
 
-    <!-- PriceRunner sektion -->
-    <section class="mt-12">
-      <h2 class="text-2xl font-semibold mb-4">Annonce i samarbejde med PriceRunner</h2>
-      <div id="prw-blender-ninja-1" class="my-4"></div>
-    </section>
-  </main>
+      <!-- PriceRunner (valgfri) -->
+      <section class="mt-12">
+        <h2 class="text-2xl font-semibold mb-3">Annonce i samarbejde med PriceRunner</h2>
+        <div id="prw-blender-ninja-1"></div>
+      </section>
+    </main>
 
-  <!-- Footer partial -->
-  <div id="footer"></div>
+    <div id="footer"></div>
 
-  <!-- Scripts -->
-  <script type="module">
-    import { mountTopContent } from '/js/top-content.js';
-    import { mountPRByKey } from '/js/pricerunner-rotator.js';
+    <!-- Scripts -->
+    <script type="module" src="/js/app.js"></script>
+    <script type="module">
+      import { mountTopContent } from '/js/top-content.js';
+      import { mountPRByKey } from '/js/pricerunner-rotator.js';
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Hent alt topindhold fra manifest.json
-      mountTopContent({
-        gridId: 'topIndexGrid',
-        limit: Infinity,
-        statusId: 'topStatus'
+      document.addEventListener('DOMContentLoaded', () => {
+        // Render ALLE top-indhold-kort i dette grid
+        mountTopContent({
+          gridId: 'topIndexGridAll',   // vigtigt: andet id end 'topIndexGrid'
+          limit: Infinity,
+          statusId: 'topStatus'
+        });
+
+        // En relevant PriceRunner-widget (skift key hvis du vil vise noget andet)
+        mountPRByKey('#prw-blender-ninja-1', 'blender-ninja-1');
       });
-
-      // Eksempel: viser PriceRunner widget (kan ændres efter kategori)
-      mountPRByKey('#prw-blender-ninja-1', 'blender-ninja-1');
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
