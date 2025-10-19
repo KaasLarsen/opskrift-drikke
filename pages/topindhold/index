@@ -23,10 +23,10 @@
   <div id="footer"></div>
 
   <script type="module" src="/js/app.js"></script>
-  <script type="module" src="/js/top-content.js"></script>
   <script type="module">
     import { mountTopContent } from '/js/top-content.js';
-    document.addEventListener('DOMContentLoaded', ()=>{
+    document.addEventListener('DOMContentLoaded', () => {
+      // Infinity = hent alle fra manifestet
       mountTopContent({ gridId: 'topIndexGrid', limit: Infinity });
     });
   </script>
