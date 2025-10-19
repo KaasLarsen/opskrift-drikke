@@ -1,26 +1,55 @@
-<!-- Topindhold/index.html -->
-<section id="top-content-grid" class="grid md:grid-cols-3 gap-6 mt-6"></section>
+<!doctype html>
+const filtered = items.filter(it => {
+const matchesText = !query || (it.title+it.desc).toLowerCase().includes(query)
+const matchesTag = active==='alle' || it.tag===active
+return matchesText && matchesTag
+})
 
-<script type="module">
-const container = document.querySelector("#top-content-grid")
 
-fetch("/Topindhold/")
-  .then(res => res.text())
-  .then(html => {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(html, "text/html")
-    const links = [...doc.querySelectorAll("a")].filter(a => a.href.endsWith(".html") && !a.href.includes("index.html"))
+if (!filtered.length){
+grid.innerHTML = ''
+empty.classList.remove('hidden')
+return
+}
+empty.classList.add('hidden')
+grid.innerHTML = filtered.map(cardTemplate).join('')
+}
 
-    for (const link of links) {
-      const title = link.textContent || link.href.split("/").pop().replace(".html","")
-      container.innerHTML += `
-        <a href="${link.getAttribute("href")}" class="block border rounded-2xl p-4 bg-white hover:shadow">
-          <h3 class="font-medium">${title.replace(/-/g, " ")}</h3>
-          <p class="text-sm opacity-70 mt-1">Læs mere</p>
-        </a>`
-    }
-  })
-  .catch(() => {
-    container.innerHTML = "<p>Indholdet kunne ikke indlæses.</p>"
-  })
+
+function cardTemplate(it){
+return `
+<a href="${it.url}" class="block border bg-white card hover-card p-5">
+<div class="flex items-start gap-3">
+<span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 border border-orange-100">
+<svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true"><path fill="currentColor" d="M9.5 3 8 7 4 8.5 8 10l1.5 4L11 10l4-1.5L11 7 9.5 3Z"/></svg>
+</span>
+<div>
+<h3 class="font-medium leading-tight">${it.title}</h3>
+<p class="text-sm opacity-70 mt-1">${it.desc||''}</p>
+</div>
+</div>
+</a>`
+}
+
+
+async function init(){
+let items = await tryDirectoryListing()
+if (!items) items = FALLBACK_ITEMS
+render(items)
+
+
+q.addEventListener('input', () => render(items))
+filterButtons.forEach(btn => btn.addEventListener('click', () => {
+filterButtons.forEach(b => b.classList.remove('active','bg-stone-50'))
+btn.classList.add('active','bg-stone-50')
+render(items)
+}))
+// default filter
+filterButtons[0].classList.add('active','bg-stone-50')
+}
+
+
+init()
 </script>
+</body>
+</html>
