@@ -1,0 +1,26 @@
+<!-- Topindhold/index.html -->
+<section id="top-content-grid" class="grid md:grid-cols-3 gap-6 mt-6"></section>
+
+<script type="module">
+const container = document.querySelector("#top-content-grid")
+
+fetch("/Topindhold/")
+  .then(res => res.text())
+  .then(html => {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, "text/html")
+    const links = [...doc.querySelectorAll("a")].filter(a => a.href.endsWith(".html") && !a.href.includes("index.html"))
+
+    for (const link of links) {
+      const title = link.textContent || link.href.split("/").pop().replace(".html","")
+      container.innerHTML += `
+        <a href="${link.getAttribute("href")}" class="block border rounded-2xl p-4 bg-white hover:shadow">
+          <h3 class="font-medium">${title.replace(/-/g, " ")}</h3>
+          <p class="text-sm opacity-70 mt-1">Læs mere</p>
+        </a>`
+    }
+  })
+  .catch(() => {
+    container.innerHTML = "<p>Indholdet kunne ikke indlæses.</p>"
+  })
+</script>
