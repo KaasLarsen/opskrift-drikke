@@ -3,59 +3,269 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Om-os</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+    <title>Om os – opskrift-drikke.dk</title>
+
+    <!-- Tailwind + tema -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="/assets/manifest.json">
-    <meta property="og:title" content="opskrift-drikke.dk"/>
-    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/mobile-menu.css">
+
+    <!-- Meta -->
+    <meta name="description" content="Lær holdet bag opskrift-drikke.dk at kende. Vores mission, redaktionelle principper, kvalitetssikring, samarbejder og kontaktoplysninger." />
+    <meta property="og:title" content="Om os – opskrift-drikke.dk" />
+    <meta property="og:description" content="Vi gør gode drikkeopskrifter enkle, gennemtestede og til at stole på – fra hverdagsfavoritter til gæstedrinks." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/om-os" />
+
+    <!-- Ikoner / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="manifest" href="/assets/manifest.json" />
+
+    <!-- Globale scripts (monter header/footer) -->
     <script type="module" src="/js/app.js"></script>
-    <script defer src="/js/analytics.js"></script>
-    
+
     <style>
-      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn { border-radius: 1rem; }
+      .lead { font-size:1.05rem; line-height:1.7; color:#374151 }
+      .toc a { display:block; padding:.35rem .5rem; border-radius:.75rem }
+      .toc a:hover { background: rgba(249,115,22,.08) }
+      .legal h2 { font-size:1.25rem; font-weight:700; margin:1.25rem 0 .5rem }
+      .legal h3 { font-weight:600; margin:1rem 0 .25rem }
+      .badge { display:inline-flex; gap:.35rem; align-items:center; font-size:.8rem; padding:.25rem .6rem; border:1px solid #e5e7eb; border-radius:9999px; background:white }
+      .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background:#f3f4f6; border:1px solid #e5e7eb; padding:.1rem .35rem; border-radius:.375rem; font-size:.85em }
+      .table { width:100%; border-collapse:separate; border-spacing:0; }
+      .table th, .table td { padding:.65rem .75rem; border-bottom:1px solid #e5e7eb; vertical-align:top }
+      .table th { font-weight:600; white-space:nowrap; background:#fafafa }
+      .note { font-size:.9rem; color:#6b7280 }
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06) }
+      .callout { border-left:4px solid #f97316; background:#fff7f2; }
+      .checklist li{ display:flex; gap:.5rem; }
+      .checklist li::before{ content:'✓'; color:#16a34a; font-weight:700; }
     </style>
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "opskrift-drikke.dk",
+      "url": "https://www.opskrift-drikke.dk/",
+      "logo": "https://www.opskrift-drikke.dk/assets/favicon.svg",
+      "sameAs": [
+        "https://www.facebook.com/[DIN-SIDE]",
+        "https://www.instagram.com/[DIN-PROFIL]"
+      ],
+      "contactPoint": [{
+        "@type": "ContactPoint",
+        "contactType": "Customer support",
+        "email": "kontakt@[dit-domæne]",
+        "availableLanguage": ["da"]
+      }]
+    }
+    </script>
   </head>
+
   <body class="bg-stone-50 text-stone-900">
     <div id="header"></div>
-    <main class="max-w-6xl mx-auto px-4">
-<section class="pt-8">
-  <h1 class="text-3xl font-semibold">Om os</h1>
-  <p class="mt-3">Vi bygger Danmarks mest brugervenlige univers for drikkeopskrifter. kun store bogstaver i starten af en sætning – resten er enkelhed, fart og kvalitet.</p>
 
-  <div class="grid md:grid-cols-3 gap-6 mt-6">
-    <div class="card bg-white p-5">
-      <h2 class="text-xl font-medium">Vores mission</h2>
-      <p class="mt-2">Gøre det nemt at finde, gemme og dele gode drikke. ingen støj – kun opskrifter, du rent faktisk bruger.</p>
-    </div>
-    <div class="card bg-white p-5">
-      <h2 class="text-xl font-medium">Hvordan vi virker</h2>
-      <ul class="mt-2 list-disc ml-5 text-sm">
-        <li>Hurtig søgning på 3.000 opskrifter</li>
-        <li>Gem favoritter med et hjerte</li>
-        <li>Kommentarer for loggede brugere</li>
-        <li>Schema.org for bedre synlighed</li>
-      </ul>
-    </div>
-    <div class="card bg-white p-5">
-      <h2 class="text-xl font-medium">Teknisk</h2>
-      <p class="mt-2 text-sm">Statisk site med Tailwind og JSON-data. alt kører lynhurtigt på Vercel og GitHub.</p>
-    </div>
-  </div>
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- breadcrumb -->
+      <nav class="text-sm opacity-80">
+        <a href="/index.html" class="hover:underline">Forside</a> /
+        <span>Om os</span>
+      </nav>
 
-  <div class="card bg-white p-6 mt-6">
-    <h2 class="text-xl font-medium">Kontakt</h2>
-    <p class="mt-2">Har du forslag eller fejl at melde? skriv til <a class="underline" href="mailto:kontakt@opskrift-drikke.dk">kontakt@opskrift-drikke.dk</a>.</p>
-  </div>
-</section>
-</main>
+      <!-- hero -->
+      <section class="mt-4 card border bg-white p-6">
+        <h1 class="text-3xl md:text-4xl font-semibold">Om os</h1>
+        <p class="lead mt-2">
+          Velkommen til opskrift-drikke.dk – dit danske univers for simple, velsmagende drikkeopskrifter. Vi samler alt fra sunde hverdagsdrikke til festlige cocktails og varme kopper hygge. Kort, klart og gennemtestet.
+        </p>
+        <div class="mt-3 text-sm opacity-70">
+          Senest opdateret: <time datetime="2025-10-19">19. oktober 2025</time>
+        </div>
+      </section>
+
+      <!-- TOC -->
+      <section class="mt-6 card border bg-white p-5">
+        <h2 class="text-lg font-medium mb-2">Indhold</h2>
+        <nav class="toc grid gap-1">
+          <a href="#mission">1. Mission & værdier</a>
+          <a href="#team">2. Hvem vi er</a>
+          <a href="#principper">3. Redaktionelle principper</a>
+          <a href="#opskrifter">4. Hvilke opskrifter vi laver</a>
+          <a href="#kvalitet">5. Kvalitet, test & kilder</a>
+          <a href="#billeder">6. Billeder, rettigheder & stil</a>
+          <a href="#samarbejde">7. Samarbejde & annoncering</a>
+          <a href="#kontakt">8. Kontakt</a>
+          <a href="#presse">9. Presse</a>
+          <a href="#job">10. Skriv for os</a>
+          <a href="#faq">11. Ofte stillede spørgsmål</a>
+        </nav>
+      </section>
+
+      <!-- indhold -->
+      <section class="mt-6 legal">
+        <!-- 1: mission -->
+        <div id="mission" class="card border bg-white p-6">
+          <h2>1. Mission & værdier</h2>
+          <p>Vores mission er at gøre det nemt at lave gode drikke – uden fluff og uden spild af tid. Opskrifterne er:</p>
+          <ul class="checklist ml-5 mt-2 space-y-1">
+            <li>Enkle og præcise med tydelige mængder og trin.</li>
+            <li>Gennemtestede i almindeligt køkkenudstyr.</li>
+            <li>Forklaret i et let sprog med små tips, så alle kan være med.</li>
+            <li>Tilpasset danske råvarer og mål.</li>
+          </ul>
+        </div>
+
+        <!-- 2: team -->
+        <div id="team" class="card border bg-white p-6 mt-6">
+          <h2>2. Hvem vi er</h2>
+          <p>
+            opskrift-drikke.dk drives af <strong>[FIRMA/ANSVARLIG]</strong> (CVR: <strong>[CVR]</strong>), baseret i <strong>[BY]</strong>.
+            Vi er et lille redaktionelt team med fokus på brugervenlighed, pålidelighed og god smag.
+          </p>
+          <div class="grid md:grid-cols-2 gap-4 mt-4">
+            <div class="border rounded-xl p-4">
+              <h3>Redaktør</h3>
+              <p>Ansvarlig for indhold, opskriftsformat og kvalitetssikring.</p>
+            </div>
+            <div class="border rounded-xl p-4">
+              <h3>Foto & produktion</h3>
+              <p>Udvikler visuel stil, skyder billeder og optimerer læseoplevelse.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3: principper -->
+        <div id="principper" class="card border bg-white p-6 mt-6">
+          <h2>3. Redaktionelle principper</h2>
+          <ul class="list-disc ml-5 space-y-1">
+            <li><strong>Klarhed:</strong> ingredienser og trin skrives kort og tydeligt.</li>
+            <li><strong>Reproducerbarhed:</strong> vores angivelser kan gentages i hjemmekøkkenet.</li>
+            <li><strong>Transparens:</strong> eventuelle samarbejder eller affiliate-links markeres tydeligt.</li>
+            <li><strong>Brugerfokus:</strong> vi prioriterer praktiske tips, variationer og serveringsforslag.</li>
+            <li><strong>Tilgængelighed:</strong> vi sigter mod let forståelig tekst og inkluderer alternative metoder, når relevant (fx uden alkohol).</li>
+          </ul>
+        </div>
+
+        <!-- 4: opskrifter -->
+        <div id="opskrifter" class="card border bg-white p-6 mt-6">
+          <h2>4. Hvilke opskrifter vi laver</h2>
+          <div class="overflow-auto">
+            <table class="table">
+              <thead>
+                <tr><th>Kategori</th><th>Eksempler</th><th>Bemærkninger</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Varme drikke</td>
+                  <td>Kakao, chai, kaffevariationer</td>
+                  <td>Danske mål, simple teknikker</td>
+                </tr>
+                <tr>
+                  <td>Kolde drikke</td>
+                  <td>Lemonade, iste, smoothie</td>
+                  <td>Sæsonråvarer og nemme udskiftninger</td>
+                </tr>
+                <tr>
+                  <td>Cocktails & mocktails</td>
+                  <td>Margarita, gin & tonic, virgin varianter</td>
+                  <td>Både klassikere og moderne twists</td>
+                </tr>
+                <tr>
+                  <td>Sundhed & velvære</td>
+                  <td>Ingefærshot, æbleshot, te</td>
+                  <td>Praktiske råd – ikke sundhedsråd</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note mt-3">Vi skriver i et ikke-medicinsk perspektiv og anbefaler altid at følge officielle kostråd.</p>
+        </div>
+
+        <!-- 5: kvalitet -->
+        <div id="kvalitet" class="card border bg-white p-6 mt-6">
+          <h2>5. Kvalitet, test & kilder</h2>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>Opskrifter testes i almindeligt køkkenudstyr og kalibreres til konsistente resultater.</li>
+            <li>Vi noterer mål, tider og temperaturer og justerer efter feedback.</li>
+            <li>Ved inspiration krediterer vi oprindelige kilder og linker, hvor det er muligt.</li>
+            <li>Vi opdaterer løbende ældre indhold for at afspejle gode metoder og sæson.</li>
+          </ul>
+        </div>
+
+        <!-- 6: billeder -->
+        <div id="billeder" class="card border bg-white p-6 mt-6">
+          <h2>6. Billeder, rettigheder & stil</h2>
+          <p>Alle billeder på siden er enten produceret af os eller brugt med licens. Kontakt os, hvis du vil bruge billeder – så finder vi en løsning.</p>
+          <ul class="list-disc ml-5 space-y-1 mt-1">
+            <li>Stil: lyst, realistisk og indbydende – fokus på ingredienser og tekstur.</li>
+            <li>Format: kvadratisk eller rektangulært efter skabelon, optimeret til web.</li>
+            <li>Rettigheder: Copyright © <span id="year"></span> opskrift-drikke.dk. Alle rettigheder forbeholdes.</li>
+          </ul>
+        </div>
+
+        <!-- 7: samarbejde -->
+        <div id="samarbejde" class="card border bg-white p-6 mt-6">
+          <h2>7. Samarbejde & annoncering</h2>
+          <p>Vi finansierer vores arbejde bl.a. gennem samarbejder og affiliate-links.</p>
+          <ul class="list-disc ml-5 space-y-1 mt-1">
+            <li><strong>Affiliate-partnere:</strong> <span class="badge">PriceRunner</span> og <span class="badge">Partner-ads</span>. Klik kan registreres, og vi kan modtage kommission – uden ekstra omkostning for dig.</li>
+            <li><strong>Annonceformater:</strong> artikel-samarbejder, produktplacering og widgets – altid tydeligt markeret.</li>
+            <li><strong>Uafhængighed:</strong> samarbejder påvirker ikke vores redaktionelle vurderinger.</li>
+          </ul>
+          <div class="callout p-4 rounded-xl mt-4">
+            <strong>Transparens:</strong> Vi markerer samarbejder og reklamer tydeligt og henviser til vores <a class="text-orange-600 hover:underline" href="/pages/privatliv">privatlivs- og cookiepolitik</a> for detaljer.
+          </div>
+        </div>
+
+        <!-- 8: kontakt -->
+        <div id="kontakt" class="card border bg-white p-6 mt-6">
+          <h2>8. Kontakt</h2>
+          <ul class="list-disc ml-5 mt-1">
+            <li>E-mail: <a class="text-orange-600 hover:underline" href="mailto:[E-MAIL]">[E-MAIL]</a></li>
+            <li>Postadresse: <strong>[ADRESSE]</strong></li>
+            <li>Dataansvarlig: <strong>[FIRMA/ANSVARLIG]</strong> (CVR: <strong>[CVR]</strong>)</li>
+          </ul>
+        </div>
+
+        <!-- 9: presse -->
+        <div id="presse" class="card border bg-white p-6 mt-6">
+          <h2>9. Presse</h2>
+          <p>Til presseforespørgsler, citater og billedmateriale kontakt os venligst på <a class="text-orange-600 hover:underline" href="mailto:[PRESSEMAIL]">[PRESSEMAIL]</a>. Vi svarer så hurtigt som muligt.</p>
+        </div>
+
+        <!-- 10: job -->
+        <div id="job" class="card border bg-white p-6 mt-6">
+          <h2>10. Skriv for os</h2>
+          <p>Brænder du for gode drikkeopskrifter, foto eller redigering? Send en kort ansøgning og 2–3 eksempler på arbejde til <a class="text-orange-600 hover:underline" href="mailto:[JOBMAIL]">[JOBMAIL]</a>.</p>
+        </div>
+
+        <!-- 11: FAQ -->
+        <div id="faq" class="card border bg-white p-6 mt-6">
+          <h2>11. Ofte stillede spørgsmål</h2>
+          <details class="border rounded-xl p-4 mb-3">
+            <summary class="font-medium">Må jeg gengive jeres opskrifter på min egen blog?</summary>
+            <p class="mt-2">Du er velkommen til at linke og citere kort. Fuld gengivelse kræver skriftlig tilladelse.</p>
+          </details>
+          <details class="border rounded-xl p-4 mb-3">
+            <summary class="font-medium">Tager I imod produktprøver?</summary>
+            <p class="mt-2">Ja, men omtale er aldrig garanteret. Vi markerer altid sponsoreret indhold.</p>
+          </details>
+          <details class="border rounded-xl p-4">
+            <summary class="font-medium">Kan jeg få en alkoholfri version?</summary>
+            <p class="mt-2">Ofte ja – se afsnittet om variationer i den enkelte opskrift. Ellers skriv til os.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
     <div id="footer"></div>
-    
+
+    <script>
+      // årstal til copyright
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
   </body>
 </html>
