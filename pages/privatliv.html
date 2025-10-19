@@ -3,34 +3,280 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Privatliv</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+    <title>Privatliv & cookies – opskrift-drikke.dk</title>
+
+    <!-- Tailwind + tema -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/mobile-menu.css">
+
+    <!-- Meta -->
+    <meta name="description" content="Læs hvordan opskrift-drikke.dk behandler personoplysninger og cookies i henhold til GDPR.">
+    <meta property="og:title" content="Privatliv & cookies – opskrift-drikke.dk">
+    <meta property="og:description" content="Transparens om data, cookies, analyse og annoncer.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/privatliv">
+
+    <!-- Ikoner / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     <link rel="manifest" href="/assets/manifest.json">
-    <meta property="og:title" content="opskrift-drikke.dk"/>
-    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+
+    <!-- Globale scripts (monter header/footer) -->
     <script type="module" src="/js/app.js"></script>
-    <script defer src="/js/analytics.js"></script>
-    
+
     <style>
-      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn { border-radius: 1rem; }
+      .lead { font-size:1.05rem; line-height:1.7; color:#374151 }
+      .toc a { display:block; padding:.35rem .5rem; border-radius:.75rem }
+      .toc a:hover { background: rgba(249,115,22,.08) }
+      .legal h2 { font-size:1.25rem; font-weight:700; margin:1.25rem 0 .5rem }
+      .legal h3 { font-weight:600; margin:1rem 0 .25rem }
+      .badge { display:inline-flex; gap:.35rem; align-items:center; font-size:.8rem; padding:.25rem .6rem; border:1px solid #e5e7eb; border-radius:9999px; background:white }
+      .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background:#f3f4f6; border:1px solid #e5e7eb; padding:.1rem .35rem; border-radius:.375rem; font-size:.85em }
+      .table { width:100%; border-collapse:separate; border-spacing:0; }
+      .table th, .table td { padding:.65rem .75rem; border-bottom:1px solid #e5e7eb; vertical-align:top }
+      .table th { font-weight:600; white-space:nowrap; background:#fafafa }
+      .note { font-size:.9rem; color:#6b7280 }
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06) }
+      .callout { border-left:4px solid #f97316; background:#fff7f2; }
     </style>
   </head>
+
   <body class="bg-stone-50 text-stone-900">
     <div id="header"></div>
-    <main class="max-w-6xl mx-auto px-4">
-    <section class="pt-8">
-      <h1 class="text-3xl font-semibold">Privatliv</h1>
-      <p class="mt-3">Vi bruger kun simple analytics. favoritter og kommentarer gemmes lokalt i din browser.</p>
-    </section>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- breadcrumb -->
+      <nav class="text-sm opacity-80">
+        <a href="/index.html" class="hover:underline">Forside</a> /
+        <span>Privatliv & cookies</span>
+      </nav>
+
+      <!-- hero -->
+      <section class="mt-4 card border bg-white p-6">
+        <h1 class="text-3xl md:text-4xl font-semibold">Privatliv & cookies</h1>
+        <p class="lead mt-2">
+          På opskrift-drikke.dk går vi op i, at du forstår, hvilke data vi indsamler, hvorfor vi gør det, og hvordan du kan styre det. Her finder du vores privatlivspolitik og cookie-politik – skrevet i klart sprog og opdateret til GDPR.
+        </p>
+        <div class="mt-3 text-sm opacity-70">
+          Senest opdateret: <time datetime="2025-10-19">19. oktober 2025</time>
+        </div>
+      </section>
+
+      <!-- TOC -->
+      <section class="mt-6 card border bg-white p-5">
+        <h2 class="text-lg font-medium mb-2">Indhold</h2>
+        <nav class="toc grid gap-1">
+          <a href="#dataansvarlig">1. Dataansvarlig & kontakt</a>
+          <a href="#hvilkedata">2. Hvilke data vi behandler</a>
+          <a href="#formaal">3. Formål & lovgrundlag</a>
+          <a href="#kilder">4. Hvor vi får data fra</a>
+          <a href="#deling">5. Deling med databehandlere/partnere</a>
+          <a href="#opbevaring">6. Opbevaring & sletning</a>
+          <a href="#dinedrettigheder">7. Dine rettigheder (GDPR)</a>
+          <a href="#cookies">8. Cookies</a>
+          <a href="#sikkerhed">9. Sikkerhed</a>
+          <a href="#boern">10. Børn og unge</a>
+          <a href="#aendringer">11. Ændringer</a>
+          <a href="#kontakt">12. Kontakt</a>
+        </nav>
+      </section>
+
+      <!-- indhold -->
+      <section class="mt-6 legal">
+        <!-- 1 -->
+        <div id="dataansvarlig" class="card border bg-white p-6">
+          <h2>1. Dataansvarlig & kontakt</h2>
+          <p>
+            Dataansvarlig for behandlingen af personoplysninger på opskrift-drikke.dk er
+            <strong>[FIRMA/ANSVARLIG]</strong>, CVR: <strong>[CVR]</strong>, <strong>[ADRESSE]</strong>.
+          </p>
+          <p class="mt-2">
+            Kontakt vedr. privatliv: <a class="text-orange-600 hover:underline" href="mailto:[E-MAIL]">[E-MAIL]</a>
+          </p>
+        </div>
+
+        <!-- 2 -->
+        <div id="hvilkedata" class="card border bg-white p-6 mt-6">
+          <h2>2. Hvilke data vi behandler</h2>
+          <ul class="list-disc ml-5 space-y-1">
+            <li><strong>Konto & login:</strong> e-mail og tekniske login-data (fx tidspunkt, IP, enhedsinfo). Bruges til at oprette og sikre din konto samt synkronisere favoritter.</li>
+            <li><strong>Favoritter & interaktion:</strong> opskrifter du gemmer, bedømmer eller kommenterer.</li>
+            <li><strong>Kommentarer:</strong> det indhold du skriver, tidspunkt og basis-metadata (fx IP for misbrugsforebyggelse).</li>
+            <li><strong>Søgning:</strong> søgeord bruges til at levere resultater og forbedre relevans (aggregeret/anonymiseret for statistik).</li>
+            <li><strong>Tekniske data:</strong> IP-adresse, cookies, enhed/browser, sidevisninger, referer (bruges til drift, sikkerhed og statistik).</li>
+            <li><strong>Affiliate/annoncer:</strong> når du klikker på partner-links (fx PriceRunner/Partner-ads), kan der sættes tracking-cookies af partneren for at måle salg/kommission.</li>
+          </ul>
+        </div>
+
+        <!-- 3 -->
+        <div id="formaal" class="card border bg-white p-6 mt-6">
+          <h2>3. Formål & lovgrundlag</h2>
+          <div class="overflow-auto">
+            <table class="table">
+              <thead>
+                <tr><th>Formål</th><th>Eksempler</th><th>Retsgrundlag (GDPR)</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Drift af tjenesten</td>
+                  <td>Login, visning af opskrifter, søgning, favoritter, kommentarer</td>
+                  <td>Art. 6(1)(b) (opfyldelse af aftale)</td>
+                </tr>
+                <tr>
+                  <td>Forbedring & statistik</td>
+                  <td>Aggregere søgninger, besøgstal, fejlmåling</td>
+                  <td>Art. 6(1)(f) (legitim interesse) – balanceret mod privatliv</td>
+                </tr>
+                <tr>
+                  <td>Sikkerhed & misbrug</td>
+                  <td>Rate-limiting, IP-logning ved misbrug, spam-beskyttelse</td>
+                  <td>Art. 6(1)(f) (legitim interesse)</td>
+                </tr>
+                <tr>
+                  <td>Affiliate/annoncer</td>
+                  <td>PriceRunner-widget, Partner-ads links</td>
+                  <td>Art. 6(1)(a) (samtykke) for marketing-cookies hvor påkrævet</td>
+                </tr>
+                <tr>
+                  <td>Juridiske forpligtelser</td>
+                  <td>Bogføring, myndighedsanmodninger</td>
+                  <td>Art. 6(1)(c) (retlig forpligtelse)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note mt-3">Hvor vi baserer os på legitim interesse, har vi foretaget en afvejning for at sikre, at dine rettigheder vejer tungt, og at behandlingen er proportional.</p>
+        </div>
+
+        <!-- 4 -->
+        <div id="kilder" class="card border bg-white p-6 mt-6">
+          <h2>4. Hvor vi får data fra</h2>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>Direkte fra dig (fx ved login, kommentarer, favoritter).</li>
+            <li>Automatisk ved brug (tekniske data fra din browser/enhed).</li>
+            <li>Affiliatipartnere når du klikker videre (partneren kan registrere klik og køb på deres domæne).</li>
+          </ul>
+        </div>
+
+        <!-- 5 -->
+        <div id="deling" class="card border bg-white p-6 mt-6">
+          <h2>5. Deling med databehandlere/partnere</h2>
+          <p>Vi benytter betroede leverandører til drift og funktioner:</p>
+          <ul class="list-disc ml-5 space-y-1 mt-2">
+            <li><strong>Hosting / CDN</strong> – levering af siden og statiske filer.</li>
+            <li><strong>Analyse</strong> – aggregeret statistik om brug (cookiebaseret eller cookiefrit afhængig af opsætning).</li>
+            <li><strong>Affiliate</strong> – <span class="badge">PriceRunner</span> (widget på sider) og <span class="badge">Partner-ads</span> (sporingslink), som kan sætte cookies på deres egne domæner til kommissionsafregning.</li>
+            <li><strong>E-mail</strong> – hvis du kontakter os eller nulstiller login.</li>
+          </ul>
+          <p class="note mt-3">
+            Overførsel uden for EU/EØS kan forekomme, men kun med gyldigt overførselsgrundlag (fx EU-Kommissionens standardkontraktbestemmelser).
+          </p>
+        </div>
+
+        <!-- 6 -->
+        <div id="opbevaring" class="card border bg-white p-6 mt-6">
+          <h2>6. Opbevaring & sletning</h2>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>Konto- og favoritdata: opbevares så længe du har en aktiv konto. Inaktive konti kan slettes efter rimelig periode.</li>
+            <li>Kommentarer: bevares som en del af indholdet, men kan efter konkret anmodning anonymiseres/slettes, hvis regler tillader det.</li>
+            <li>Tekniske logs: typisk 30–180 dage, med mindre længere opbevaring kræves for sikkerhed eller retlige krav.</li>
+            <li>Cookie-levetider: afhænger af typen (se cookie-afsnit).</li>
+          </ul>
+        </div>
+
+        <!-- 7 -->
+        <div id="dinedrettigheder" class="card border bg-white p-6 mt-6">
+          <h2>7. Dine rettigheder (GDPR)</h2>
+          <p>Du kan til enhver tid gøre følgende gældende:</p>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>Ret til indsigt, berigtigelse og sletning.</li>
+            <li>Ret til begrænsning og indsigelse mod behandling baseret på legitime interesser.</li>
+            <li>Ret til dataportabilitet (for data du selv har givet).</li>
+            <li>Ret til at trække samtykke tilbage (fx marketing-cookies) – uden at det påvirker lovligheden før tilbagetrækning.</li>
+            <li>Klage til Datatilsynet: <a class="text-orange-600 hover:underline" href="https://www.datatilsynet.dk/">datatilsynet.dk</a></li>
+          </ul>
+        </div>
+
+        <!-- 8 -->
+        <div id="cookies" class="card border bg-white p-6 mt-6">
+          <h2>8. Cookies</h2>
+          <p>Vi bruger cookies og lignende teknologier til:</p>
+          <ul class="list-disc ml-5 space-y-1 mt-1">
+            <li><strong>Nødvendige</strong> – fx huske login og sikre siden.</li>
+            <li><strong>Præferencer</strong> – gemme simple indstillinger.</li>
+            <li><strong>Statistik</strong> – forstå brug (aggregeret).</li>
+            <li><strong>Marketing/affiliate</strong> – måle klik/salg hos partnere.</li>
+          </ul>
+
+          <h3 class="mt-4">Eksempler på cookies</h3>
+          <div class="overflow-auto mt-2">
+            <table class="table">
+              <thead>
+                <tr><th>Navn</th><th>Type</th><th>Formål</th><th>Levetid</th><th>Udbyder</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>session_id</td>
+                  <td>Nødvendig</td>
+                  <td>Holder dig logget ind og beskytter mod misbrug.</td>
+                  <td>Session</td>
+                  <td>opskrift-drikke.dk</td>
+                </tr>
+                <tr>
+                  <td>pr_* / pa_*</td>
+                  <td>Marketing/affiliate</td>
+                  <td>Måler klik/kommission via PriceRunner/Partner-ads.</td>
+                  <td>30–180 dage</td>
+                  <td>pricerunner.dk / partner-ads.com</td>
+                </tr>
+                <tr>
+                  <td>analytics_*</td>
+                  <td>Statistik</td>
+                  <td>Aggregere brug af siden for at forbedre oplevelsen.</td>
+                  <td>Op til 24 mdr.</td>
+                  <td>[Analyseudbyder]</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout p-4 rounded-xl mt-4">
+            <strong>Cookie-valg:</strong> Du kan tilpasse eller trække samtykke tilbage via vores cookie-indstillinger (hvis vist i bunden af siden) eller i din browser. Se fx <span class="kbd">Indstillinger → Privatliv</span>.
+          </div>
+        </div>
+
+        <!-- 9 -->
+        <div id="sikkerhed" class="card border bg-white p-6 mt-6">
+          <h2>9. Sikkerhed</h2>
+          <p>Vi bruger passende tekniske og organisatoriske foranstaltninger (kryptering i transit, adgangskontrol, minimal logning, backups). Ingen løsning er 100% sikker, men vi arbejder løbende for at beskytte dine data.</p>
+        </div>
+
+        <!-- 10 -->
+        <div id="boern" class="card border bg-white p-6 mt-6">
+          <h2>10. Børn og unge</h2>
+          <p>Tjenesten er rettet mod voksne brugere. Hvis du er forælder/værge og mener, at et barn har givet os data, bedes du kontakte os – så hjælper vi med at slette dem.</p>
+        </div>
+
+        <!-- 11 -->
+        <div id="aendringer" class="card border bg-white p-6 mt-6">
+          <h2>11. Ændringer</h2>
+          <p>Vi kan opdatere denne politik ved væsentlige ændringer i vores tjeneste eller lovkrav. Den seneste version er altid tilgængelig her – se datoen øverst.</p>
+        </div>
+
+        <!-- 12 -->
+        <div id="kontakt" class="card border bg-white p-6 mt-6">
+          <h2>12. Kontakt</h2>
+          <p>Har du spørgsmål eller ønsker at gøre dine rettigheder gældende, så kontakt os:</p>
+          <ul class="list-disc ml-5 mt-1">
+            <li>E-mail: <a class="text-orange-600 hover:underline" href="mailto:[E-MAIL]">[E-MAIL]</a></li>
+            <li>Postadresse: <strong>[ADRESSE]</strong></li>
+            <li>Dataansvarlig: <strong>[FIRMA/ANSVARLIG]</strong> (CVR: <strong>[CVR]</strong>)</li>
+          </ul>
+        </div>
+      </section>
     </main>
+
     <div id="footer"></div>
-    
   </body>
 </html>
