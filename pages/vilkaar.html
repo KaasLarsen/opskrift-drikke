@@ -3,34 +3,159 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Vilkaar</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+    <title>Vilkår & betingelser – opskrift-drikke.dk</title>
+
+    <!-- Tailwind + tema -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="description" content="drikkeopskrifter med søgning, favoritter og kommentarer."/>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="/assets/manifest.json">
-    <meta property="og:title" content="opskrift-drikke.dk"/>
-    <meta property="og:description" content="500 drikkeopskrifter – søg, gem og bedøm."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://opskrift-drikke.dk/"/>
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
+    <link rel="stylesheet" href="/assets/site.css" />
+    <link rel="stylesheet" href="/assets/mobile-menu.css" />
+
+    <!-- Meta -->
+    <meta name="description" content="Læs brugsvilkår, ansvar og ophavsret for brug af opskrift-drikke.dk." />
+    <meta property="og:title" content="Vilkår & betingelser – opskrift-drikke.dk" />
+    <meta property="og:description" content="Dine rettigheder og pligter ved brug af opskrift-drikke.dk." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/vilkaar" />
+
+    <!-- Ikoner / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="manifest" href="/assets/manifest.json" />
+
+    <!-- Globale scripts (monter header/footer) -->
     <script type="module" src="/js/app.js"></script>
-    <script defer src="/js/analytics.js"></script>
-    
+
     <style>
-      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
-      .btn { border-radius: 1rem; }
+      .lead { font-size:1.05rem; line-height:1.7; color:#374151 }
+      .toc a { display:block; padding:.35rem .5rem; border-radius:.75rem }
+      .toc a:hover { background: rgba(249,115,22,.08) }
+      .legal h2 { font-size:1.25rem; font-weight:700; margin:1.25rem 0 .5rem }
+      .legal h3 { font-weight:600; margin:1rem 0 .25rem }
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06) }
+      .callout { border-left:4px solid #f97316; background:#fff7f2; }
     </style>
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Vilkår & betingelser",
+      "description": "Brugsvilkår og juridisk information for opskrift-drikke.dk.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Opskrift.drikke.dk",
+        "url": "https://www.opskrift-drikke.dk/",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Næstved",
+          "addressCountry": "DK"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "info@opskrift.drikke.dk",
+          "contactType": "Support"
+        }
+      }
+    }
+    </script>
   </head>
+
   <body class="bg-stone-50 text-stone-900">
     <div id="header"></div>
-    <main class="max-w-6xl mx-auto px-4">
-    <section class="pt-8">
-      <h1 class="text-3xl font-semibold">Vilkår</h1>
-      <p class="mt-3">Alt indhold leveres som det er. du må gerne linke hertil.</p>
-    </section>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- breadcrumb -->
+      <nav class="text-sm opacity-80">
+        <a href="/index.html" class="hover:underline">Forside</a> /
+        <span>Vilkår & betingelser</span>
+      </nav>
+
+      <!-- hero -->
+      <section class="mt-4 card border bg-white p-6">
+        <h1 class="text-3xl md:text-4xl font-semibold">Vilkår & betingelser</h1>
+        <p class="lead mt-2">
+          Disse vilkår gælder for brugen af websitet opskrift-drikke.dk. Ved at benytte siden accepterer du disse betingelser. Vi anbefaler, at du læser dem grundigt igennem.
+        </p>
+        <div class="mt-3 text-sm opacity-70">
+          Senest opdateret: <time datetime="2025-10-19">19. oktober 2025</time>
+        </div>
+      </section>
+
+      <!-- TOC -->
+      <section class="mt-6 card border bg-white p-5">
+        <h2 class="text-lg font-medium mb-2">Indhold</h2>
+        <nav class="toc grid gap-1">
+          <a href="#anvendelse">1. Anvendelse af websitet</a>
+          <a href="#indhold">2. Indhold & ophavsret</a>
+          <a href="#ansvar">3. Ansvarsfraskrivelse</a>
+          <a href="#links">4. Eksterne links & affiliate</a>
+          <a href="#brugergenereret">5. Kommentarer & brugergenereret indhold</a>
+          <a href="#aendringer">6. Ændringer af vilkår</a>
+          <a href="#lovvalg">7. Lovvalg & værneting</a>
+          <a href="#kontakt">8. Kontakt</a>
+        </nav>
+      </section>
+
+      <!-- Indhold -->
+      <section class="mt-6 legal">
+        <!-- 1 -->
+        <div id="anvendelse" class="card border bg-white p-6">
+          <h2>1. Anvendelse af websitet</h2>
+          <p>opskrift-drikke.dk stiller opskrifter, guides og inspiration frit til rådighed for privat brug. Du må gerne udskrive eller dele links til vores sider, men ikke kopiere eller distribuere hele opskrifter uden tilladelse.</p>
+        </div>
+
+        <!-- 2 -->
+        <div id="indhold" class="card border bg-white p-6 mt-6">
+          <h2>2. Indhold & ophavsret</h2>
+          <p>Alt tekst, billeder og design på opskrift-drikke.dk tilhører Opskrift.drikke.dk og er beskyttet af ophavsretsloven. Du må gerne citere små uddrag med tydelig kildeangivelse og link til kilden.</p>
+          <p class="mt-2">Enhver kommerciel anvendelse kræver skriftlig tilladelse. Kontakt os for presse- og samarbejdsaftaler.</p>
+        </div>
+
+        <!-- 3 -->
+        <div id="ansvar" class="card border bg-white p-6 mt-6">
+          <h2>3. Ansvarsfraskrivelse</h2>
+          <p>Alt indhold er vejledende og bruges på eget ansvar. Vi tilstræber korrekte oplysninger, men kan ikke garantere nøjagtighed, fuldstændighed eller aktualitet.</p>
+          <p class="mt-2">Opskrifterne er ikke sundhedsfaglige anbefalinger, og eventuelle helbredsmæssige oplysninger bør ikke erstatte professionel rådgivning.</p>
+        </div>
+
+        <!-- 4 -->
+        <div id="links" class="card border bg-white p-6 mt-6">
+          <h2>4. Eksterne links & affiliate</h2>
+          <p>Nogle links på siden fører til eksterne samarbejdspartnere som PriceRunner eller Partner-ads. Disse anvendes til finansiering af sitet via kommission ved køb.</p>
+          <p class="mt-2">Vi påtager os ikke ansvar for indhold, tilgængelighed eller databehandling på tredjepartssider.</p>
+        </div>
+
+        <!-- 5 -->
+        <div id="brugergenereret" class="card border bg-white p-6 mt-6">
+          <h2>5. Kommentarer & brugergenereret indhold</h2>
+          <p>Hvis du kommenterer eller indsender indhold på siden, giver du Opskrift.drikke.dk ret til at vise, redigere eller slette det efter redaktionel vurdering. Indhold må ikke være stødende, krænkende eller i strid med gældende lovgivning.</p>
+        </div>
+
+        <!-- 6 -->
+        <div id="aendringer" class="card border bg-white p-6 mt-6">
+          <h2>6. Ændringer af vilkår</h2>
+          <p>Vi kan løbende opdatere disse vilkår. Den gældende version vil altid være tilgængelig her, og væsentlige ændringer markeres med opdateringsdato øverst.</p>
+        </div>
+
+        <!-- 7 -->
+        <div id="lovvalg" class="card border bg-white p-6 mt-6">
+          <h2>7. Lovvalg & værneting</h2>
+          <p>Vilkårene er underlagt dansk lovgivning. Eventuelle tvister afgøres ved danske domstole.</p>
+        </div>
+
+        <!-- 8 -->
+        <div id="kontakt" class="card border bg-white p-6 mt-6">
+          <h2>8. Kontakt</h2>
+          <p>Har du spørgsmål til vores vilkår, er du altid velkommen til at kontakte os:</p>
+          <ul class="list-disc ml-5 mt-1">
+            <li>E-mail: <a class="text-orange-600 hover:underline" href="mailto:info@opskrift.drikke.dk">info@opskrift.drikke.dk</a></li>
+            <li>Postadresse: <strong>Opskrift.drikke.dk, Næstved</strong></li>
+          </ul>
+        </div>
+      </section>
     </main>
+
     <div id="footer"></div>
-    
   </body>
 </html>
