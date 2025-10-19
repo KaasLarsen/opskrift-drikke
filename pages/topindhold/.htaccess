@@ -1,0 +1,14 @@
+# Sørg for at .html serveres som HTML – ikke download
+AddType text/html .html .htm
+AddDefaultCharset utf-8
+
+# Fjern enhver attachment-disposition
+<FilesMatch "\.(html|htm)$">
+  Header unset Content-Disposition
+  Header set Content-Type "text/html; charset=utf-8"
+</FilesMatch>
+
+# Cache fornuftigt (valgfrit)
+<FilesMatch "\.(html|htm)$">
+  Header set Cache-Control "public, max-age=600"
+</FilesMatch>
