@@ -419,4 +419,60 @@ input[type="search"]::-webkit-search-results-decoration{ display:none; }
   margin-top: 0 !important;
   padding-top: inherit; /* behold kortets egen padding, men ingen ekstra på toppen */
 }
+/* === Top indhold — badge + stjerner === */
+.top-card{
+  position:relative;
+  border:1px solid var(--line,#e5e7eb);
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:var(--shadow-sm,0 6px 14px rgba(0,0,0,.06));
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.top-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(8,24,20,.10);
+  border-color:#f7c6a4;
+}
+
+/* Lille bånd oppe i hjørnet */
+.top-badge{
+  position:absolute; top:10px; left:10px;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px; font-weight:700;
+  color:#7a3b00; /* mørk orange-brun */
+  background:linear-gradient(180deg,#fff1e6, #ffe5d3);
+  border:1px solid #f8ccae;
+  box-shadow:0 6px 14px rgba(0,0,0,.06);
+}
+.top-badge .spark{
+  display:inline-block; line-height:1;
+  filter: drop-shadow(0 0 2px rgba(249,115,22,.25));
+}
+
+/* Titel + undertekst spacing */
+.top-card h3{ margin:8px 0 2px; font-size:1rem; line-height:1.35; }
+.top-card .sub{ font-size:0.9rem; opacity:.75; }
+
+/* Stjernerække under titlen */
+.top-stars{
+  display:flex; align-items:center; gap:2px; margin-top:6px;
+}
+.top-stars svg{
+  width:16px; height:16px; display:block;
+}
+.top-stars .fill{
+  /* varm gul/amber gradient i stjernerne */
+  fill:url(#top-star-grad);
+}
+
+/* Dark-mode polering */
+[data-theme="dark"] .top-card{ background:#0f1914; border-color:#213328; }
+[data-theme="dark"] .top-badge{
+  color:#7a3b00;
+  background:linear-gradient(180deg,#2b211a,#3a2a1f);
+  border-color:#4a3a2e;
+}
 
