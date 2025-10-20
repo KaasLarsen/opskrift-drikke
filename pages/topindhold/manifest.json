@@ -34,5 +34,11 @@
   "href": "/pages/topindhold/smoothie-guide.html",
   "sub": "Grundopskrift, cremet konsistens og udstyr.",
   "icon": "/assets/icons/smoothie.svg"
+  },
+  {
+  "title": "Smoothie – den komplette guide",
+  "href": "/pages/topindhold/smoothie-komplet-guide.html",
+  "sub": "Opskrifter, balancer, protein-boosts og fejlfinding.",
+  "icon": "/assets/icons/smoothie.svg"
   }
 ]
