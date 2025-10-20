@@ -1,32 +1,32 @@
 [
   {
-    "title": "Koldbryg kaffe – alt du skal vide",
-    "href": "/pages/topindhold/koldbryg-kaffe-guide.html",
-    "sub": "Opskrift, metoder, udstyr og fejlfinding.",
-    "icon": "/assets/topicons/coldbrew.png"
-  },
-  {
     "title": "Alt om ingefærshots",
     "href": "/pages/topindhold/ingefaershot-guide.html",
-    "sub": "Opskrift, styrke, holdbarhed.",
-    "icon": "/assets/topicons/ginger.png"
+    "sub": "Opskrift, styrke og holdbarhed.",
+    "icon": "/assets/icons/ingefaershot.svg"
   },
   {
     "title": "Iste uden sukker",
     "href": "/pages/topindhold/uden-sukker-guide.html",
     "sub": "Koldbryg og smagstricks.",
-    "icon": "/assets/topicons/icedtea.png"
+    "icon": "/assets/icons/iste-uden-sukker.svg"
   },
   {
     "title": "Matcha – komplet guide",
     "href": "/pages/topindhold/matcha-komplet-guide.html",
     "sub": "Temperatur og teknik.",
-    "icon": "/assets/topicons/matcha.png"
+    "icon": "/assets/icons/matcha-guide.svg"
   },
   {
     "title": "Mælkeskum som en barista",
     "href": "/pages/topindhold/maelkeskum-barista-guide.html",
     "sub": "Mikroskum og latte art.",
-    "icon": "/assets/topicons/milkfoam.png"
+    "icon": "/assets/icons/maelkeskum-barista.svg"
+  },
+  {
+    "title": "Koldbryg kaffe – sådan gør du",
+    "href": "/pages/topindhold/koldbryg-kaffe-guide.html",
+    "sub": "Langsom bryg, aroma og servering.",
+    "icon": "/assets/icons/koldbryg-kaffe.svg"
   }
 ]
