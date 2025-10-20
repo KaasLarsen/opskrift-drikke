@@ -1,1 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12"/><path d="M9 3l1 4"/><rect x="6" y="7" width="12" height="13" rx="2"/><path d="M8 11h8M9 15h6"/><path d="M12 20v1"/></svg>
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Smoothie ikon</title>
+  <desc id="desc">Et højt glas med smoothie, sugerør og lille frugt-garnish</desc>
+
+  <!-- Baggrundsbadge (svag tone for konsistent look) -->
+  <circle cx="256" cy="256" r="236" fill="#FFF7F2"></circle>
+
+  <!-- Sugerør -->
+  <path d="M322 96c10 0 18 8 18 18v40c0 6-5 11-11 11h-10c-6 0-11-5-11-11v-40c0-10 8-18 18-18z" fill="#FF9E66"></path>
+  <!-- Strå bøjet del -->
+  <path d="M319 125h52c8 0 14 6 14 14s-6 14-14 14h-52c-6 0-11-5-11-11v-6c0-6 5-11 11-11z" fill="#FFB784"></path>
+
+  <!-- Glas kant -->
+  <rect x="150" y="140" width="212" height="280" rx="28" fill="#FFFFFF" stroke="#E6E0DA" stroke-width="8"></rect>
+
+  <!-- Smoothie væske -->
+  <path d="M170 208h172v180c0 15-13 28-28 28H198c-15 0-28-13-28-28V208z" fill="#FF6B8A"></path>
+  <!-- Smoothie lysere overlay for dybde -->
+  <path d="M182 208h86v196h-70c-9 0-16-7-16-16V208z" fill="#FF86A0" opacity=".65"></path>
+
+  <!-- Bobler i smoothien -->
+  <circle cx="212" cy="260" r="8" fill="#FFD6DF"></circle>
+  <circle cx="266" cy="286" r="6" fill="#FFD6DF"></circle>
+  <circle cx="238" cy="324" r="7" fill="#FFD6DF"></circle>
+  <circle cx="298" cy="332" r="5" fill="#FFD6DF"></circle>
+  <circle cx="284" cy="252" r="6" fill="#FFD6DF"></circle>
+
+  <!-- Glas-lys / highlight -->
+  <path d="M330 160c8 0 14 6 14 14v40c-20 6-37 9-52 9-36 0-76-18-122-6v-43c0-8 6-14 14-14h146z" fill="#FFFFFF" opacity=".5"></path>
+
+  <!-- Låg/åbning -->
+  <rect x="160" y="164" width="192" height="24" rx="8" fill="#F4EFEA"></rect>
+
+  <!-- Frugt-garnish (jordbærskive) -->
+  <circle cx="352" cy="182" r="24" fill="#FF6B8A" stroke="#E2456B" stroke-width="4"></circle>
+  <circle cx="352" cy="182" r="10" fill="#FFD6DF"></circle>
+  <!-- Lille blad -->
+  <path d="M370 160c10-2 18 2 20 10-9 4-20 3-28-3 2-4 5-6 8-7z" fill="#18A56D"></path>
+
+  <!-- Glas bund -->
+  <rect x="190" y="408" width="132" height="12" rx="6" fill="#EDE7E1"></rect>
+  <rect x="182" y="424" width="148" height="14" rx="7" fill="#E6E0DA"></rect>
+
+</svg>
