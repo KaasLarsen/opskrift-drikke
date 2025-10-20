@@ -1,22 +1,32 @@
 [
   {
+    "title": "Koldbryg kaffe – alt du skal vide",
+    "href": "/pages/topindhold/koldbryg-kaffe-guide.html",
+    "sub": "Opskrift, metoder, udstyr og fejlfinding.",
+    "icon": "/assets/topicons/coldbrew.png"
+  },
+  {
     "title": "Alt om ingefærshots",
     "href": "/pages/topindhold/ingefaershot-guide.html",
-    "sub": "Opskrift, styrke, holdbarhed."
+    "sub": "Opskrift, styrke, holdbarhed.",
+    "icon": "/assets/topicons/ginger.png"
   },
   {
     "title": "Iste uden sukker",
     "href": "/pages/topindhold/uden-sukker-guide.html",
-    "sub": "Koldbryg og smagstricks."
+    "sub": "Koldbryg og smagstricks.",
+    "icon": "/assets/topicons/icedtea.png"
   },
   {
     "title": "Matcha – komplet guide",
     "href": "/pages/topindhold/matcha-komplet-guide.html",
-    "sub": "Temperatur og teknik."
+    "sub": "Temperatur og teknik.",
+    "icon": "/assets/topicons/matcha.png"
   },
   {
     "title": "Mælkeskum som en barista",
     "href": "/pages/topindhold/maelkeskum-barista-guide.html",
-    "sub": "Mikroskum og latte art."
+    "sub": "Mikroskum og latte art.",
+    "icon": "/assets/topicons/milkfoam.png"
   }
 ]
