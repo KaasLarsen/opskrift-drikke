@@ -28,5 +28,11 @@
     "href": "/pages/topindhold/koldbryg-kaffe-guide.html",
     "sub": "Langsom bryg, aroma og servering.",
     "icon": "/assets/icons/koldbryg-kaffe.svg"
+  },
+  {
+  "title": "Den perfekte smoothie – guide",
+  "href": "/pages/topindhold/smoothie-guide.html",
+  "sub": "Grundopskrift, cremet konsistens og udstyr.",
+  "icon": "/assets/icons/smoothie.svg"
   }
 ]
