@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Den perfekte smoothie – opskrift, blender & tips | Top indhold – opskrift-drikke.dk</title>
+
+    <!-- Tailwind + tema -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/mobile-menu.css">
+
+    <!-- Meta -->
+    <meta name="description" content="Lær at lave den perfekte smoothie: grundopskrift, frugt/grønt-matrix, protein-boost, teksturtricks, blenderguide, fejlfinding og FAQ – plus anbefalet udstyr." />
+    <meta property="og:title" content="Den perfekte smoothie – opskrift, blender & tips" />
+    <meta property="og:description" content="Grundopskrift, variationer, konsistens, protein, udstyr, fejlfinding og de bedste tricks til cremet smoothies – hver gang." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/topindhold/smoothie-guide.html" />
+
+    <!-- Ikoner / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="manifest" href="/assets/manifest.json" />
+
+    <!-- Globale scripts -->
+    <script type="module" src="/js/app.js"></script>
+    <script type="module" src="/js/pricerunner-rotator.js"></script>
+
+    <style>
+      .lead { font-size:1.05rem; line-height:1.7; color:#374151 }
+      .toc a { display:block; padding:.35rem .5rem; border-radius:.75rem }
+      .toc a:hover { background: rgba(249,115,22,.08) }
+      .section h2 { font-size:1.25rem; font-weight:700; margin:1.25rem 0 .5rem }
+      .section h3 { font-weight:600; margin:1rem 0 .25rem }
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06) }
+      .note { font-size:.9rem; color:#6b7280 }
+      .table { width:100%; border-collapse:separate; border-spacing:0; }
+      .table th, .table td { padding:.65rem .75rem; border-bottom:1px solid #e5e7eb; vertical-align:top }
+      .table th { font-weight:600; white-space:nowrap; background:#fafafa }
+      .checklist li{ display:flex; gap:.5rem; }
+      .checklist li::before{ content:'✓'; color:#16a34a; font-weight:700; }
+      .badge-top {
+        display:inline-flex; align-items:center; gap:.4rem;
+        font-size:.72rem; padding:.35rem .55rem; border-radius:.65rem;
+        background:#fff7ed; color:#9a3412; border:1px solid #fed7aa;
+      }
+    </style>
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Den perfekte smoothie – opskrift, blender & tips",
+      "description": "Komplet smoothie-guide: grundopskrift, frugt/grønt-matrix, protein-boost, tekstur-tricks, udstyr, fejlfinding og FAQ.",
+      "author": {"@type": "Organization", "name": "opskrift-drikke.dk"},
+      "publisher": {"@type": "Organization", "name": "opskrift-drikke.dk"},
+      "inLanguage": "da",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.opskrift-drikke.dk/pages/topindhold/smoothie-guide.html"
+      }
+    }
+    </script>
+  </head>
+
+  <body class="bg-stone-50 text-stone-900">
+    <div id="header"></div>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- breadcrumb -->
+      <nav class="text-sm opacity-80">
+        <a href="/index.html" class="hover:underline">Forside</a> /
+        <a href="/pages/topindhold/index.html" class="hover:underline">Top indhold</a> /
+        <span>Den perfekte smoothie</span>
+      </nav>
+
+      <!-- hero -->
+      <section class="mt-4 card border bg-white p-6">
+        <div class="flex items-start gap-3">
+          <span class="badge-top">
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+              <path fill="currentColor" d="M12 17.3l-4.12 2.45 1.1-4.72L5.9 11l4.84-.41L12 6l1.26 4.59 4.84.41-3.08 4.03 1.1 4.72z"/>
+            </svg>
+            Top indhold
+          </span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-semibold mt-2">Den perfekte smoothie – opskrift, blender & tips</h1>
+        <p class="lead mt-2">
+          Cremet, kold og balanceret – uden at blive vandet eller “grynet”. Her får du
+          grundopskrift, en let matrix til at sammensætte smag, ideer til protein-boost,
+          udstyrsguide, fejlfinding og svar på de klassiske spørgsmål.
+        </p>
+        <div class="mt-3 text-sm opacity-70">Opdateret: <time datetime="2025-10-19">19. oktober 2025</time></div>
+      </section>
+
+      <!-- TOC -->
+      <section class="mt-6 card border bg-white p-5">
+        <h2 class="text-lg font-medium mb-2">Indhold</h2>
+        <nav class="toc grid gap-1">
+          <a href="#grundopskrift">1. Grundopskrift</a>
+          <a href="#matrix">2. Smags-matrix (frugt, grønt, fedt, sødme)</a>
+          <a href="#protein">3. Protein & mæthed</a>
+          <a href="#tekstur">4. Tekstur-tricks (is, frys, fibre)</a>
+          <a href="#udstyr">5. Blenderguide & anbefalet udstyr</a>
+          <a href="#fejl">6. Fejlfinding</a>
+          <a href="#faq">7. FAQ</a>
+          <a href="#relateret">8. Relateret indhold</a>
+        </nav>
+      </section>
+
+      <section class="mt-6 section">
+        <!-- 1. Grundopskrift -->
+        <article id="grundopskrift" class="card border bg-white p-6">
+          <h2>1. Grundopskrift (1 stor eller 2 små)</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3>Ingredienser</h3>
+              <ul class="list-disc ml-5 space-y-1">
+                <li>200 g frossen frugt (fx banan + bær)</li>
+                <li>150–200 ml væske (mælk, plantedrik eller æblejuice)</li>
+                <li>1 spsk cremet element (græsk yoghurt, skyr eller nøddesmør)</li>
+                <li>Evt. 1 tsk honning/sirup (smag til)</li>
+                <li>Is – hvis du bruger ufrossen frugt</li>
+              </ul>
+              <p class="note mt-2">Tip: frys modne bananer i skiver – det giver iscreme-agtig konsistens.</p>
+            </div>
+            <div>
+              <h3>Sådan gør du</h3>
+              <ol class="list-decimal ml-5 space-y-1">
+                <li>Start med væske i blenderen, tilsæt herefter frossen frugt.</li>
+                <li>Blend kort på lav, derefter 20–40 sek. på høj.</li>
+                <li>Stop, skrab ned fra siderne, og blend igen til helt glat.</li>
+                <li>Smag til med syre (citronsaft), sødme eller mere væske.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Matrix -->
+        <article id="matrix" class="card border bg-white p-6 mt-6">
+          <h2>2. Smags-matrix – byg din smoothie</h2>
+          <div class="overflow-auto">
+            <table class="table">
+              <thead>
+                <tr><th>Base (frossen)</th><th>Frisk/frugtig</th><th>Grønt</th><th>Fedt/cremet</th><th>Sødme</th><th>Syre</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Bananskiver, mango, jordbær</td><td>Æble, ananas, appelsinfilet</td><td>Spinat, avocado, agurk</td><td>Yoghurt, skyr, peanut/mandelsmør</td><td>Dadler, honning, ahorn</td><td>Citron/lime, passionsfrugt</td></tr>
+                <tr><td>Blåbær, kirsebær</td><td>Pære, fersken</td><td>Grønkål (finthakket)</td><td>Kokosmælk (50/50 m. vand)</td><td>Modne bananer</td><td>Let æbleeddike (1 tsk.)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note mt-3">Regel: frossen base + cremet element + lidt syre = glat, “løftet” smag.</p>
+        </article>
+
+        <!-- 3. Protein -->
+        <article id="protein" class="card border bg-white p-6 mt-6">
+          <h2>3. Protein & mæthed</h2>
+          <ul class="checklist ml-5 mt-1 space-y-1">
+            <li>Skyr/græsk yoghurt: 100–150 g → cremet + protein.</li>
+            <li>Proteinpulver (neutral/vanilje): 15–25 g → ryst med lidt væske før blend.</li>
+            <li>Silketofu: 100 g → neutral, meget cremet.</li>
+            <li>Havregryn: 2–3 spsk → fibre & mæthed (blend ekstra længe).</li>
+            <li>Chia/hørfrø: 1 spsk → tykner efter 5–10 min.</li>
+          </ul>
+        </article>
+
+        <!-- 4. Tekstur -->
+        <article id="tekstur" class="card border bg-white p-6 mt-6">
+          <h2>4. Tekstur-tricks</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3>Cremet & kold</h3>
+              <ul class="list-disc ml-5 space-y-1">
+                <li>Brug 60–70% frossen frugt i total vægt.</li>
+                <li>Tilføj 3–5 isterninger mod slut for “lift”.</li>
+                <li>Avocado (30–50 g) giver silkeblød finish.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Undgå “gryn”</h3>
+              <ul class="list-disc ml-5 space-y-1">
+                <li>Blend havre og frø 10 sek. alene med væske først.</li>
+                <li>Brug høj hastighed + skrab siderne ned.</li>
+                <li>Si gennem fintmasket si ved behov (juice-agtig stil).</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- 5. Udstyr / PriceRunner -->
+        <article id="udstyr" class="card border bg-white p-6 mt-6">
+          <h2>5. Blenderguide & anbefalet udstyr</h2>
+          <p class="mt-1">Høj effekt gør frossen frugt nem. Til dagligt brug er “personal blender” super praktisk.</p>
+
+          <!-- PriceRunner widget: vælg én eller flere relevante -->
+          <div class="mt-4 grid md:grid-cols-2 gap-4">
+            <div>
+              <h3 class="font-medium mb-2">Kraftig blender (familie)</h3>
+              <div id="prw-blender-ninja-1"></div>
+            </div>
+            <div>
+              <h3 class="font-medium mb-2">Kompakt to-go blender</h3>
+              <div id="prw-blender-nutribullet-1"></div>
+            </div>
+          </div>
+
+          <p class="note mt-3">Annonce i samarbejde med PriceRunner. Links kan være affiliatelinks.</p>
+        </article>
+
+        <!-- 6. Fejlfinding -->
+        <article id="fejl" class="card border bg-white p-6 mt-6">
+          <h2>6. Fejlfinding</h2>
+          <div class="overflow-auto">
+            <table class="table">
+              <thead><tr><th>Problem</th><th>Løsning</th></tr></thead>
+              <tbody>
+                <tr><td>For tynd/vandet</td><td>Mere frossen frugt, mindre væske, ½ avocado eller 1 spsk nøddesmør.</td></tr>
+                <tr><td>For tyk</td><td>+30–50 ml væske, blend 10–15 sek. ekstra.</td></tr>
+                <tr><td>Grynede fibre</td><td>Forblend havre/frø med væsken, øg hastighed, si evt. let.</td></tr>
+                <tr><td>Flad smag</td><td>1–2 tsk citronsaft + knivspids salt fremhæver frugt.</td></tr>
+                <tr><td>For sød</td><td>+citronsaft eller lidt yoghurt/skyr for balance.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- 7. FAQ -->
+        <article id="faq" class="card border bg-white p-6 mt-6">
+          <h2>7. FAQ</h2>
+          <details class="border rounded-xl p-4 mb-3">
+            <summary class="font-medium">Kan jeg meal-preppe smoothies?</summary>
+            <p class="mt-2">Ja. Frys frugt i poser (1 portion), og blend med væske ved behov. Færdig smoothie holder 1 dag på køl (ryst før servering).</p>
+          </details>
+          <details class="border rounded-xl p-4 mb-3">
+            <summary class="font-medium">Hvordan får jeg den helt “iscremede” konsistens?</summary>
+            <p class="mt-2">Brug frossen banan/mango som base + et cremet element (yoghurt/avocado) og en kraftig blender.</p>
+          </details>
+          <details class="border rounded-xl p-4">
+            <summary class="font-medium">Bedste plantedrik til smoothie?</summary>
+            <p class="mt-2">Usødet mandel- eller havredrik giver neutral base. Kokosmælk (delvist) giver mere fylde.</p>
+          </details>
+        </article>
+
+        <!-- 8. Relateret -->
+        <article id="relateret" class="card border bg-white p-6 mt-6">
+          <h2>8. Relateret indhold</h2>
+          <div class="grid md:grid-cols-3 gap-4 mt-2">
+            <a href="/pages/topindhold/ingefaershot-guide.html" class="block border rounded-xl p-4 hover:shadow">
+              <h3 class="font-semibold">Alt om ingefærshots</h3>
+              <p class="text-sm opacity-80 mt-1">Opskrift, styrke, holdbarhed.</p>
+            </a>
+            <a href="/pages/topindhold/uden-sukker-guide.html" class="block border rounded-xl p-4 hover:shadow">
+              <h3 class="font-semibold">Iste uden sukker</h3>
+              <p class="text-sm opacity-80 mt-1">Koldbryg og smagstricks.</p>
+            </a>
+            <a href="/pages/topindhold/koldbryg-kaffe-guide.html" class="block border rounded-xl p-4 hover:shadow">
+              <h3 class="font-semibold">Koldbryg kaffe – guide</h3>
+              <p class="text-sm opacity-80 mt-1">Forhold, tid og filtrering.</p>
+            </a>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <!-- Side-specifik JS -->
+    <script type="module">
+      import { mountPRByKey } from '/js/pricerunner-rotator.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        // Indsæt relevante PriceRunner-widgets
+        mountPRByKey('#prw-blender-ninja-1', 'blender-ninja-1');
+        mountPRByKey('#prw-blender-nutribullet-1', 'blender-nutribullet-1');
+      });
+    </script>
+  </body>
+</html>
