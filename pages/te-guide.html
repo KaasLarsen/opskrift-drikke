@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Te – den komplette guide (sort, grøn, urtete & koldbryg) | opskrift-drikke.dk</title>
+
+    <!-- Tailwind + tema -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/mobile-menu.css">
+
+    <meta name="description" content="Lær at brygge te perfekt: temperatur, trækketid, te-typer, koldbryg, servering og udstyr. Praktiske opskrifter og tips til hverdag og gæster." />
+    <meta property="og:title" content="Te – den komplette guide" />
+    <meta property="og:description" content="Sort, grøn, hvid & urtete, temperaturer og trækketider, koldbryg-te, serveringstips og udstyr." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.opskrift-drikke.dk/pages/topindhold/te-guide.html" />
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="manifest" href="/assets/manifest.json" />
+
+    <style>
+      .lead { font-size:1.05rem; line-height:1.7; color:#374151 }
+      .toc a { display:block; padding:.35rem .5rem; border-radius:.75rem }
+      .toc a:hover { background: rgba(249,115,22,.08) }
+      .section h2 { font-size:1.25rem; font-weight:700; margin:1.25rem 0 .5rem }
+      .section h3 { font-weight:600; margin:1rem 0 .35rem }
+      .card { border-radius: 1rem; box-shadow: 0 4px 18px rgba(0,0,0,.06) }
+      .note { font-size:.9rem; color:#6b7280 }
+      .table { width:100%; border-collapse:separate; border-spacing:0; }
+      .table th, .table td { padding:.65rem .75rem; border-bottom:1px solid #e5e7eb; vertical-align:top }
+      .table th { font-weight:600; white-space:nowrap; background:#fafafa }
+      .badge { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem; border-radius:.75rem; background:#fff7f2; border:1px solid #fde9dd; color:#b45309; font-size:.8rem }
+    </style>
+
+    <!-- Structured data (Article) -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"Article",
+      "headline":"Te – den komplette guide",
+      "description":"Sort, grøn, hvid og urtete – temperaturer og trækketider, koldbryg, serveringstips og udstyr.",
+      "author":{"@type":"Organization","name":"opskrift-drikke.dk"},
+      "publisher":{"@type":"Organization","name":"opskrift-drikke.dk"},
+      "inLanguage":"da",
+      "mainEntityOfPage":{"@type":"WebPage","@id":"https://www.opskrift-drikke.dk/pages/topindhold/te-guide.html"}
+    }
+    </script>
+  </head>
+
+  <body class="bg-stone-50 text-stone-900">
+    <div id="header"></div>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- breadcrumb -->
+      <nav class="text-sm opacity-80">
+        <a href="/index.html" class="hover:underline">Forside</a> /
+        <a href="/pages/topindhold/index.html" class="hover:underline">Top indhold</a> /
+        <span>Te – den komplette guide</span>
+      </nav>
+
+      <!-- hero -->
+      <section class="mt-4 card border bg-white p-6">
+        <div class="flex items-start gap-3">
+          <!-- Brug eksisterende iste-ikon som te-ikon -->
+          <img src="/assets/icons/iste.svg" alt="" class="w-12 h-12 rounded-xl border bg-white object-contain"/>
+          <div class="flex-1">
+            <h1 class="text-3xl md:text-4xl font-semibold">Te – den komplette guide</h1>
+            <p class="lead mt-2">
+              Alt du skal bruge for at brygge bedre te: temperaturer og trækketider for sort, grøn, hvid og urtete, 
+              hvordan du laver koldbryg, smarte smagsvariationer – og udstyr der gør det nemt hver dag.
+            </p>
+            <div class="mt-3 text-sm opacity-70">Opdateret: <time datetime="2025-10-21">21. oktober 2025</time></div>
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span class="badge">🫖 præcis temperatur</span>
+          <span class="badge">🌿 naturlig smag</span>
+          <span class="badge">🧊 god til koldbryg</span>
+        </div>
+      </section>
+
+      <!-- Indholdsfortegnelse -->
+      <section class="mt-6 card border bg-white p-5">
+        <h2 class="text-lg font-medium mb-2">Indhold</h2>
+        <nav class="toc grid md:grid-cols-2 gap-1">
+          <a href="#typer">1. Te-typer & smagsprofiler</a>
+          <a href="#temperatur">2. Temperatur & trækketid (tabel)</a>
+          <a href="#koldbryg">3. Koldbrygget te – opskrift</a>
+          <a href="#variationer">4. Variationer & sødme</a>
+          <a href="#udstyr">5. Udstyr & anbefalinger</a>
+          <a href="#faq">6. FAQ</a>
+          <a href="#relateret">7. Relateret indhold</a>
+        </nav>
+      </section>
+
+      <!-- 1. Te-typer -->
+      <section id="typer" class="mt-6 section card border bg-white p-6">
+        <h2>1. Te-typer & smagsprofiler</h2>
+        <div class="overflow-auto">
+          <table class="table">
+            <thead><tr><th>Type</th><th>Kendetegn</th><th>Smag</th><th>Hvornår vælge</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Sort te</strong></td>
+                <td>Fuld oxidation, højere koffein</td>
+                <td>Maltrig, karamelliseret, robust</td>
+                <td>Morgenkoppen eller med mælk/citron</td>
+              </tr>
+              <tr>
+                <td><strong>Grøn te</strong></td>
+                <td>Let oxideret, nænsomt opvarmet</td>
+                <td>Frisk, urtet, let bitterhed</td>
+                <td>Let og ren smag – god til mad</td>
+              </tr>
+              <tr>
+                <td><strong>Hvid te</strong></td>
+                <td>Minimalt forarbejdet</td>
+                <td>Delikat, blomster, blød</td>
+                <td>Når du vil have mild, elegant kop</td>
+              </tr>
+              <tr>
+                <td><strong>Urtete</strong></td>
+                <td>Urter/frugter (uden teblade)</td>
+                <td>Koffeinfri; fra citrus til krydderurter</td>
+                <td>Aftenro, koffeinfrit, smagslege</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note mt-2">Tip: kvalitet på vand og te gør stor forskel – filtreret vand og frisk te giver renere kop.</p>
+      </section>
+
+      <!-- 2. Temperatur & trækketid -->
+      <section id="temperatur" class="mt-6 section card border bg-white p-6">
+        <h2>2. Temperatur & trækketid (tabel)</h2>
+        <div class="overflow-auto">
+          <table class="table">
+            <thead>
+              <tr><th>Type</th><th>Temperatur</th><th>Trækketid</th><th>Dosering</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Sort te</td><td>95–100 °C</td><td>3–5 min</td><td>2–3 g pr. 250 ml</td></tr>
+              <tr><td>Grøn te</td><td>75–85 °C</td><td>2–3 min</td><td>2 g pr. 250 ml</td></tr>
+              <tr><td>Hvid te</td><td>80–90 °C</td><td>3–5 min</td><td>2–3 g pr. 250 ml</td></tr>
+              <tr><td>Urtete</td><td>95–100 °C</td><td>5–8 min</td><td>2–3 g pr. 250 ml</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note mt-2">Undgå bitterhed: brug køligere vand til grøn/hvid te og stop trækketiden i tide.</p>
+      </section>
+
+      <!-- 3. Koldbryg -->
+      <section id="koldbryg" class="mt-6 section card border bg-white p-6">
+        <h2>3. Koldbrygget te – opskrift</h2>
+        <ul class="list-disc ml-5 space-y-1">
+          <li>10–12 g teblade pr. liter koldt vand</li>
+          <li>Træk på køl 6–12 timer (smag undervejs)</li>
+          <li>Filtrér og server over is med citron/mynte</li>
+        </ul>
+        <p class="note mt-1">Koldbryg udtrækker blidere – mindre bitterhed og en frisk, rund smag. Perfekt sommerdrik.</p>
+      </section>
+
+      <!-- 4. Variationer -->
+      <section id="variationer" class="mt-6 section card border bg-white p-6">
+        <h2>4. Variationer & sødme</h2>
+        <ul class="list-disc ml-5 space-y-1">
+          <li><strong>Honning & citron:</strong> klassiker til sort/hvid te (tilsæt under 60 °C for at bevare aroma).</li>
+          <li><strong>Friske urter:</strong> mynte, citronmelisse eller rosmarin for duft og friskhed.</li>
+          <li><strong>Frugt:</strong> appelsinskal, bær eller fersken i koldbryg giver let sødme.</li>
+          <li><strong>Sukkerfri:</strong> et par ml sukkerfri sirup eller erythritol-blandinger for ren smag.</li>
+        </ul>
+      </section>
+
+      <!-- 5. Udstyr & PriceRunner -->
+      <section id="udstyr" class="mt-6 section card border bg-white p-6">
+        <h2>5. Udstyr & anbefalinger</h2>
+        <p>For stabil smag: brug kedel med temperaturstyring og en god te-si eller kande med filter.</p>
+        <div class="mt-3 grid md:grid-cols-2 gap-4">
+          <div>
+            <h3 class="mb-2">Hældekedel (1,2 L)</h3>
+            <div id="prw-kedel-hario-12"></div>
+          </div>
+          <div>
+            <h3 class="mb-2">Kedel med temperatur</h3>
+            <div id="prw-kedel-hario-temp"></div>
+          </div>
+        </div>
+        <div class="mt-4 grid md:grid-cols-2 gap-4">
+          <div>
+            <h3 class="mb-2">Kompakt hældekedel (1,0 L)</h3>
+            <div id="prw-kedel-hario-10"></div>
+          </div>
+          <div>
+            <h3 class="mb-2">Kandefilter (tip)</h3>
+            <p class="note">Har du en te-si eller kande med filter i forvejen, kan du bruge den til koldbryg.</p>
+          </div>
+        </div>
+        <p class="note mt-2">Annonce: PriceRunner-widgets viser priser fra danske forhandlere.</p>
+      </section>
+
+      <!-- 6. FAQ -->
+      <section id="faq" class="mt-6 section card border bg-white p-6">
+        <h2>6. Ofte stillede spørgsmål</h2>
+        <details class="border rounded-xl p-4 mb-3">
+          <summary class="font-medium">Kan jeg genbruge teblade flere gange?</summary>
+          <p class="mt-2">Ja – især grøn og hvid te kan brygges 2–3 gange. Hæv temperatur/trækketid en anelse for hver omgang.</p>
+        </details>
+        <details class="border rounded-xl p-4 mb-3">
+          <summary class="font-medium">Hvorfor bliver min grønne te bitter?</summary>
+          <p class="mt-2">For varmt vand eller for lang trækketid. Hold 75–85 °C og 2–3 min.</p>
+        </details>
+        <details class="border rounded-xl p-4">
+          <summary class="font-medium">Kan jeg lave te-latte?</summary>
+          <p class="mt-2">Ja – stærk sort eller chai med varm eller kold mikroskum giver en blød te latte. Se også vores mælkeskum-guide.</p>
+        </details>
+      </section>
+
+      <!-- 7. Relateret indhold -->
+      <section id="relateret" class="mt-6 section card border bg-white p-6">
+        <h2>7. Relateret indhold</h2>
+        <div class="grid md:grid-cols-3 gap-4 mt-2">
+          <a href="/pages/topindhold/uden-sukker-guide.html" class="block border rounded-xl p-4 hover:shadow">
+            <div class="flex items-center gap-2 mb-1">
+              <img src="/assets/icons/iste.svg" alt="" class="w-6 h-6"/>
+              <h3 class="font-semibold">Iste uden sukker – guide</h3>
+            </div>
+            <p class="text-sm opacity-80">Koldbryg, smag og sødme uden sukker.</p>
+          </a>
+          <a href="/pages/topindhold/matcha-komplet-guide.html" class="block border rounded-xl p-4 hover:shadow">
+            <div class="flex items-center gap-2 mb-1">
+              <img src="/assets/icons/matcha.svg" alt="" class="w-6 h-6"/>
+              <h3 class="font-semibold">Matcha – komplet guide</h3>
+            </div>
+            <p class="text-sm opacity-80">Pisketeknik, temperatur og latte.</p>
+          </a>
+          <a href="/pages/topindhold/maelkeskum-barista-guide.html" class="block border rounded-xl p-4 hover:shadow">
+            <div class="flex items-center gap-2 mb-1">
+              <img src="/assets/icons/maelkeskum.svg" alt="" class="w-6 h-6"/>
+              <h3 class="font-semibold">Mælkeskum som en barista</h3>
+            </div>
+            <p class="text-sm opacity-80">Mikroskum – også koldt – til te latte.</p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="/js/app.js"></script>
+    <script type="module">
+      import { mountPRByKey } from '/js/pricerunner-rotator.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        // PriceRunner widgets – nøgler matcher din rotator-fil
+        mountPRByKey('#prw-kedel-hario-12', 'kedel-hario-12');
+        mountPRByKey('#prw-kedel-hario-temp', 'kedel-hario-temp');
+        mountPRByKey('#prw-kedel-hario-10', 'kedel-hario-10');
+      });
+    </script>
+  </body>
+</html>
