@@ -53,4 +53,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
+  <url>
+  <loc>https://www.opskrift-drikke.dk/pages/topindhold/proteinshakes-guide.html</loc>
+  <lastmod>2025-10-21</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.90</priority>
+  </url>
 </urlset>
