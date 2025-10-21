@@ -1,5 +1,16 @@
 [
   {
+  "id": "proteinshakes-guide",
+  "title": "Proteinshakes – den ultimative guide",
+  "description": "Whey, vegansk, low-cal & mass gainer – opskrifter, timing og udstyr.",
+  "href": "/pages/topindhold/proteinshakes-guide.html",
+  "icon": "/assets/icons/smoothie.svg",
+  "badge": "Top",
+  "rating": 4.5,
+  "tags": ["træning", "protein", "shake"],
+  "updated": "2025-10-21"
+  },
+  {
   "title": "Iskaffe – den ultimative guide",
   "sub": "Lær at lave iced latte, americano og frappe derhjemme – med barista-tricks, cold foam og udstyr.",
   "href": "/pages/topindhold/iskaffe-guide.html",
