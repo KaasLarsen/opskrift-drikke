@@ -1,5 +1,5 @@
 // /js/pricerunner-rotator.js
-// — Home-karussel med pile + kategori-specifik visning pr. key —
+// — Home-karussel med pile + kategori-/guide-specifik visning pr. key —
 
 // 1) Home-karussel (de 3 du allerede har)
 const WIDGETS_HOME = [
@@ -76,12 +76,27 @@ const WIDGETS_KEYED = [
   { key:'gryde-tefal-5l',        divId:'prw-gryde-tefal-5l',        productId:'3200022122',
     link:'https://www.pricerunner.dk/pl/1266-3200022122/Kasseroller-Stegepander/Tefal-Nordica-med-laag-24cm-Sammenlign-Priser' },
   { key:'gryde-dorre-5l',        divId:'prw-gryde-dorre-5l',        productId:'3276645688',
+    link:'https://www.pricerunner.dk/pl/1266-3276645688/Kasseroller-Stegepander/Dorre-Karla-Gryde-5-L-med-laag-24cm-Sammenlign-Priser' },
+
+  // ----------------- NYT: Proteinshakes (matcher din HTMLs keys) -----------------
+  // NOTE: midlertidige IDs så der vises noget nu – skift dem til dine rigtige PriceRunner IDs.
+  { key:'blender-1',       divId:'prw-blender-1',       productId:'3385670828',
+    link:'https://www.pricerunner.dk/pl/84-3385670828/Blendere/Ninja-Detect-TB301EU-Blender-Pro-Sammenlign-Priser' },
+
+  // TODO: skift til et rigtigt fitness-shaker produkt-ID + URL
+  { key:'shaker-1',        divId:'prw-shaker-1',        productId:'3200061470',
+    link:'https://www.pricerunner.dk/pl/461-3200061470/Koekkentilbehoer/Zone-Denmark-Rocks-Boston-Cocktailshaker-29.5cm-Sammenlign-Priser' },
+
+  // TODO: hvis du har kategori-ID for proteinpulver, skift til { type:'category', categoryId:'XXXX' }
+  { key:'proteinpulver-1', divId:'prw-proteinpulver-1', productId:'3299718083',
+    link:'https://www.pricerunner.dk/pl/84-3299718083/Blendere/Nutribullet-Pro-900-NB907MAB-Sammenlign-Priser' },
+
+  // TODO: skift til passende meal prep/to-go produkt eller categoryId
+  { key:'mealprep-1',      divId:'prw-mealprep-1',      productId:'3276645688',
     link:'https://www.pricerunner.dk/pl/1266-3276645688/Kasseroller-Stegepander/Dorre-Karla-Gryde-5-L-med-laag-24cm-Sammenlign-Priser' }
 ];
 
-// ---------- Home-karussel (pile) ----------
-let currentHome = 0;
-
+// ---------- Hjælpefunktioner ----------
 function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
 
 function createHomeFrame(w){
@@ -139,7 +154,9 @@ function renderHome(slot, idx){
   slot.appendChild(card);
 }
 
-// offentlige funktioner
+// ---------- Offentlige funktioner ----------
+let currentHome = 0;
+
 export function mountPRHome(selector = '#pr-home-slot'){
   const slot = document.querySelector(selector);
   if (!slot) return;
@@ -149,24 +166,45 @@ export function mountPRHome(selector = '#pr-home-slot'){
   io.observe(slot);
 }
 
-// bagudkompatibel alias (din forside kalder måske mountPR)
+// Bagudkompatibelt alias (din forside kalder måske mountPR)
 export const mountPR = mountPRHome;
 
-// ---------- Kategori/guide: vis bestemt key ----------
+// Find widget via key
 function widgetByKey(key){ return WIDGETS_KEYED.find(w => w.key === key); }
 
+// Byg korrekt script-URL (product vs category)
+function buildScriptSrc(w){
+  const base = 'https://api.pricerunner.com/publisher-widgets/dk';
+  const params = 'onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&partnerId=adrunner_dk_opskrift-drikke';
+  if (w.type === 'category' && w.categoryId){
+    return `${base}/category.js?${params}&categoryId=${w.categoryId}&widgetId=${w.divId}`;
+  }
+  // default: product
+  return `${base}/product.js?${params}&productId=${w.productId}&widgetId=${w.divId}`;
+}
+
+// ---------- Kategori/guide: vis bestemt key ----------
 export function mountPRByKey(selector, key){
   const slot = document.querySelector(selector);
-  if (!slot) return;
-  const chosen = widgetByKey(key);
-  if (!chosen) return;
+  if (!slot) { console.warn('[PR] Selector not found:', selector); return; }
+  const w = widgetByKey(key);
+  if (!w) { console.warn('[PR] Unknown key:', key); return; }
+
+  // Blid fallback: hvis hverken categoryId eller productId er sat, brug et sikkert standardprodukt
+  const hasCategory = w.type === 'category' && !!w.categoryId;
+  const hasProduct  = !!w.productId;
+  if (!hasCategory && !hasProduct){
+    console.warn('[PR] Missing productId/categoryId for key:', key, '— using fallback productId=3385670828');
+    w.productId = '3385670828'; // Ninja blender fallback
+    w.link = w.link || 'https://www.pricerunner.dk/pl/84-3385670828/Blendere/Ninja-Detect-TB301EU-Blender-Pro-Sammenlign-Priser';
+  }
 
   slot.innerHTML = `
     <div class="card bg-white p-4 border rounded-2xl">
       <div class="text-sm opacity-70 mb-2">Annonce i samarbejde med PriceRunner</div>
-      <div id="${chosen.divId}" style="display:block;width:100%"></div>
+      <div id="${w.divId}" style="display:block;width:100%"></div>
       <div style="display:inline-block;margin-top:4px">
-        <a href="${chosen.link}" rel="nofollow">
+        <a href="${w.link || '#'}" rel="nofollow">
           <p style="font:14px 'Klarna Text', Helvetica, sans-serif; font-style:italic; color:#444; text-decoration:underline;">
             Annonce i samarbejde med <span style="font-weight:bold">PriceRunner</span>
           </p>
@@ -176,11 +214,11 @@ export function mountPRByKey(selector, key){
 
   const s = document.createElement('script');
   s.async = true;
-  s.src = `https://api.pricerunner.com/publisher-widgets/dk/product.js?onlyInStock=true&offerOrigin=NATIONAL&offerLimit=4&productId=${chosen.productId}&partnerId=adrunner_dk_opskrift-drikke&widgetId=${chosen.divId}`;
+  s.src = buildScriptSrc(w);
   slot.appendChild(s);
 }
 
-// auto-mount kun for forsiden (hvis slot findes)
+// Auto-mount kun for forsiden (hvis slot findes)
 document.addEventListener('DOMContentLoaded', () => {
   const home = document.querySelector('#pr-home-slot');
   if (home) mountPRHome('#pr-home-slot');
