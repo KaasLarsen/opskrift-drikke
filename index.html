@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Forside – opskrift-drikke.dk</title>
 
+    <!-- ✅ AdSense (KRÆVES for både Auto ads og manuelle slots) -->
+    <meta name="google-adsense-account" content="ca-pub-7373148222153531">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7373148222153531" crossorigin="anonymous"></script>
+
     <link rel="preconnect" href="https://cdn.tailwindcss.com"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/assets/site.css">
@@ -33,7 +37,6 @@
     <!-- Fjern denne linje: -->
     <!-- <script type="module" src="/js/suggest.js"></script> -->
     <script type="module" src="/js/home-popular.js"></script>
-
 
     <style>.card{border-radius:1rem;box-shadow:0 4px 18px rgba(0,0,0,.06)}.btn{border-radius:1rem}</style>
   </head>
@@ -86,33 +89,33 @@
       </section>
 
       <!-- På forsiden et sted -->
-<section class="py-10 bg-stone-50">
-  <div class="max-w-6xl mx-auto px-4">
-    <div class="flex items-end justify-between flex-wrap gap-3">
-      <div class="flex items-center gap-3">
-        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 border border-orange-100">
-          <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true">
-            <path fill="currentColor" d="M9.5 3 8 7 4 8.5 8 10l1.5 4L11 10l4-1.5L11 7 9.5 3Zm8 4-1 2.5L14 11l2.5 1.5L18 15l1.5-2.5L22 11l-2.5-1.5L17.5 7Zm-9 7L7 13l1.5 2.5L7 18l2.5-1.5L12 18l-1.5-2.5L12 13l-2.5 1Z"/>
-          </svg>
-        </span>
-        <div>
-          <h2 class="text-2xl md:text-3xl font-semibold">Top indhold</h2>
-          <p class="opacity-80">Udvalgte guides fra vores redaktion.</p>
+      <section class="py-10 bg-stone-50">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="flex items-end justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 border border-orange-100">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true">
+                  <path fill="currentColor" d="M9.5 3 8 7 4 8.5 8 10l1.5 4L11 10l4-1.5L11 7 9.5 3Zm8 4-1 2.5L14 11l2.5 1.5L18 15l1.5-2.5L22 11l-2.5-1.5L17.5 7Zm-9 7L7 13l1.5 2.5L7 18l2.5-1.5L12 18l-1.5-2.5L12 13l-2.5 1Z"/>
+                </svg>
+              </span>
+              <div>
+                <h2 class="text-2xl md:text-3xl font-semibold">Top indhold</h2>
+                <p class="opacity-80">Udvalgte guides fra vores redaktion.</p>
+              </div>
+            </div>
+            <a href="/pages/topindhold/index.html" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
+          </div>
+
+          <div id="homeTopGrid" class="grid md:grid-cols-4 gap-4 mt-6"></div>
         </div>
-      </div>
-      <a href="/pages/topindhold/index.html" class="text-sm font-medium text-orange-600 hover:underline">Se alle</a>
-    </div>
+      </section>
 
-    <div id="homeTopGrid" class="grid md:grid-cols-4 gap-4 mt-6"></div>
-  </div>
-</section>
-
-<script type="module">
-  import { mountTopContent } from '/js/top-content.js';
-  document.addEventListener('DOMContentLoaded', () => {
-    mountTopContent({ gridId: 'homeTopGrid', limit: 4 });
-  });
-</script>
+      <script type="module">
+        import { mountTopContent } from '/js/top-content.js';
+        document.addEventListener('DOMContentLoaded', () => {
+          mountTopContent({ gridId: 'homeTopGrid', limit: 4 });
+        });
+      </script>
       
       <!-- SÆSONENS FAVORITTER -->
       <section class="mt-10" id="seasonal">
@@ -128,36 +131,25 @@
             Se flere →
           </a>
         </div>
-      
-        <!-- grid som matcher “Mest populære” -->
         <div id="seasonalGrid" class="mt-5 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
       </section>
 
+      <!-- MEST POPULÆRE -->
+      <section id="popular" class="mt-6">
+        <div class="section-head flex items-end justify-between mb-2">
+          <div>
+            <h2 id="popularTitle" class="text-2xl md:text-3xl font-semibold">
+              Mest populære opskrifter
+            </h2>
+            <p class="text-stone-600 mt-1 mb-0">
+              Håndplukket favoritter – sæsonens sikre vindere.
+            </p>
+          </div>
+          <a href="/pages/seneste.html" class="hidden sm:inline-flex items-center gap-2 text-sm text-orange-600 hover:underline">Se alle →</a>
+        </div>
 
-<!-- MEST POPULÆRE -->
-<section id="popular" class="mt-6">
-  <div class="section-head flex items-end justify-between mb-2">
-    <div>
-      <h2 id="popularTitle" class="text-2xl md:text-3xl font-semibold">
-        Mest populære opskrifter
-      </h2>
-      <p class="text-stone-600 mt-1 mb-0">
-        Håndplukket favoritter – sæsonens sikre vindere.
-      </p>
-    </div>
-    <a
-      href="/pages/seneste.html"
-      class="hidden sm:inline-flex items-center gap-2 text-sm text-orange-600 hover:underline"
-    >
-      Se alle →
-    </a>
-  </div>
-
-  <!-- Grid med opskrifter -->
-  <div id="popularRecipes"
-       class="mt-2 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-       style="margin-top:0!important"></div>
-</section>
+        <div id="popularRecipes" class="mt-2 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style="margin-top:0!important"></div>
+      </section>
 
       <!-- Resultater (de “gamle” kort – nu rendrer de samme kompakte kort som populære) -->
       <section class="pt-8">
@@ -166,6 +158,19 @@
 
         <div class="max-w-6xl mx-auto px-4 mt-8">
           <div id="pr-home-slot"></div>
+        </div>
+      </section>
+
+      <!-- 🔧 AdSense test-slot (kan fjernes igen, brug dit RIGTIGE slot-id fra AdSense > Ad units > Display > Responsive) -->
+      <section class="py-8">
+        <div class="max-w-6xl mx-auto px-4">
+          <ins class="adsbygoogle"
+               style="display:block; text-align:center;"
+               data-ad-client="ca-pub-7373148222153531"
+               data-ad-slot="REPLACE_WITH_REAL_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </div>
       </section>
     </main>
