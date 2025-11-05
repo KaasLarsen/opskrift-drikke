@@ -1,5 +1,37 @@
 // /js/app.js  (NO <script> TAGS IN THIS FILE)
 
+// === Global AdSense bootstrap (indsættes automatisk på alle sider) ===
+(function ensureAdSense() {
+  try {
+    const CLIENT = 'ca-pub-7373148222153531';
+
+    // 1) Meta-tag til Auto ads (tilføjes hvis mangler)
+    const META_NAME = 'google-adsense-account';
+    let meta = document.querySelector(`meta[name="${META_NAME}"]`);
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', META_NAME);
+      meta.setAttribute('content', CLIENT);
+      document.head.appendChild(meta);
+      // console.debug('[AdSense] Meta added');
+    }
+
+    // 2) Loader-script (tilføjes hvis mangler)
+    const LOADER_ID = 'adsense-loader';
+    if (!document.getElementById(LOADER_ID)) {
+      const s = document.createElement('script');
+      s.id = LOADER_ID;
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${CLIENT}`;
+      document.head.appendChild(s);
+      // console.debug('[AdSense] Loader appended');
+    }
+  } catch (e) {
+    console.warn('[AdSense] Kunne ikke initialisere:', e);
+  }
+})();
+
 // Load a partial and resolve when inserted
 function mountPartial(id, url) {
   return new Promise(async (resolve) => {
